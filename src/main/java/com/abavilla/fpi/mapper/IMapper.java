@@ -16,20 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.entity.impl.sms;
+package com.abavilla.fpi.mapper;
 
-import com.abavilla.fpi.entity.mongo.AbsMongoItem;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.abavilla.fpi.dto.IDto;
+import com.abavilla.fpi.entity.IItem;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@MongoEntity(collection="customers")
-public class Customer extends AbsMongoItem {
-  private String name;
-  private String address;
-  private String mobile;
+public interface IMapper<DTO extends IDto, ENTITY extends IItem> {
+  DTO mapToDto(ENTITY entity);
+  ENTITY mapToEntity(DTO dto);
 }

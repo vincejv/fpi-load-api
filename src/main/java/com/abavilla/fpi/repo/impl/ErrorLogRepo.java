@@ -16,19 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.config.codec.impl;
+package com.abavilla.fpi.repo.impl;
 
-import com.abavilla.fpi.config.codec.AbsCodec;
-import com.abavilla.fpi.entity.enums.DCSCoding;
+import javax.enterprise.context.ApplicationScoped;
 
-public class DCSCodingCodec extends AbsCodec<DCSCoding> {
+import com.abavilla.fpi.entity.impl.ErrorLog;
+import com.abavilla.fpi.repo.AbsMongoRepo;
 
-  public DCSCodingCodec() {
-    super();
-  }
+@ApplicationScoped
+public class ErrorLogRepo extends AbsMongoRepo<ErrorLog> {
 
-  @Override
-  public Class<DCSCoding> getEncoderClass() {
-    return DCSCoding.class;
-  }
 }

@@ -16,19 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.dto.impl.sms;
+package com.abavilla.fpi.mapper;
 
-import com.abavilla.fpi.dto.AbsDto;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.abavilla.fpi.dto.impl.SessionDto;
+import com.abavilla.fpi.entity.impl.Session;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@RegisterForReflection
-public class MsgReqDto extends AbsDto {
-  private String content;
-  private String mobileNumber;
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface SessionMapper extends IMapper<SessionDto, Session> {
+  @Mapping(target = "dateCreated", ignore = true)
+  @Mapping(target = "dateUpdated", ignore = true)
+  SessionDto mapToDto(Session entity);
+
+  @Mapping(target = "dateCreated", ignore = true)
+  @Mapping(target = "dateUpdated", ignore = true)
+  Session mapToEntity(SessionDto dto);
 }

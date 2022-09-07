@@ -16,21 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.repo.impl.m360;
+package com.abavilla.fpi.dto.impl;
 
-import com.abavilla.fpi.config.ApiRepoExHandler;
-import com.abavilla.fpi.dto.impl.api.m360.BroadcastRequestDto;
-import com.abavilla.fpi.repo.IApiRepo;
-import com.fasterxml.jackson.databind.JsonNode;
-import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import com.abavilla.fpi.dto.AbsDto;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.ws.rs.POST;
-
-@RegisterRestClient(configKey = "m360-api")
-@RegisterProvider(value = ApiRepoExHandler.class)
-public interface M360ApiRepo extends IApiRepo<BroadcastRequestDto> {
-  @POST
-  Uni<JsonNode> sendMsg(BroadcastRequestDto broadcastRequestDto);
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@RegisterForReflection
+public class CustomerDto extends AbsDto {
+  private String name;
+  private String address;
+  private String mobile;
 }

@@ -7,10 +7,6 @@ quarkus:
     database: vbl
 # Your configuration properties
   rest-client:
-    m360-api:
-      url: https://api.m360.com.ph/v3/api/broadcast
-      #url: https://localhost
-      scope: javax.inject.Singleton
     gl-rewards-api:
       url: https://devapi.globelabs.com.ph/rewards/v1/transactions/send
       #url: https://localhost
@@ -30,31 +26,20 @@ quarkus:
           path: /fpi/login/*
           enforcement-mode: DISABLED
         '2':
-          path: /fpi/sms/dlr/*
-          enforcement-mode: DISABLED
-        '3':
           path: /fpi/load/callback/*
           enforcement-mode: DISABLED
-        '4':
+        '3':
           # debug
           path: /fpi/load/reload/*
           enforcement-mode: DISABLED
 
 fpi:
   webhook:
-    dlr:
-      api-key: ${FPI_DLR_WEBHOOK_KEY:FPIDLRAABBBDDCCCQQQ}
-    mo:
-      api-key: ${FPI_MO_WEBHOOK_KEY:FPIDLRAABBBDDCCCQQQ}
     gen:
       api-key: ${FPI_GEN_WEBHOOK_KEY:FPIDLRAABBBDDCCCQQQ}
 
 ph:
   com:
-    m360:
-      api-key: ${SMS_API_KEY:123456789}
-      api-secret: ${SMS_SECRET:123456789}
-      sender-id: ${SMS_SID:ABCDE}
     gl:
       app-id: ${GL_APP_ID:APP112233}
       app-secret: ${GL_APP_SEC:APPSEC112233}

@@ -16,18 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.repo.impl.sms;
+package com.abavilla.fpi.controller.impl;
 
-import com.abavilla.fpi.entity.impl.sms.MsgReq;
-import com.abavilla.fpi.repo.AbsMongoRepo;
+import javax.ws.rs.Path;
+
+import com.abavilla.fpi.controller.AbsResource;
+import com.abavilla.fpi.dto.impl.ErrorLogDto;
+import com.abavilla.fpi.entity.impl.ErrorLog;
+import com.abavilla.fpi.service.impl.ErrorLogSvc;
 import io.smallrye.mutiny.Uni;
 
-import javax.enterprise.context.ApplicationScoped;
-import java.util.Optional;
-
-@ApplicationScoped
-public class MsgReqRepo extends AbsMongoRepo<MsgReq> {
-  public Uni<Optional<MsgReq>> findByMsgId(String msgId){
-    return find("messageId", msgId).firstResultOptional();
+@Path("/fpi/log/error")
+public class ErrorLogResource extends AbsResource<ErrorLogDto, ErrorLog, ErrorLogSvc> {
+  public Uni<ErrorLogDto> post(ErrorLogDto dto) {
+    return service.post(dto);
   }
 }

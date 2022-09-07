@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.entity.impl.sms;
+package com.abavilla.fpi.entity.impl;
 
 import com.abavilla.fpi.entity.mongo.AbsMongoItem;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -27,9 +27,11 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@MongoEntity(collection="sms_template")
-public class MsgTemplate extends AbsMongoItem {
-  private String name;
-  private String content;
-  private Boolean tokenRefresh;
+@MongoEntity(collection="login_sessions")
+public class Session extends AbsMongoItem {
+  private String username;
+  private String refreshToken;
+  private String accessToken;
+  private String ipAddress;
+  private String userAgent;
 }

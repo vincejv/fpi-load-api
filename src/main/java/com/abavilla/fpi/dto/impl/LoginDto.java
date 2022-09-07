@@ -16,12 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.mapper.sms;
+package com.abavilla.fpi.dto.impl;
 
-import com.abavilla.fpi.dto.IDto;
-import com.abavilla.fpi.entity.IItem;
+import com.abavilla.fpi.entity.mongo.AbsMongoItem;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-public interface IMapper<DTO extends IDto, ENTITY extends IItem> {
-  DTO mapToDto(ENTITY entity);
-  ENTITY mapToEntity(DTO dto);
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@RegisterForReflection
+public class LoginDto extends AbsMongoItem {
+  private String username;
+  private String password;
+  private String remoteAddress;
+  private String userAgent;
 }

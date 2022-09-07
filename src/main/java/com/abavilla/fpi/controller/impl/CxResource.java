@@ -16,20 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.dto.impl.sms;
+package com.abavilla.fpi.controller.impl;
 
-import com.abavilla.fpi.dto.AbsDto;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import javax.ws.rs.Path;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@RegisterForReflection
-public class CustomerDto extends AbsDto {
-  private String name;
-  private String address;
-  private String mobile;
+import com.abavilla.fpi.controller.AbsResource;
+import com.abavilla.fpi.dto.impl.CustomerDto;
+import com.abavilla.fpi.entity.impl.Customer;
+import com.abavilla.fpi.service.impl.CxSvc;
+
+@Path("/fpi/cx")
+public class CxResource extends AbsResource<CustomerDto, Customer, CxSvc> {
+
 }

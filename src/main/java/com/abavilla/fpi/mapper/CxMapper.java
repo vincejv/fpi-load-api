@@ -16,28 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.service.impl.sms;
+package com.abavilla.fpi.mapper;
 
-import com.abavilla.fpi.dto.impl.sms.ErrorLogDto;
-import com.abavilla.fpi.entity.impl.sms.ErrorLog;
-import com.abavilla.fpi.service.AbsSvc;
-import com.abavilla.fpi.util.MapperUtil;
-import io.smallrye.mutiny.Uni;
+import com.abavilla.fpi.dto.impl.CustomerDto;
+import com.abavilla.fpi.entity.impl.Customer;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-import javax.enterprise.context.ApplicationScoped;
-
-@ApplicationScoped
-public class ErrorLogSvc extends AbsSvc<ErrorLogDto, ErrorLog> {
-  public Uni<ErrorLogDto> post(ErrorLogDto dto) {
-    return repo.persist(mapToEntity(dto)).map(this::mapToDto);
-  }
-  @Override
-  public ErrorLogDto mapToDto(ErrorLog entity) {
-    return MapperUtil.mapper().convertValue(entity, ErrorLogDto.class);
-  }
-
-  @Override
-  public ErrorLog mapToEntity(ErrorLogDto dto) {
-    return MapperUtil.mapper().convertValue(dto, ErrorLog.class);
-  }
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface CxMapper extends IMapper<CustomerDto, Customer> {
 }

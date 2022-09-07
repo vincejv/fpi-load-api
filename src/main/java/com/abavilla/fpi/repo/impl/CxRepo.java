@@ -16,25 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.service.impl.sms;
-
-import com.abavilla.fpi.dto.impl.sms.MsgTemplateDto;
-import com.abavilla.fpi.entity.impl.sms.MsgTemplate;
-import com.abavilla.fpi.service.AbsSvc;
-import com.abavilla.fpi.util.MapperUtil;
+package com.abavilla.fpi.repo.impl;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import com.abavilla.fpi.entity.impl.Customer;
+import com.abavilla.fpi.repo.AbsMongoRepo;
+
 @ApplicationScoped
-public class MsgTemplateSvc extends AbsSvc<MsgTemplateDto, MsgTemplate> {
+public class CxRepo extends AbsMongoRepo<Customer> {
 
-  @Override
-  public MsgTemplateDto mapToDto(MsgTemplate entity) {
-    return MapperUtil.mapper().convertValue(entity, MsgTemplateDto.class);
-  }
-
-  @Override
-  public MsgTemplate mapToEntity(MsgTemplateDto dto) {
-    return MapperUtil.mapper().convertValue(dto, MsgTemplate.class);
-  }
 }

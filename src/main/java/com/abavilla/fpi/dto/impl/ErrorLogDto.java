@@ -16,18 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.dto.impl.sms;
+package com.abavilla.fpi.dto.impl;
+
+import java.time.LocalDateTime;
 
 import com.abavilla.fpi.dto.AbsDto;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @RegisterForReflection
-public class MsgReqStatusDto extends AbsDto {
-  private Integer status;
+public class ErrorLogDto extends AbsDto {
+  @BsonProperty("Message")
+  private String message;
+  @BsonProperty("StackTrace")
+  private String stackTrace;
+  @BsonProperty("Payload")
+  private Object payload;
+  @BsonProperty("DateCreated")
+  private LocalDateTime dateCreated;
+  @BsonProperty("DateUpdated")
+  private LocalDateTime dateUpdated;
 }
