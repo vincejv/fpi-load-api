@@ -32,8 +32,6 @@ quarkus:
           # debug
           path: /fpi/load/reload/*
           enforcement-mode: DISABLED
-  native:
-    native-image-xmx: 3584M
 
 fpi:
   webhook:
