@@ -20,7 +20,6 @@ package com.abavilla.fpi.load.engine.load;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -37,8 +36,7 @@ public class LoadEngine extends AbsEngine<AbsLoadProviderSvc, PromoSku> {
     final List<String> promoProviders = promo.getOffers()
         .stream()
         .sorted(Comparator.comparing(ProviderOffer::getWalletCost)) // sort list by wallet cost
-        .map(ProviderOffer::getProviderName)
-        .collect(Collectors.toUnmodifiableList());
+        .map(ProviderOffer::getProviderName).toList();
 
     var provider = providers.stream()
         .filter(loadProvider ->
