@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.abavilla</groupId>
     <artifactId>fpi-framework-bom</artifactId>
-    <version>1.0.16-RC</version>
+    <version>1.0.18-RC</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -42,12 +42,6 @@
   </repositories>
 
   <dependencies>
-
-    <dependency>
-      <groupId>${abavilla.framework.group-id}</groupId>
-      <artifactId>fpi-framework</artifactId>
-      <version>${abavilla.framework.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>com.dtone.dvs</groupId>
