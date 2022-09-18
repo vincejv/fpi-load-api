@@ -16,22 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.load;
+package com.abavilla.fpi.load.config;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-public class LoadReq extends AbsMongoField {
-  private String sku;
-  private String accountNo;
-  private String mobile;
-  private Telco telco;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+
+@ApplicationScoped
+public class PhoneNumberUtilLoader {
+  @Produces
+  PhoneNumberUtil phoneNumberUtil() {
+    return PhoneNumberUtil.getInstance();
+  }
 }
