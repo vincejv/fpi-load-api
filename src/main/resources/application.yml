@@ -32,6 +32,10 @@ quarkus:
           # debug
           path: /fpi/load/reload/*
           enforcement-mode: DISABLED
+  native:
+    resources:
+      includes:
+        com/google/i18n/phonenumbers/data/**
 
 fpi:
   webhook:
