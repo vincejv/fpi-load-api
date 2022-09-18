@@ -25,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
+import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
@@ -44,15 +45,18 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
   @Inject
   LoadReqEntityMapper loadReqMapper;
+
   @Inject
   RewardsTransStatusMapper dtoToEntityMapper;
 
   @Inject
   PromoSkuSvc promoSkuSvc;
+
   @Inject
   LoadEngine loadEngine;
 
   public Uni<Response> reloadNumber(LoadReqDto loadReqDto) {
+
     // create log to db
     var log = new RewardsTransStatus();
     log.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
@@ -81,9 +85,18 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
                     log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
                     return repo.persistOrUpdate(logEntity)
                         .map(res -> loadRespDto);
+                  })
+                  .onFailure(ApiSvcEx.class).recoverWithItem(apiEx -> {
+                    var errorResp = new LoadRespDto();
+                    errorResp.setError(apiEx.getMessage());
+                    errorResp.setTimestamp(DateUtil.nowAsStr());
+                    errorResp.setTransactionId(logEntity.getTransactionId());
+                    errorResp.setStatus(ApiStatus.REJ);
+                    return errorResp;
                   });
             })
-            .map(loadRespDto -> Response.ok()
+            .map(loadRespDto -> Response.status(loadRespDto.getError() == null ?
+                    Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
                 .entity(loadRespDto)
                 .build());
       } else {

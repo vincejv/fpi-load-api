@@ -32,7 +32,9 @@ import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.repo.load.gl.GLLoadApiRepo;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
+import lombok.SneakyThrows;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -61,7 +63,7 @@ public class GLRewardsSvc extends AbsLoadProviderSvc {
   }
 
   @Override
-  public Uni<LoadRespDto> reload(LoadReqDto req, PromoSku promo) {
+  public Uni<LoadRespDto> callSvc(LoadReqDto req, PromoSku promo) {
     var apiReqBody = new GLRewardsReqDto.Body();
     apiReqBody.setAppId(appId);
     apiReqBody.setAppSecret(appSecret);
@@ -105,5 +107,12 @@ public class GLRewardsSvc extends AbsLoadProviderSvc {
     //        }
     //      }
         });
+  }
+
+  @SneakyThrows
+  @Override
+  protected void parsePhoneNumber(LoadReqDto loadReqDto) {
+    var number = phoneNumberUtil.parse(loadReqDto.getMobile(), LoadConst.PH_REGION_CODE);
+    loadReqDto.setMobile(phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.NATIONAL));
   }
 }

@@ -37,6 +37,7 @@ import com.dtone.dvs.dto.PartyIdentifier;
 import com.dtone.dvs.dto.Source;
 import com.dtone.dvs.dto.TransactionRequest;
 import com.dtone.dvs.dto.UnitTypes;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -63,9 +64,8 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
     providerName = LoadConst.PROV_DTONE;
   }
 
-  @SneakyThrows
   @Override
-  public Uni<LoadRespDto> reload(LoadReqDto req, PromoSku promo) {
+  public Uni<LoadRespDto> callSvc(LoadReqDto req, PromoSku promo) {
     var dvsReq = buildRngRequest(req, promo);
     var dvsRespJob = Uni.createFrom()
         .completionStage(() -> dvsClient.createTransaction(dvsReq))
@@ -105,8 +105,8 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
     dtoOneReq.setAutoConfirm(true);
 
     var destMob = new PartyIdentifier();
-    //destMob.setMobileNumber(loadRequest.getMobile());
-    destMob.setAccountNumber(loadRequest.getMobile());
+    destMob.setMobileNumber(loadRequest.getMobile());
+    destMob.setAccountNumber(loadRequest.getAccountNo());
     dtoOneReq.setCreditPartyIdentifier(destMob);
     dtoOneReq.setProductId(NumberUtils.toLong(  // product id selection
         getProductCode(promo)));
@@ -114,5 +114,12 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
     dtoOneReq.setCallbackUrl(callbackUrl);
     dtoOneReq.setExternalId(loadRequest.getTransactionId());
     return dtoOneReq;
+  }
+
+  @SneakyThrows
+  @Override
+  protected void parsePhoneNumber(LoadReqDto loadReqDto) {
+    var number = phoneNumberUtil.parse(loadReqDto.getMobile(), LoadConst.PH_REGION_CODE);
+    loadReqDto.setMobile(phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
   }
 }

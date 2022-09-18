@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 @RegisterForReflection
 public class LoadReqDto extends AbsDto {
   private String mobile;
+  private String accountNo;
   private String sku;
   private String transactionId;
   private String telco;
