@@ -22,6 +22,8 @@ public abstract class LoadConst {
 
   public static final String PH_CURRENCY = "PHP";
 
+  public static final String PH_REGION_CODE = "PH";
+
   public static final String PROV_GL = "GlobeLabs";
 
   public static final String PROV_DTONE = "DTOne";

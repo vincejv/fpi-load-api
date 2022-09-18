@@ -19,14 +19,26 @@
 package com.abavilla.fpi.load.service.load;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
+import com.abavilla.fpi.load.dto.load.LoadReqDto;
+import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.entity.load.ProviderOffer;
+import com.abavilla.fpi.load.util.LoadConst;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.smallrye.mutiny.Uni;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 
 public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
   protected long priority;
   protected String providerName;
+
+  @Inject
+  protected PhoneNumberUtil phoneNumberUtil;
 
   @PostConstruct
   final void constructObject() {
@@ -47,5 +59,29 @@ public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
     return promo.getOffers().stream().filter(sku ->
         StringUtils.equals(sku.getProviderName(), providerName))
         .map(ProviderOffer::getProductCode).findAny().orElseThrow();
+  }
+
+  public Uni<LoadRespDto> reload(LoadReqDto req, PromoSku promo) {
+
+    if (StringUtils.isNotBlank(req.getMobile())) {
+      if (isValidPhoneNo(req)) {
+        parsePhoneNumber(req);
+      } else {
+        throw new ApiSvcEx("Invalid phone number", HttpStatus.SC_NOT_ACCEPTABLE);
+      }
+    }
+
+    return callSvc(req, promo);
+  }
+
+  protected abstract Uni<LoadRespDto> callSvc(LoadReqDto req, PromoSku promo);
+
+  @SneakyThrows
+  protected boolean isValidPhoneNo(LoadReqDto loadReqDto) {
+    var phoneNo = phoneNumberUtil.parse(loadReqDto.getMobile(), LoadConst.PH_REGION_CODE);
+    return phoneNumberUtil.isValidNumber(phoneNo);
+  }
+
+  protected void parsePhoneNumber(LoadReqDto loadReqDto) {
   }
 }
