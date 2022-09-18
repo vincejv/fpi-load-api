@@ -8,7 +8,7 @@ quarkus:
 # Your configuration properties
   rest-client:
     gl-rewards-api:
-      url: https://devapi.globelabs.com.ph/rewards/v1/transactions/send
+      url: ${GL_REWARDS_API}
       #url: https://localhost
       scope: javax.inject.Singleton
   oidc:
