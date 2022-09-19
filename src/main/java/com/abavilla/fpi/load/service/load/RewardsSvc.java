@@ -20,6 +20,8 @@ package com.abavilla.fpi.load.service.load;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,6 +35,7 @@ import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.engine.load.LoadEngine;
 import com.abavilla.fpi.load.entity.enums.ApiStatus;
+import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
@@ -62,82 +65,74 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     log.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
 
     return promoSkuSvc.findSku(loadReqDto).chain(promo -> {
-      ILoadProviderSvc loadSvc = null;
-      if (promo.isPresent()) {
-        loadSvc = loadEngine.getProvider(promo.get());
-      }
+      ILoadProviderSvc loadSvc = promo
+          .map(promoSku -> loadEngine.getProvider(promoSku))
+          .orElse(null);
+
       var loadReq = loadReqMapper.mapToEntity(loadReqDto);
       log.setLoadRequest(loadReq);
 
-      final var loadSvcProvider = loadSvc;
-      if (loadSvcProvider != null) {
+      if (loadSvc != null) {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-        var logJob = repo.persist(log);
-        return logJob
-            .chain(logEntity -> {
-              loadReqDto.setTransactionId(logEntity.getId().toString());
-              return loadSvcProvider.reload(loadReqDto, promo.get())
-                  .onFailure(ApiSvcEx.class).recoverWithItem(apiEx -> {
-                    var errorResp = new LoadRespDto();
-                    errorResp.setError(apiEx.getMessage());
-                    errorResp.setTimestamp(DateUtil.nowAsStr());
-                    errorResp.setTransactionId(logEntity.getTransactionId());
-                    errorResp.setStatus(ApiStatus.REJ);
-                    return errorResp;
-                  })
-                  .chain(loadRespDto -> {
-                    dtoToEntityMapper.mapLoadRespDtoToEntity(
-                        loadRespDto, logEntity
-                    );
-                    log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-                    return repo.persistOrUpdate(logEntity)
-                        .map(res -> loadRespDto);
-                  });
-            })
-            .map(loadRespDto -> Response.status(loadRespDto.getError() == null ?
-                    Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
-                .entity(loadRespDto)
-                .build());
+        return repo.persist(log)
+            .chain(reloadAndUpdateDb(loadReqDto, log, promo, loadSvc))
+            .map(determineReloadResponse());
       } else {
-        var resp = new LoadRespDto();
-        resp.setStatus(ApiStatus.REJ);
-        resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
-        resp.setTimestamp(DateUtil.nowAsStr());
-        return Uni.createFrom().item(Response
-            .status(Response.Status.NOT_ACCEPTABLE)
-            .entity(resp)
-            .build());
+        return buildRejectedResponse();
       }
     });
+  }
 
-//    return
-//        loadApi.sendLoad(apiReq)
-//            .onFailure(ApiSvcEx.class).recoverWithItem(ex -> {
-//              var apiEx = (ApiSvcEx) ex;
-//              var resp = apiEx.getJsonResponse(RewardsRespDto.class);
-//              resp.chainEx(apiEx);
-//              return resp;
-//            })
-//            .chain(resp -> {
-//              rewardsMapper.mapRespDtoToEntity(resp, log);
-//              log.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
-//              log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-//              return repo.persist(log).chain(()->Uni.createFrom().item(log));
-//            })
-//            .map(rewardsTransStatus -> {
-//              var dtoResp = loadRespMapper.mapToDto(rewardsTransStatus.getResponse());
-//              if (rewardsTransStatus.lastEx() == null) {
-//                return Response.ok().entity(dtoResp).build();
-//              } else {
-//                if (rewardsTransStatus.lastEx() instanceof ApiSvcEx) {
-//                  return Response.status(((ApiSvcEx)rewardsTransStatus.lastEx())
-//                      .getHttpResponseStatus().code()).entity(dtoResp).build();
-//                } else {
-//                  return Response.serverError().entity(dtoResp).build();
-//                }
-//              }
-//            });
+  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, Optional<PromoSku> promo, ILoadProviderSvc loadSvcProvider) {
+    return logEntity -> {
+      loadReqDto.setTransactionId(logEntity.getId().toString());
+      return loadSvcProvider.reload(loadReqDto, promo.get())
+          .onFailure(ApiSvcEx.class)
+          .recoverWithItem(handleReloadException(logEntity))
+          .chain(saveRequestToDb(log, logEntity));
+    };
+  }
+
+  private Uni<Response> buildRejectedResponse() {
+    var resp = new LoadRespDto();
+    resp.setStatus(ApiStatus.REJ);
+    resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
+    resp.setTimestamp(DateUtil.nowAsStr());
+    return Uni.createFrom().item(Response
+        .status(Response.Status.NOT_ACCEPTABLE)
+        .entity(resp)
+        .build());
+  }
+
+  private Function<LoadRespDto, Response> determineReloadResponse() {
+    return loadRespDto ->
+        Response.status(loadRespDto.getError() == null ?
+                Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
+            .entity(loadRespDto)
+            .build();
+  }
+
+  private Function<LoadRespDto, Uni<? extends LoadRespDto>> saveRequestToDb(RewardsTransStatus log, RewardsTransStatus logEntity) {
+    return loadRespDto -> {
+      dtoToEntityMapper.mapLoadRespDtoToEntity(
+          loadRespDto, logEntity
+      );
+      log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+      return repo.persistOrUpdate(logEntity)
+          .map(res -> loadRespDto);
+    };
+  }
+
+  private Function<Throwable, LoadRespDto> handleReloadException(RewardsTransStatus logEntity) {
+    return apiEx -> {
+      var errorResp = new LoadRespDto();
+      errorResp.setError(apiEx.getMessage());
+      errorResp.setTimestamp(DateUtil.nowAsStr());
+      errorResp.setTransactionId(logEntity.getTransactionId());
+      errorResp.setStatus(ApiStatus.REJ);
+      return errorResp;
+    };
   }
 
   @Override
