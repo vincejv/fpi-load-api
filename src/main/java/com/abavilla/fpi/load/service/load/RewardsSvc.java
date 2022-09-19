@@ -78,14 +78,6 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
             .chain(logEntity -> {
               loadReqDto.setTransactionId(logEntity.getId().toString());
               return loadSvcProvider.reload(loadReqDto, promo.get())
-                  .chain(loadRespDto -> {
-                    dtoToEntityMapper.mapLoadRespDtoToEntity(
-                        loadRespDto, logEntity
-                    );
-                    log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-                    return repo.persistOrUpdate(logEntity)
-                        .map(res -> loadRespDto);
-                  })
                   .onFailure(ApiSvcEx.class).recoverWithItem(apiEx -> {
                     var errorResp = new LoadRespDto();
                     errorResp.setError(apiEx.getMessage());
@@ -93,6 +85,14 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
                     errorResp.setTransactionId(logEntity.getTransactionId());
                     errorResp.setStatus(ApiStatus.REJ);
                     return errorResp;
+                  })
+                  .chain(loadRespDto -> {
+                    dtoToEntityMapper.mapLoadRespDtoToEntity(
+                        loadRespDto, logEntity
+                    );
+                    log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+                    return repo.persistOrUpdate(logEntity)
+                        .map(res -> loadRespDto);
                   });
             })
             .map(loadRespDto -> Response.status(loadRespDto.getError() == null ?
