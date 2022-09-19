@@ -21,12 +21,16 @@ package com.abavilla.fpi.load.config.codec;
 import com.abavilla.fpi.fw.config.codec.AbsCodec;
 import com.abavilla.fpi.load.entity.enums.ApiStatus;
 
+/**
+ * MongoDB Codec for {@link ApiStatus} enum.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 public class ApiStatusCodec extends AbsCodec<ApiStatus> {
 
-  public ApiStatusCodec() {
-    super();
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Class<ApiStatus> getEncoderClass() {
     return ApiStatus.class;

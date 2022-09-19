@@ -23,8 +23,19 @@ import javax.enterprise.inject.Produces;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
+/**
+ * Bean definition for {@link  PhoneNumberUtil}.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @ApplicationScoped
 public class PhoneNumberUtilLoader {
+
+  /**
+   * Creates a {@link PhoneNumberUtil} instance using the default configurations
+   *
+   * @return {@link PhoneNumberUtil} instance
+   */
   @Produces
   PhoneNumberUtil phoneNumberUtil() {
     return PhoneNumberUtil.getInstance();

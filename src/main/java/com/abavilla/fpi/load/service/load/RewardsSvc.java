@@ -74,7 +74,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
       if (loadSvc != null) {
         log.setLoadProvider(loadSvc.getProviderName());
-        log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+        log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
             .chain(reloadAndUpdateDb(loadReqDto, log, promo, loadSvc))
             .map(determineReloadResponse());
