@@ -21,12 +21,16 @@ package com.abavilla.fpi.load.config.codec;
 import com.abavilla.fpi.fw.config.codec.AbsCodec;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 
+/**
+ * MongoDB Codec for {@link SkuType} enum.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 public class SkuTypeCodec extends AbsCodec<SkuType> {
 
-  public SkuTypeCodec() {
-    super();
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Class<SkuType> getEncoderClass() {
     return SkuType.class;
