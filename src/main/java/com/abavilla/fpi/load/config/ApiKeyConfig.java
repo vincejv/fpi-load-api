@@ -23,11 +23,18 @@ import javax.enterprise.context.ApplicationScoped;
 import lombok.Getter;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-
+/**
+ * Configuration for API Keys.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @ApplicationScoped
 @Getter
 public class ApiKeyConfig {
 
+  /**
+   * API Key for Webhook access
+   */
   @ConfigProperty(name = "fpi.webhook.gen.api-key")
   String genericApiKey;
 

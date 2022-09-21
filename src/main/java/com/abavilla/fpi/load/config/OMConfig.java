@@ -30,6 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Singleton
 public class OMConfig implements IObjectMapperConfig {
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void customizeMapper(ObjectMapper mapper) {
     // do nothing
