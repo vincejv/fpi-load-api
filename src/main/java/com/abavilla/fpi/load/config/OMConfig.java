@@ -23,8 +23,17 @@ import javax.inject.Singleton;
 import com.abavilla.fpi.fw.config.IObjectMapperConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Contains {@link ObjectMapper} configuration for JSON serialization and deserialization.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Singleton
 public class OMConfig implements IObjectMapperConfig {
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void customizeMapper(ObjectMapper mapper) {
     // do nothing

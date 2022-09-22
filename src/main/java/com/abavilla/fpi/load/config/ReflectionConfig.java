@@ -60,6 +60,11 @@ import com.dtone.dvs.dto.Validity;
 import com.dtone.dvs.dto.Values;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * Classes to register for reflection for Quarkus native image.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @RegisterForReflection(targets = {
     Amount.class,
     ApiRequest.class,

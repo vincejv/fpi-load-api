@@ -67,7 +67,8 @@ public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
       if (isValidPhoneNo(req)) {
         parsePhoneNumber(req);
       } else {
-        throw new ApiSvcEx("Invalid phone number", HttpStatus.SC_NOT_ACCEPTABLE);
+        return Uni.createFrom().failure(
+            new ApiSvcEx("Invalid phone number", HttpStatus.SC_NOT_ACCEPTABLE));
       }
     }
 

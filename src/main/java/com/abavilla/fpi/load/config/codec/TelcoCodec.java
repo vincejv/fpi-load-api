@@ -21,12 +21,16 @@ package com.abavilla.fpi.load.config.codec;
 import com.abavilla.fpi.fw.config.codec.AbsCodec;
 import com.abavilla.fpi.load.entity.enums.Telco;
 
+/**
+ * MongoDB Codec for {@link Telco} enum.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 public class TelcoCodec extends AbsCodec<Telco> {
 
-  public TelcoCodec() {
-    super();
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Class<Telco> getEncoderClass() {
     return Telco.class;

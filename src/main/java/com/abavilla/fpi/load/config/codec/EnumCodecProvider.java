@@ -24,7 +24,20 @@ import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import org.bson.codecs.Codec;
 
+/**
+ * MongoDB Codec registry, contains all the codec to enum mapping for MongoDb driver.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 public class EnumCodecProvider implements IEnumCodecProvider {
+
+  /**
+   * Provides the codec mapping definition
+   *
+   * @param clazz Class to decode/encode
+   * @return {@link Codec} to use
+   * @param <T> Type of {@link Codec}
+   */
   @Override
   public <T> Codec<T> getCodecProvider(Class<T> clazz) {
     if (clazz == Telco.class) {
