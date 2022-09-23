@@ -35,7 +35,7 @@ public class LoadEngine extends AbsEngine<AbsLoadProviderSvc, PromoSku> {
   public AbsLoadProviderSvc getProvider(PromoSku promo) {
     final List<String> promoProviders = promo.getOffers()
         .stream()
-        .sorted(Comparator.comparing(ProviderOffer::getWalletCost)) // sort list by wallet cost
+        .sorted(Comparator.comparing(ProviderOffer::getWholesaleDiscount).reversed()) // sort list by wallet cost
         .map(ProviderOffer::getProviderName).toList();
 
     var provider = providers.stream()
@@ -44,7 +44,7 @@ public class LoadEngine extends AbsEngine<AbsLoadProviderSvc, PromoSku> {
                 .anyMatch(name -> // only use provider which carry the promo
                     StringUtils.equals(name, loadProvider.getProviderName())
                 )).min((o1, o2) -> {
-                  int compare = // compare by provider wallet cost, if the same, use priority
+                  int compare = // if provider has same wallet cost, if the same, use priority
                       Integer.compare(promoProviders.indexOf(o1.getProviderName()),
                           promoProviders.indexOf(o2.getProviderName()));
                   if (compare != 0) {

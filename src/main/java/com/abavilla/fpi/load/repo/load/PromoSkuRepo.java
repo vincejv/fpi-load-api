@@ -61,7 +61,7 @@ public class PromoSkuRepo implements IMongoRepo<PromoSku> {
               ]
             }
             """,
-        Sort.ascending("type.ord"),
+        Sort.ascending("type.ord", "offers.wholesaleDiscount"),
         telco.getValue(),
         keyword,
         Integer.parseInt(keyword)

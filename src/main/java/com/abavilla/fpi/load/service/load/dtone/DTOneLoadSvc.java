@@ -27,6 +27,7 @@ import com.abavilla.fpi.fw.util.FWConst;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.entity.enums.ApiStatus;
+import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
@@ -99,22 +100,26 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
 
   private TransactionRequest buildRngRequest(LoadReqDto loadRequest,
                                              PromoSku promo) {
-    var destUnit = new Source(); // required for ranged products
-    destUnit.setAmount(NumberUtils.toDouble(loadRequest.getSku()));
-    destUnit.setUnitType(UnitTypes.CURRENCY.name());
-    destUnit.setUnit(LoadConst.PH_CURRENCY); // Philippines peso
-
     var dtoOneReq = new TransactionRequest();
-    dtoOneReq.setCalculationMode(CalculationMode.DESTINATION_AMOUNT);
-    dtoOneReq.setDestination(destUnit);
-    dtoOneReq.setAutoConfirm(true);
 
+    if (promo.getType() == SkuType.RANGED) {
+      var destUnit = new Source(); // required for ranged products
+      destUnit.setAmount(NumberUtils.toDouble(loadRequest.getSku()));
+      destUnit.setUnitType(UnitTypes.CURRENCY.name());
+      destUnit.setUnit(LoadConst.PH_CURRENCY); // Philippines peso
+      dtoOneReq.setDestination(destUnit);
+      dtoOneReq.setCalculationMode(CalculationMode.DESTINATION_AMOUNT);
+    }
+
+    // Recipient
     var destMob = new PartyIdentifier();
     destMob.setMobileNumber(loadRequest.getMobile());
     destMob.setAccountNumber(loadRequest.getAccountNo());
     dtoOneReq.setCreditPartyIdentifier(destMob);
+
     dtoOneReq.setProductId(NumberUtils.toLong(  // product id selection
         getProductCode(promo)));
+    dtoOneReq.setAutoConfirm(true);
 
     dtoOneReq.setCallbackUrl(callbackUrl);
     dtoOneReq.setExternalId(loadRequest.getTransactionId());

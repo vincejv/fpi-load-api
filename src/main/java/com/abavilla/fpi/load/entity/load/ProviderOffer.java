@@ -34,6 +34,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProviderOffer extends AbsMongoField {
   private String providerName;
-  private BigDecimal walletCost;
+  private BigDecimal wholesaleDiscount;
   private String productCode;
 }
