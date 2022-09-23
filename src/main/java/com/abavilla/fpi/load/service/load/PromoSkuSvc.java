@@ -38,7 +38,7 @@ public class PromoSkuSvc extends AbsSvc<LoadReqDto, PromoSku> {
   PromoSkuRepo advRepo;
 
   public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndKeyword(
+    return advRepo.findByTelcoAndDenomination(
         Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
   }
 

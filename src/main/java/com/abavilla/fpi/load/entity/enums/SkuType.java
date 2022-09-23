@@ -34,8 +34,9 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @RegisterForReflection
 public enum SkuType {
-  CREDITS(1, "Credits"),
   BUNDLE(2, "Bundle"),
+  RANGED(5, "Ranged"),
+  CREDITS(10, "Credits"),
   UNKNOWN(-1, "");
   private static final Map<String, SkuType> ENUM_MAP = new HashMap<>();
 

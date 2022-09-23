@@ -18,12 +18,9 @@
 
 package com.abavilla.fpi.load.entity.load;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
-import com.abavilla.fpi.load.entity.enums.SkuType;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import io.quarkus.mongodb.panache.common.MongoEntity;
+import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,13 +30,15 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
-@MongoEntity(collection = "promo_sku")
-public class PromoSku extends AbsMongoItem {
-  private SkuType type;
-  private String name;
-  private Pricing denomination;
-  private Pricing srp;
-  private Telco telco;
-  private List<ProviderOffer> offers;
-  private List<String> keywords;
+public class Pricing extends AbsMongoField {
+
+  /**
+   * Minimum Price
+   */
+  private BigDecimal min;
+
+  /**
+   * Maximum Price
+   */
+  private BigDecimal max;
 }
