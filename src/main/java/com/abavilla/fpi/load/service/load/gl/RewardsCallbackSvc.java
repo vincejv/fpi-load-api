@@ -30,6 +30,7 @@ import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
+import com.abavilla.fpi.load.dto.sms.MsgReqDto;
 import com.abavilla.fpi.load.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.entity.load.CallBack;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
@@ -37,7 +38,10 @@ import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.abavilla.fpi.load.repo.load.RewardsLeakRepo;
 import com.abavilla.fpi.load.repo.load.RewardsTransRepo;
+import com.abavilla.fpi.load.repo.sms.SmsRepo;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
@@ -55,6 +59,15 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
 
   @Inject
   GLMapper glMapper;
+
+  /**
+   * Service for sending SMS
+   */
+  @Inject
+  SmsRepo smsRepo;
+
+  @Inject
+  PhoneNumberUtil phoneNumberUtil;
 
   /**
    * Runs background tasks from webhook
@@ -97,7 +110,21 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             rewardsTrans.getApiCallback().add(callBack);
             rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
             return repo.persistOrUpdate(rewardsTrans);
-          }).onFailure().call(ex -> { // leaks/delay
+          })
+          .chain(rewardsTransStatus -> {
+            var req = new MsgReqDto();
+            try {
+              var number = phoneNumberUtil.parse(rewardsTransStatus.getLoadRequest().getMobile(),
+                  LoadConst.PH_REGION_CODE);
+              req.setMobileNumber(phoneNumberUtil
+                  .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
+            } catch (NumberParseException e) {
+              throw new RuntimeException(e);
+            }
+            req.setContent("Thank you for visiting Florenz Pension Inn!");
+            return smsRepo.sendSms(req);
+          })
+          .onFailure().call(ex -> { // leaks/delay
             field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
             field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
             return leakRepo.persist(field);

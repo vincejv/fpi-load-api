@@ -20,7 +20,6 @@ package com.abavilla.fpi.load.service.load;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -76,7 +75,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(reloadAndUpdateDb(loadReqDto, log, promo, loadSvc))
+            .chain(reloadAndUpdateDb(loadReqDto, log, promo.get(), loadSvc))
             .map(determineReloadResponse());
       } else {
         return buildRejectedResponse();
@@ -84,10 +83,10 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     });
   }
 
-  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, Optional<PromoSku> promo, ILoadProviderSvc loadSvcProvider) {
+  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
     return logEntity -> {
       loadReqDto.setTransactionId(logEntity.getId().toString());
-      return loadSvcProvider.reload(loadReqDto, promo.get())
+      return loadSvcProvider.reload(loadReqDto, promo)
           .onFailure(ApiSvcEx.class)
           .recoverWithItem(handleReloadException(logEntity))
           .chain(saveRequestToDb(log, logEntity));

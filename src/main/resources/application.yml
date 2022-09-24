@@ -9,7 +9,12 @@ quarkus:
   rest-client:
     gl-rewards-api:
       url: ${GL_REWARDS_API}
-      #url: https://localhost
+      scope: javax.inject.Singleton
+    login-api:
+      url: ${LOGIN_BASE_URI}
+      scope: javax.inject.Singleton
+    sms-api:
+      url: ${SMS_BASE_API}
       scope: javax.inject.Singleton
   oidc:
     auth-server-url: ${OIDC_AUTH_URL:https://localhost:8543/realms/quarkus}
@@ -38,6 +43,10 @@ quarkus:
         com/google/i18n/phonenumbers/data/**
 
 fpi:
+  app-to-app:
+    auth:
+      username: ${FPI_APP_TO_APP_USERN:username}
+      password: ${FPI_APP_TO_APP_PASSW:password}
   webhook:
     gen:
       api-key: ${FPI_GEN_WEBHOOK_KEY:FPIDLRAABBBDDCCCQQQ}
