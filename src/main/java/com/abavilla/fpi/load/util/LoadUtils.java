@@ -16,39 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.load;
+package com.abavilla.fpi.load.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Base64;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.apache.commons.lang3.StringUtils;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-@BsonDiscriminator
-@MongoEntity(collection="rewards_log")
-public class RewardsTransStatus extends AbsMongoItem {
-  private LoadReq loadRequest;
-  private String loadProvider;
-  private String transactionId;
-  private String loadSmsId;
-  private AbsMongoField apiRequest;
-  private AbsMongoField apiResponse;
-  private List<CallBack> apiCallback;
+/**
+ * Utility methods for the Load API Service.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+public abstract class LoadUtils {
 
-  public List<CallBack> getApiCallback() {
-    if (apiCallback == null) {
-      apiCallback = new ArrayList<>();
-    }
-    return apiCallback;
+  /**
+   * Encodes a string to Bse64 given the provider and provider id.
+   * @param prov Load Provider
+   * @param provId Provider Id
+   *
+   * @return Encoded string
+   */
+  public static String encodeId(String prov, String provId) {
+    String rawString = StringUtils.substring(prov, 0, 1) + provId;
+    return Base64.getEncoder()
+        .withoutPadding()
+        .encodeToString(rawString.getBytes());
   }
 }

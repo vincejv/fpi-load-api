@@ -115,7 +115,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           } catch (NumberParseException e) {
             throw new RuntimeException(e);
           }
-          req.setContent("Thank you for visiting Florenz Pension Inn!");
+          req.setContent("Thank you for visiting Florenz Pension Inn!\n" +
+              "Ref: " + rewardsTransStatus.getLoadSmsId());
           return smsRepo.sendSms(req);
         })
         .onFailure().call(ex -> { // leaks/delay

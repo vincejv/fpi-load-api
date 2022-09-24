@@ -39,6 +39,7 @@ import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.load.util.LoadUtils;
 import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -117,6 +118,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
       dtoToEntityMapper.mapLoadRespDtoToEntity(
           loadRespDto, logEntity
       );
+      log.setLoadSmsId(LoadUtils.encodeId(log.getLoadProvider(), log.getTransactionId()));
       log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
       return repo.persistOrUpdate(logEntity)
           .map(res -> loadRespDto);
