@@ -18,9 +18,11 @@
 
 package com.abavilla.fpi.load.util;
 
-import java.util.Base64;
+import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * Utility methods for the Load API Service.
@@ -30,16 +32,40 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class LoadUtils {
 
   /**
-   * Encodes a string to Bse64 given the provider and provider id.
+   * Compress and encodes a string to Bse64 given the provider and provider id.
    * @param prov Load Provider
    * @param provId Provider Id
    *
    * @return Encoded string
    */
   public static String encodeId(String prov, String provId) {
-    String rawString = StringUtils.substring(prov, 0, 1) + provId;
-    return Base64.getEncoder()
-        .withoutPadding()
-        .encodeToString(rawString.getBytes());
+    if (NumberUtils.isDigits(provId)) {
+      throw new IllegalArgumentException("Supports only integer provider ids");
+    }
+    if (StringUtils.isBlank(prov)) {
+      throw new IllegalArgumentException("Must provide a provider");
+    }
+
+    // get the value as an eight byte array (where the last three are zero)
+    // and store the first char of the provider name
+    var compoundedBytes =
+        Arrays.copyOf(longToBytes(Long.parseLong(provId)), 6);
+    compoundedBytes[5] = (byte) prov.charAt(0);
+    return new Base32().encodeAsString(compoundedBytes);
+  }
+
+  /**
+   * Converts long value to byte array
+   * @param l The long value
+   *
+   * @return Byte array
+   */
+  private static byte[] longToBytes(long l) {
+    byte[] result = new byte[Long.BYTES];
+    for (int i = Long.BYTES - 1; i >= 0; i--) {
+      result[i] = (byte)(l & 0xFF);
+      l >>= Byte.SIZE;
+    }
+    return result;
   }
 }
