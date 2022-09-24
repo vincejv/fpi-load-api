@@ -126,7 +126,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         }).onFailure().recoverWithNull()
         .subscribe().with(ignored->{});
 
-    return Uni.createFrom().voidItem().replaceWithVoid();
+    return Uni.createFrom().voidItem();
   }
 
   @Override
