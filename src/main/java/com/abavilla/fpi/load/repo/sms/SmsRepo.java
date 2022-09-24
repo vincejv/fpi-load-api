@@ -18,16 +18,12 @@
 
 package com.abavilla.fpi.load.repo.sms;
 
-import javax.inject.Inject;
 import javax.ws.rs.POST;
 
-import com.abavilla.fpi.load.dto.auth.LoginDto;
 import com.abavilla.fpi.load.dto.sms.MsgReqDto;
 import com.abavilla.fpi.load.dto.sms.MsgReqStatusDto;
-import com.abavilla.fpi.load.repo.auth.LoginRepo;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
@@ -36,26 +32,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @RegisterRestClient(configKey = "sms-api")
-@ClientHeaderParam(name = "Authorization", value = "{authenticate}")
-public abstract class SmsRepo {
-
-  /**
-   * API Key for SMS service access
-   */
-  @ConfigProperty(name = "fpi.app-to-app.auth.username")
-  String apiKey;
-
-  /**
-   * Secret Key for SMS service access
-   */
-  @ConfigProperty(name = "fpi.app-to-app.auth.password")
-  String secretKey;
-
-  /**
-   * Login resource
-   */
-  @Inject
-  LoginRepo loginRepo;
+@RegisterClientHeaders(SmsRepoHeaders.class)
+public interface SmsRepo {
 
   /**
    * Send an SMS through SMS service
@@ -64,19 +42,5 @@ public abstract class SmsRepo {
    * @return {@link MsgReqDto} future object containing the status
    */
   @POST
-  public abstract Uni<MsgReqStatusDto> sendSms(MsgReqDto msgReqDto);
-
-  /**
-   * Get a token for authentication.
-   *
-   * @return Session token
-   */
-  public String authenticate() {
-    var creds = new LoginDto();
-    creds.setUsername(apiKey);
-    creds.setPassword(secretKey);
-
-    var session = loginRepo.authenticate(creds);
-    return "Bearer " + session.await().indefinitely().getAccessToken();
-  }
+  Uni<MsgReqStatusDto> sendSms(MsgReqDto msgReqDto);
 }

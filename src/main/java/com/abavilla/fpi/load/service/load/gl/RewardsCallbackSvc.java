@@ -44,6 +44,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.context.ManagedExecutor;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTransStatus> {
@@ -63,7 +64,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   /**
    * Service for sending SMS
    */
-  @Inject
+  @RestClient
   SmsRepo smsRepo;
 
   @Inject
