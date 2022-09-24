@@ -42,6 +42,7 @@ import com.abavilla.fpi.load.repo.sms.SmsRepo;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -100,7 +101,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
               throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
             }
           })
-          .onFailure().retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
+          .onFailure(ApiSvcEx.class).retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
           .atMost(5) // Retry for item not found and nothing else
           .chain(rewardsTrans -> {
             //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
@@ -126,6 +127,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             return smsRepo.sendSms(req);
           })
           .onFailure().call(ex -> { // leaks/delay
+            Log.error("Rewards leak " + transactionId, ex);
             field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
             field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
             return leakRepo.persist(field);

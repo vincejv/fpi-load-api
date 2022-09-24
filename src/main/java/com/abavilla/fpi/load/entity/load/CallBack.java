@@ -27,11 +27,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
+@BsonDiscriminator
 public class CallBack extends AbsMongoField {
   private AbsMongoItem content;
   private ApiStatus status;

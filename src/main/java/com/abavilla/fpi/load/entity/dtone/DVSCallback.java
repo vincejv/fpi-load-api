@@ -37,12 +37,14 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
+@BsonDiscriminator
 @MongoEntity(collection = "rewards_leak")
 public class DVSCallback extends AbsMongoItem {
   @BsonProperty(value = "transactionId")

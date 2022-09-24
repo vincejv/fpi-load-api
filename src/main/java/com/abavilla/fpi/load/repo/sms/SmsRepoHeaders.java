@@ -78,6 +78,6 @@ public class SmsRepoHeaders extends ReactiveClientHeadersFactory {
     creds.setPassword(secretKey);
 
     return loginRepo.authenticate(creds)
-        .map(token -> "Bearer " + token);
+        .map(token -> "Bearer " + token.getAccessToken());
   }
 }
