@@ -24,6 +24,7 @@ import java.time.ZoneOffset;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.net.ssl.SSLHandshakeException;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
@@ -120,7 +121,9 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             "\n\nRef: " + rewardsTransStatus.getLoadSmsId());
         return smsRepo.sendSms(req);
       })
-      .onFailure().call(ex -> { // leaks/delay
+      .onFailure(SSLHandshakeException.class).retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
+      .atMost(5).onFailure()
+      .call(ex -> { // leaks/delay
         Log.error("Rewards leak " + transactionId, ex);
         field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
         field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
