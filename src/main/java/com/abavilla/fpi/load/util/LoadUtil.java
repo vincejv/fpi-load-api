@@ -37,10 +37,10 @@ public abstract class LoadUtil {
    */
   public static String encodeId(String prov, String provId) {
     if (NumberUtils.isDigits(provId)) {
-      throw new IllegalArgumentException("Supports only integer provider ids");
+      throw new IllegalArgumentException("Supports only integer provider ids, given: " + provId);
     }
     if (StringUtils.isBlank(prov)) {
-      throw new IllegalArgumentException("Must provide a provider");
+      throw new IllegalArgumentException("Must provide a provider, given empty string");
     }
 
     return prov.charAt(0) + B32Util.encode(Long.parseLong(provId));
