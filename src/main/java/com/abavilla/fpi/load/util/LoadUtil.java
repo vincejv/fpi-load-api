@@ -36,7 +36,7 @@ public abstract class LoadUtil {
    * @return Encoded string
    */
   public static String encodeId(String prov, String provId) {
-    if (NumberUtils.isDigits(provId)) {
+    if (!NumberUtils.isDigits(provId)) {
       throw new IllegalArgumentException("Supports only integer provider ids, given: " + provId);
     }
     if (StringUtils.isBlank(prov)) {
