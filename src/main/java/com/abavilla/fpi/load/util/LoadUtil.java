@@ -26,7 +26,7 @@ import org.apache.commons.lang3.math.NumberUtils;
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-public abstract class LoadUtils {
+public abstract class LoadUtil {
 
   /**
    * Compress and encodes a string to Bse64 given the provider and provider id.
