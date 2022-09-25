@@ -77,7 +77,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
 
   @PostConstruct
   public void init() {
-    executor = Executors.newCachedThreadPool();
+    executor = Executors.newSingleThreadExecutor();
   }
 
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
