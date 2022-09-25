@@ -2,10 +2,6 @@ quarkus:
   http:
     port: ${PORT:8080}
   mongodb:
-    read-timeout: 120000
-    connect-timeout: 120000
-    wait-queue-timeout: 120000
-    server-selection-timeout: 120000
     connection-string:
       ${MONGO_CONN_STRING:mongodb://localhost}
     database: vbl
@@ -14,18 +10,12 @@ quarkus:
     gl-rewards-api:
       url: ${GL_REWARDS_API}
       scope: javax.inject.Singleton
-      connect-timeout: 120000
-      read-timeout: 120000
     login-api:
       url: ${LOGIN_BASE_URI}
       scope: javax.inject.Singleton
-      connect-timeout: 120000
-      read-timeout: 120000
     sms-api:
       url: ${SMS_BASE_API}
       scope: javax.inject.Singleton
-      connect-timeout: 120000
-      read-timeout: 120000
   oidc:
     auth-server-url: ${OIDC_AUTH_URL:https://localhost:8543/realms/quarkus}
     client-id: ${OIDC_CLIENT_ID:backend-api}
