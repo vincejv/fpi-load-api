@@ -18,9 +18,6 @@
 
 package com.abavilla.fpi.load.util;
 
-import java.util.Arrays;
-
-import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -46,12 +43,7 @@ public abstract class LoadUtils {
       throw new IllegalArgumentException("Must provide a provider");
     }
 
-    // get the value as an eight byte array (where the last three are zero)
-    // and store the first char of the provider name
-    var compoundedBytes =
-        Arrays.copyOf(longToBytes(Long.parseLong(provId)), 6);
-    compoundedBytes[5] = (byte) prov.charAt(0);
-    return new Base32().encodeAsString(compoundedBytes);
+    return prov.charAt(0) + B32Util.encode(Long.parseLong(provId));
   }
 
   /**
