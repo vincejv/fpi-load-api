@@ -28,6 +28,8 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public abstract class LoadUtil {
 
+  public static final int STANDARD_ID_LENGTH = 8;
+
   /**
    * Compress and encodes a string to Bse64 given the provider and provider id.
    * @param prov Load Provider
@@ -43,6 +45,6 @@ public abstract class LoadUtil {
       throw new IllegalArgumentException("Must provide a provider, given empty string");
     }
 
-    return prov.charAt(0) + B32Util.encode(Long.parseLong(provId));
+    return prov.charAt(0) + B32Util.encode(Long.parseLong(provId), false, STANDARD_ID_LENGTH, STANDARD_ID_LENGTH);
   }
 }

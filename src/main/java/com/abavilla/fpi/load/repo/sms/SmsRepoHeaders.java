@@ -60,10 +60,10 @@ public class SmsRepoHeaders extends ReactiveClientHeadersFactory {
    */
   @Override
   public Uni<MultivaluedMap<String, String>> getHeaders(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> clientOutgoingHeaders) {
-    return authenticate().map(token ->{
+    return authenticate().chain(token ->{
       MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
       headers.add("Authorization", token);
-      return headers;
+      return Uni.createFrom().item(headers);
     });
   }
 
@@ -78,6 +78,8 @@ public class SmsRepoHeaders extends ReactiveClientHeadersFactory {
     creds.setPassword(secretKey);
 
     return loginRepo.authenticate(creds)
-        .map(token -> "Bearer " + token.getAccessToken());
+        .chain(sessionDto ->
+            Uni.createFrom().item("Bearer " +
+                sessionDto.getAccessToken()));
   }
 }
