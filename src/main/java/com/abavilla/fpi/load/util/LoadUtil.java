@@ -45,19 +45,4 @@ public abstract class LoadUtil {
 
     return prov.charAt(0) + B32Util.encode(Long.parseLong(provId));
   }
-
-  /**
-   * Converts long value to byte array
-   * @param l The long value
-   *
-   * @return Byte array
-   */
-  private static byte[] longToBytes(long l) {
-    byte[] result = new byte[Long.BYTES];
-    for (int i = Long.BYTES - 1; i >= 0; i--) {
-      result[i] = (byte)(l & 0xFF);
-      l >>= Byte.SIZE;
-    }
-    return result;
-  }
 }
