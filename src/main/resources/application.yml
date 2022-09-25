@@ -2,11 +2,16 @@ quarkus:
   http:
     port: ${PORT:8080}
   mongodb:
+    read-timeout: 120S
+    connect-timeout: 120S
+    server-selection-timeout: 120S
     connection-string:
       ${MONGO_CONN_STRING:mongodb://localhost}
     database: vbl
 # Your configuration properties
   rest-client:
+    connect-timeout: 120000
+    read-timeout: 120000
     gl-rewards-api:
       url: ${GL_REWARDS_API}
       scope: javax.inject.Singleton
