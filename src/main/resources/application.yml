@@ -2,6 +2,10 @@ quarkus:
   http:
     port: ${PORT:8080}
   mongodb:
+    read-timeout: 120000
+    connect-timeout: 120000
+    wait-queue-timeout: 120000
+    server-selection-timeout: 120000
     connection-string:
       ${MONGO_CONN_STRING:mongodb://localhost}
     database: vbl
