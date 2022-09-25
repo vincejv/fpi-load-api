@@ -23,7 +23,6 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import com.abavilla.fpi.load.dto.auth.LoginDto;
-import com.abavilla.fpi.load.dto.auth.SessionDto;
 import com.abavilla.fpi.load.repo.auth.LoginRepo;
 import io.quarkus.rest.client.reactive.ReactiveClientHeadersFactory;
 import io.smallrye.mutiny.Uni;
@@ -61,9 +60,9 @@ public class SmsRepoHeaders extends ReactiveClientHeadersFactory {
    */
   @Override
   public Uni<MultivaluedMap<String, String>> getHeaders(MultivaluedMap<String, String> incomingHeaders, MultivaluedMap<String, String> clientOutgoingHeaders) {
-    return authenticate().chain(session ->{
+    return authenticate().chain(token ->{
       MultivaluedMap<String, String> headers = new MultivaluedHashMap<>();
-      headers.add("Authorization", "Bearer " + session.getAccessToken());
+      headers.add("Authorization", token);
       return Uni.createFrom().item(headers);
     });
   }
@@ -73,11 +72,14 @@ public class SmsRepoHeaders extends ReactiveClientHeadersFactory {
    *
    * @return Session token
    */
-  public Uni<SessionDto> authenticate() {
+  public Uni<String> authenticate() {
     var creds = new LoginDto();
     creds.setUsername(apiKey);
     creds.setPassword(secretKey);
 
-    return loginRepo.authenticate(creds);
+    return loginRepo.authenticate(creds)
+        .chain(sessionDto ->
+            Uni.createFrom().item("Bearer " +
+                sessionDto.getAccessToken()));
   }
 }
