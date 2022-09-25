@@ -21,7 +21,10 @@ package com.abavilla.fpi.load.service.load.gl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -70,6 +73,13 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   @Inject
   PhoneNumberUtil phoneNumberUtil;
 
+  Executor executor;
+
+  @PostConstruct
+  public void init() {
+    executor = Executors.newCachedThreadPool();
+  }
+
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
     ApiStatus status = ApiStatus.ACK;
     return storeCallback(glMapper.mapGLCallbackDtoToEntity(dto),
@@ -86,7 +96,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
                                   String provider, Long transactionId) {
     var byTransId = advRepo.findByRespTransIdAndProvider(
         String.valueOf(transactionId), provider);
-    return byTransId.chain(rewardsTransStatusOpt -> {
+    byTransId.chain(rewardsTransStatusOpt -> {
           if (rewardsTransStatusOpt.isPresent()) {
             return Uni.createFrom().item(rewardsTransStatusOpt.get());
           } else {
@@ -124,10 +134,10 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
           field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
           return leakRepo.persist(field);
-        }).onFailure().recoverWithNull()
-        .replaceWithVoid();
+        }).onFailure().recoverWithNull().emitOn(executor)
+        .subscribe().with(ignored->{});
 
-    //return Uni.createFrom().voidItem();
+    return Uni.createFrom().voidItem();
   }
 
   @Override
