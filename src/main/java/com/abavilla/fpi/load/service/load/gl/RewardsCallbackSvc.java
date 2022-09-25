@@ -96,6 +96,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
                                   String provider, Long transactionId) {
     var byTransId = advRepo.findByRespTransIdAndProvider(
         String.valueOf(transactionId), provider);
+
+    executor.execute(() ->
     byTransId.chain(rewardsTransStatusOpt -> {
           if (rewardsTransStatusOpt.isPresent()) {
             return Uni.createFrom().item(rewardsTransStatusOpt.get());
@@ -134,8 +136,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
           field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
           return leakRepo.persist(field);
-        }).onFailure().recoverWithNull().emitOn(executor)
-        .subscribe().with(ignored->{});
+        }).onFailure().recoverWithNull()
+        .await().indefinitely());
 
     return Uni.createFrom().voidItem();
   }
