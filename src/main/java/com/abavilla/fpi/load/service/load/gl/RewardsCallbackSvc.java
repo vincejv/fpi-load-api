@@ -21,10 +21,7 @@ package com.abavilla.fpi.load.service.load.gl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -73,13 +70,6 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   @Inject
   PhoneNumberUtil phoneNumberUtil;
 
-  Executor executor;
-
-  @PostConstruct
-  public void init() {
-    executor = Executors.newSingleThreadExecutor();
-  }
-
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
     ApiStatus status = ApiStatus.ACK;
     return storeCallback(glMapper.mapGLCallbackDtoToEntity(dto),
@@ -97,47 +87,47 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     var byTransId = advRepo.findByRespTransIdAndProvider(
         String.valueOf(transactionId), provider);
 
-    executor.execute(() ->
     byTransId.chain(rewardsTransStatusOpt -> {
-          if (rewardsTransStatusOpt.isPresent()) {
-            return Uni.createFrom().item(rewardsTransStatusOpt.get());
-          } else {
-            throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
-          }
-        })
-        .onFailure(ApiSvcEx.class).retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
-        .atMost(5) // Retry for item not found and nothing else
-        .chain(rewardsTrans -> {
-          //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
-          CallBack callBack = new CallBack();
-          callBack.setContent(field);
-          callBack.setDateReceived(LocalDateTime.now(ZoneOffset.UTC));
-          callBack.setStatus(status);
-          rewardsTrans.getApiCallback().add(callBack);
-          rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-          return repo.persistOrUpdate(rewardsTrans);
-        })
-        .chain(rewardsTransStatus -> {
-          var req = new MsgReqDto();
-          try {
-            var number = phoneNumberUtil.parse(rewardsTransStatus.getLoadRequest().getMobile(),
-                LoadConst.PH_REGION_CODE);
-            req.setMobileNumber(phoneNumberUtil
-                .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
-          } catch (NumberParseException e) {
-            throw new RuntimeException(e);
-          }
-          req.setContent("Thank you for visiting Florenz Pension Inn!\n" +
-              "Ref: " + rewardsTransStatus.getLoadSmsId());
-          return smsRepo.sendSms(req);
-        })
-        .onFailure().call(ex -> { // leaks/delay
-          Log.error("Rewards leak " + transactionId, ex);
-          field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
-          field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-          return leakRepo.persist(field);
-        }).onFailure().recoverWithNull()
-        .await().indefinitely());
+        if (rewardsTransStatusOpt.isPresent()) {
+          return Uni.createFrom().item(rewardsTransStatusOpt.get());
+        } else {
+          throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
+        }
+      })
+      .onFailure(ApiSvcEx.class).retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
+      .atMost(5) // Retry for item not found and nothing else
+      .chain(rewardsTrans -> {
+        //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
+        CallBack callBack = new CallBack();
+        callBack.setContent(field);
+        callBack.setDateReceived(LocalDateTime.now(ZoneOffset.UTC));
+        callBack.setStatus(status);
+        rewardsTrans.getApiCallback().add(callBack);
+        rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+        return repo.persistOrUpdate(rewardsTrans);
+      })
+      .chain(rewardsTransStatus -> {
+        var req = new MsgReqDto();
+        try {
+          var number = phoneNumberUtil.parse(rewardsTransStatus.getLoadRequest().getMobile(),
+              LoadConst.PH_REGION_CODE);
+          req.setMobileNumber(phoneNumberUtil
+              .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
+        } catch (NumberParseException e) {
+          throw new RuntimeException(e);
+        }
+        req.setContent("Thank you for visiting Florenz Pension Inn!\n" +
+            "Ref: " + rewardsTransStatus.getLoadSmsId());
+        return smsRepo.sendSms(req);
+      })
+      .onFailure().call(ex -> { // leaks/delay
+        Log.error("Rewards leak " + transactionId, ex);
+        field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
+        field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+        return leakRepo.persist(field);
+      })
+      .onFailure().recoverWithNull()
+      .subscribe().with(ignored->{});
 
     return Uni.createFrom().voidItem();
   }
