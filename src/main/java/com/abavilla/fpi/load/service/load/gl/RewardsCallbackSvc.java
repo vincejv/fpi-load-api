@@ -126,9 +126,9 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         Log.error("Rewards leak " + transactionId, ex);
         field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
         field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-        return leakRepo.persist(field);
+        return leakRepo.persist(field)
+            .onFailure().recoverWithNull();
       })
-      .onFailure().recoverWithNull()
       .subscribe().with(ignored->{});
 
     return Uni.createFrom().voidItem();
