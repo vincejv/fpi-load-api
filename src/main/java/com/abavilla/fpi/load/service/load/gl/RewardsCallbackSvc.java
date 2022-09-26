@@ -24,7 +24,7 @@ import java.time.ZoneOffset;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
@@ -119,7 +119,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         }
         req.setContent("Thank you for visiting Florenz Pension Inn! For reservations message us at https://m.me/florenzpensioninn" +
             "\n\nRef: " + rewardsTransStatus.getLoadSmsId());
-        return smsRepo.sendSms(req).onFailure(SSLException.class).retry()
+        return smsRepo.sendSms(req).onFailure(SSLHandshakeException.class).retry()
             .withBackOff(Duration.ofSeconds(3)).withJitter(0.2).atMost(5);
       }).onFailure()
       .call(ex -> { // leaks/delay
