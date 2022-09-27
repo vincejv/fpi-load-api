@@ -42,13 +42,13 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-@Path("/fpi/load")
+@Path("/fpi/load/callback")
 public class CallbackResource
     extends AbsResource<GLRewardsCallbackDto, RewardsTransStatus, RewardsCallbackSvc> {
   @Inject
   ApiKeyConfig apiKeyConfig;
 
-  @Path("callback/{apiKey}")
+  @Path("{apiKey}")
   @POST
   public Uni<Void> callback(@PathParam("apiKey") String apiKey,
                             JsonNode body) {
