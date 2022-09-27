@@ -37,6 +37,7 @@ public enum ApiStatus {
   DEL(1, "Delivered"),
   UND(2, "Undelivered"),
   ACK(8, "Acknowledged"),
+  INV(15, "Invalid"),
   REJ(16, "Rejected"),
   CREATED(200, "Created"),
   UNKNOWN(-1, ""),

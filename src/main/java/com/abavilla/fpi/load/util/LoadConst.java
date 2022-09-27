@@ -29,4 +29,29 @@ public abstract class LoadConst {
   public static final String PROV_DTONE = "DTOne";
 
   public static final String NO_LOAD_PROVIDER_AVAILABLE = "No Load provider available";
+
+  /**
+   * Successful status code for globelabs provider
+   */
+  public static final String GL_SUCCESS_STS = "SUCCESS";
+
+  /**
+   * Successful status code for dtone provider
+   */
+  public static final long DT_SUCCESS_STS = 7000L;
+
+  /**
+   * Failed status code for globelabs provider
+   */
+  public static final String GL_FAILED_STS = "FAILED";
+
+  /**
+   * Failed status code when reloading a postpaid number with prepaid credits
+   */
+  public static final int DT_INVPREPAID_STS = 90000;
+
+  /**
+   * Failed status code when number is not in operator
+   */
+  public static final int DT_OPMISMATCH_STS = 90200;
 }

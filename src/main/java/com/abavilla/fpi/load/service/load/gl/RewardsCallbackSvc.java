@@ -21,6 +21,7 @@ package com.abavilla.fpi.load.service.load.gl;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -44,6 +45,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
@@ -71,13 +73,37 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   PhoneNumberUtil phoneNumberUtil;
 
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
-    ApiStatus status = ApiStatus.ACK;
+    ApiStatus status = ApiStatus.UNKNOWN;
+
+    if (StringUtils.equals(dto.getBody().getStatus(),
+        LoadConst.GL_SUCCESS_STS)) {
+      status = ApiStatus.DEL;
+    } else if (StringUtils.equals(dto.getBody().getSku(),
+        LoadConst.GL_FAILED_STS)) {
+      status = ApiStatus.REJ;
+    } else {
+      ApiStatus.fromValue(dto.getBody().getStatus());
+    }
+
     return storeCallback(glMapper.mapGLCallbackDtoToEntity(dto),
         status, LoadConst.PROV_GL, dto.getBody().getTransactionId());
   }
 
   public Uni<Void> storeCallback(DVSCallbackDto dto) {
-    ApiStatus status = ApiStatus.ACK;
+    ApiStatus status = ApiStatus.UNKNOWN;
+
+    if (dto.getStatus().getId() == LoadConst.DT_SUCCESS_STS) {
+      status = ApiStatus.DEL;
+    } else if (dto.getStatus().getId() == LoadConst.DT_INVPREPAID_STS) {
+      // postpaid number is reloaded with prepaid credits
+      status = ApiStatus.INV;
+    }else if (dto.getStatus().getId() == LoadConst.DT_OPMISMATCH_STS) {
+      // operator and mobile number mismatch
+      status = ApiStatus.REJ;
+    } else {
+      ApiStatus.fromValue(dto.getStatus().getMessage());
+    }
+
     return storeCallback(dtOneMapper.mapDTOneRespToEntity(dto),
         status, LoadConst.PROV_DTONE, dto.getDtOneId());
   }
@@ -106,7 +132,39 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
         return repo.persistOrUpdate(rewardsTrans);
       })
-      .chain(rewardsTransStatus -> {
+      .chain(sendFPIAckMsg(status)).onFailure()
+      .call(saveAsLeak(field, transactionId))
+      .subscribe().with(ignored->{});
+
+    return Uni.createFrom().voidItem();
+  }
+
+  /**
+   * Logs the load transaction as a failed in the database
+   *
+   * @param field Load transaction
+   * @param transactionId External transaction id
+   * @return {@link Function} callback
+   */
+  private Function<Throwable, Uni<?>> saveAsLeak(AbsMongoItem field, Long transactionId) {
+    return ex -> { // leaks/delay
+      Log.error("Rewards leak " + transactionId, ex);
+      field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
+      field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+      return leakRepo.persist(field)
+          .onFailure().recoverWithNull();
+    };
+  }
+
+  /**
+   * Sends an acknowledgement message for successful load transfer
+   *
+   * @param status Load status
+   * @return {@link Function} callback
+   */
+  private Function<RewardsTransStatus, Uni<?>> sendFPIAckMsg(ApiStatus status) {
+    return rewardsTransStatus -> {
+      if (status == ApiStatus.DEL) {
         var req = new MsgReqDto();
         try {
           var number = phoneNumberUtil.parse(rewardsTransStatus.getLoadRequest().getMobile(),
@@ -118,20 +176,13 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         }
         req.setContent(
             String.format("You have purchased %d of LOAD. Thank you for visiting Florenz Pension Inn! " +
-            "For reservations message us at https://m.me/florenzpensioninn" +
-            "\n\nRef: " + rewardsTransStatus.getLoadSmsId(), rewardsTransStatus.getLoadRequest().getSku()));
+                "For reservations message us at https://m.me/florenzpensioninn" +
+                "\n\nRef: " + rewardsTransStatus.getLoadSmsId(), rewardsTransStatus.getLoadRequest().getSku()));
         return smsRepo.sendSms(req);
-      }).onFailure()
-      .call(ex -> { // leaks/delay
-        Log.error("Rewards leak " + transactionId, ex);
-        field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
-        field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-        return leakRepo.persist(field)
-            .onFailure().recoverWithNull();
-      })
-      .subscribe().with(ignored->{});
-
-    return Uni.createFrom().voidItem();
+      } else {
+        return Uni.createFrom().voidItem();
+      }
+    };
   }
 
   @Override
