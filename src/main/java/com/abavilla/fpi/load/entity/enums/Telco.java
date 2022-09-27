@@ -54,7 +54,8 @@ public enum Telco {
 
   @JsonCreator
   public static Telco fromValue(String value) {
-    return ENUM_MAP.getOrDefault(value, Telco.UNKNOWN.setValue(value));
+    return ENUM_MAP.getOrDefault(value, Telco.UNKNOWN.setValue(
+        String.format("Unknown (%s)", value)));
   }
 
   public static Telco fromId(int id) {

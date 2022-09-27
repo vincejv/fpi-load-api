@@ -52,7 +52,8 @@ public enum SkuType {
 
   @JsonCreator
   public static SkuType fromValue(String value) {
-    return ENUM_MAP.getOrDefault(value, SkuType.UNKNOWN.setValue(value));
+    return ENUM_MAP.getOrDefault(value, SkuType.UNKNOWN.setValue(
+        String.format("Unknown (%s)", value)));
   }
 
   public static SkuType fromId(int id) {
