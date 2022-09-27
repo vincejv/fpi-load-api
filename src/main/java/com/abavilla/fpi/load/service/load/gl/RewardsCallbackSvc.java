@@ -120,7 +120,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
         }
       })
-      .onFailure(ApiSvcEx.class).retry().withBackOff(Duration.ofSeconds(3)).withJitter(0.2)
+      .onFailure(ApiSvcEx.class).retry().withBackOff(
+          Duration.ofSeconds(3)).withJitter(0.2)
       .atMost(5) // Retry for item not found and nothing else
       .chain(rewardsTrans -> {
         //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
@@ -164,6 +165,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    */
   private Function<RewardsTransStatus, Uni<?>> sendFPIAckMsg(ApiStatus status) {
     return rewardsTransStatus -> {
+      Log.info("Sending ack message for " +
+          rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
       if (status == ApiStatus.DEL) {
         var req = new MsgReqDto();
         try {
@@ -172,7 +175,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           req.setMobileNumber(phoneNumberUtil
               .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
         } catch (NumberParseException e) {
-          throw new RuntimeException(e);
+          return Uni.createFrom().failure(e);
         }
         req.setContent(
             String.format("You have purchased %d of LOAD. Thank you for visiting Florenz Pension Inn! " +
