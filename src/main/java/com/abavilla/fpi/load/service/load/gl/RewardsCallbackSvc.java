@@ -181,8 +181,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             String.format(
                 "You have purchased %s of LOAD. Thank you for visiting Florenz Pension Inn! " +
                 "For reservations message us at https://m.me/florenzpensioninn" +
-                "\n\nRef: %s", rewardsTransStatus.getLoadSmsId(),
-                rewardsTransStatus.getLoadRequest().getSku()));
+                "\n\nRef: %s", rewardsTransStatus.getLoadRequest().getSku(),
+                rewardsTransStatus.getLoadSmsId()));
         return smsRepo.sendSms(req);
       } else {
         return Uni.createFrom().voidItem();
