@@ -16,48 +16,43 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.mapper.load;
 
-import java.util.Optional;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import com.abavilla.fpi.fw.service.AbsSvc;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
+import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.load.dto.load.PromoSkuDto;
+import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
-import io.smallrye.mutiny.Uni;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
 /**
- * Service layer for operating on {@link PromoSku} items.
+ * Mapping definition between conversion of {@link PromoSku} and {@link PromoSkuDto}
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-@ApplicationScoped
-public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface PromoSkuMapper extends IMapper<PromoSkuDto, PromoSku> {
 
-  @Inject
-  PromoSkuMapper mapper;
-
-  @Inject
-  PromoSkuRepo advRepo;
-
-  public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndDenomination(
-        Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
+  /**
+   * Mapping for {@link Telco} to {@link String} and vice versa
+   *
+   * @param telcoStr The telco string containing the value
+   * @return Equivalent {@link Telco} enum value
+   */
+  default Telco strToTelco(String telcoStr) {
+    return Telco.fromValue(telcoStr);
   }
 
-  @Override
-  public PromoSkuDto mapToDto(PromoSku entity) {
-    return mapper.mapToDto(entity);
-  }
-
-  @Override
-  public PromoSku mapToEntity(PromoSkuDto dto) {
-    return mapper.mapToEntity(dto);
+  /**
+   * Mapping for {@link Telco} to {@link String} and vice versa
+   *
+   * @param skuStr The sku string containing the value
+   * @return Equivalent {@link Telco} enum value
+   */
+  default SkuType strToSku(String skuStr) {
+    return SkuType.fromValue(skuStr);
   }
 }

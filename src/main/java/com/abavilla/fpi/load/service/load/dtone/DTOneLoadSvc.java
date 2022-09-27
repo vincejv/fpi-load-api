@@ -45,7 +45,6 @@ import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.context.ManagedExecutor;
 
 @ApplicationScoped
 public class DTOneLoadSvc extends AbsLoadProviderSvc {
@@ -57,9 +56,6 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
 
   @ConfigProperty(name = "com.dtone.callback-url")
   String callbackUrl;
-
-  @Inject
-  ManagedExecutor executor;
 
   @Override
   public void init() {
@@ -77,7 +73,7 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
           return null;
         });
 
-            var loadResp = new LoadRespDto();
+    var loadResp = new LoadRespDto();
     loadResp.setTransactionId(req.getTransactionId());
     loadResp.setApiRequest(dvsReq);
     loadResp.setStatus(ApiStatus.CREATED);

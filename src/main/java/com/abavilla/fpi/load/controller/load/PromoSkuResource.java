@@ -18,43 +18,19 @@
 
 package com.abavilla.fpi.load.controller.load;
 
-import javax.inject.Inject;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.controller.AbsResource;
-import com.abavilla.fpi.fw.util.MapperUtil;
-import com.abavilla.fpi.load.config.ApiKeyConfig;
-import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
-import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
-import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
-import com.abavilla.fpi.load.service.load.gl.RewardsCallbackSvc;
-import com.fasterxml.jackson.databind.JsonNode;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.smallrye.mutiny.Uni;
-import org.apache.commons.lang3.StringUtils;
+import com.abavilla.fpi.load.dto.load.PromoSkuDto;
+import com.abavilla.fpi.load.entity.load.PromoSku;
+import com.abavilla.fpi.load.service.load.PromoSkuSvc;
 
-@Path("/fpi/load")
-public class FPILoadCallbackResource
-    extends AbsResource<GLRewardsCallbackDto, RewardsTransStatus, RewardsCallbackSvc> {
-  @Inject
-  ApiKeyConfig apiKeyConfig;
+/**
+ * Endpoints for doing operations with {@link PromoSku} items.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Path("/fpi/load/sku")
+public class PromoSkuResource extends AbsResource<PromoSkuDto, PromoSku, PromoSkuSvc> {
 
-  @Path("callback/{apiKey}")
-  @POST
-  public Uni<Void> callback(@PathParam("apiKey") String apiKey,
-                            JsonNode body) {
-    if (StringUtils.equals(apiKey, apiKeyConfig.getGenericApiKey())) {
-      return service.storeCallback(MapperUtil.convert(body, GLRewardsCallbackDto.class));
-    } else if (StringUtils.equals(apiKey, "intlprov")) {
-      return service.storeCallback(MapperUtil.convert(body, DVSCallbackDto.class));
-    } else {
-      throw new WebApplicationException(Response
-          .status(HttpResponseStatus.UNAUTHORIZED.code())
-          .build());
-    }
-  }
 }

@@ -16,48 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.controller.load;
 
-import java.util.Optional;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import com.abavilla.fpi.fw.service.AbsSvc;
+import com.abavilla.fpi.fw.controller.AbsResource;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.PromoSkuDto;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
+import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
+import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
+import com.abavilla.fpi.load.service.load.RewardsSvc;
 import io.smallrye.mutiny.Uni;
 
 /**
- * Service layer for operating on {@link PromoSku} items.
+ * Endpoints for doing reload transactions.
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-@ApplicationScoped
-public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
+@Path("/fpi/load/reload")
+public class LoadResource extends AbsResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
 
-  @Inject
-  PromoSkuMapper mapper;
-
-  @Inject
-  PromoSkuRepo advRepo;
-
-  public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndDenomination(
-        Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
-  }
-
-  @Override
-  public PromoSkuDto mapToDto(PromoSku entity) {
-    return mapper.mapToDto(entity);
-  }
-
-  @Override
-  public PromoSku mapToEntity(PromoSkuDto dto) {
-    return mapper.mapToEntity(dto);
+  @POST
+  public Uni<Response> loadUp(LoadReqDto loadReq) {
+    return service.reloadNumber(loadReq);
   }
 }

@@ -27,6 +27,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
+/**
+ * Contains the pricing for the promo, if ranged, contains the possible minimum and absolute maximum denomination.
+ * For fixed products minimum and maximum should be equal.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection

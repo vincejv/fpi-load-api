@@ -16,48 +16,60 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.dto.load;
 
-import java.util.Optional;
+import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import com.abavilla.fpi.fw.service.AbsSvc;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.PromoSkuDto;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
-import io.smallrye.mutiny.Uni;
+import com.abavilla.fpi.fw.dto.AbsDto;
+import com.abavilla.fpi.load.entity.load.ProviderOffer;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
- * Service layer for operating on {@link PromoSku} items.
+ * Data transfer object containing the information for promotional packs.
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-@ApplicationScoped
-public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+@RegisterForReflection
+@NoArgsConstructor
+public class PromoSkuDto extends AbsDto {
 
-  @Inject
-  PromoSkuMapper mapper;
+  /**
+   * Promo type, whether bundle, credits or others
+   */
+  private String type;
 
-  @Inject
-  PromoSkuRepo advRepo;
+  /**
+   * Name of the promo
+   */
+  private String name;
 
-  public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndDenomination(
-        Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
-  }
+  /**
+   * The face value of the pack
+   */
+  private PricingDto denomination;
 
-  @Override
-  public PromoSkuDto mapToDto(PromoSku entity) {
-    return mapper.mapToDto(entity);
-  }
+  /**
+   * Suggested retail price
+   */
+  private PricingDto srp;
 
-  @Override
-  public PromoSku mapToEntity(PromoSkuDto dto) {
-    return mapper.mapToEntity(dto);
-  }
+  /**
+   * Operator which the promo is available
+   */
+  private String telco;
+
+  /**
+   * Upstream providers offering the promo
+   */
+  private List<ProviderOffer> offers;
+
+  /**
+   * Keywords linked to the offering
+   */
+  private List<String> keywords;
 }

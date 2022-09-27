@@ -40,7 +40,7 @@ quarkus:
           enforcement-mode: DISABLED
         '3':
           # debug
-          path: /fpi/load/reload/*
+          path: /fpi/load/*
           enforcement-mode: DISABLED
   native:
     resources:

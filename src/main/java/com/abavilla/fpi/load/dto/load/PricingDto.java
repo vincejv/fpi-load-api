@@ -16,48 +16,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.dto.load;
 
-import java.util.Optional;
+import java.math.BigDecimal;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import com.abavilla.fpi.fw.service.AbsSvc;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.PromoSkuDto;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
-import io.smallrye.mutiny.Uni;
+import com.abavilla.fpi.fw.dto.AbsFieldDto;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 /**
- * Service layer for operating on {@link PromoSku} items.
+ * Contains the pricing for the promo, if ranged, contains the possible minimum and absolute maximum denomination.
+ * For fixed products minimum and maximum should be equal.
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-@ApplicationScoped
-public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+@RegisterForReflection
+@NoArgsConstructor
+@BsonDiscriminator
+public class PricingDto extends AbsFieldDto {
 
-  @Inject
-  PromoSkuMapper mapper;
+  /**
+   * Minimum Price for the promo
+   */
+  private BigDecimal min;
 
-  @Inject
-  PromoSkuRepo advRepo;
+  /**
+   * Maximum Price for the promo
+   */
+  private BigDecimal max;
 
-  public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndDenomination(
-        Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
-  }
-
-  @Override
-  public PromoSkuDto mapToDto(PromoSku entity) {
-    return mapper.mapToDto(entity);
-  }
-
-  @Override
-  public PromoSku mapToEntity(PromoSkuDto dto) {
-    return mapper.mapToEntity(dto);
-  }
+  /**
+   * Fixed value pricing
+   */
+  private BigDecimal value;
 }

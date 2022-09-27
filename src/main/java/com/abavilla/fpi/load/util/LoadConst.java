@@ -46,12 +46,12 @@ public abstract class LoadConst {
   public static final String GL_FAILED_STS = "FAILED";
 
   /**
-   * Failed status code when reloading a postpaid number with prepaid credits
+   * Failed status code for dtone provider when reloading a postpaid number with prepaid credits
    */
   public static final long DT_INVPREPAID_STS = 90000L;
 
   /**
-   * Failed status code when number is not in operator
+   * Failed status code for dtone provider when number is not in operator
    */
   public static final long DT_OPMISMATCH_STS = 90200L;
 }

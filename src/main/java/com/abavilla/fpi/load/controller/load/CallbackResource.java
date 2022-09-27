@@ -21,46 +21,45 @@ package com.abavilla.fpi.load.controller.load;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.controller.AbsResource;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
+import com.abavilla.fpi.fw.util.MapperUtil;
+import com.abavilla.fpi.load.config.ApiKeyConfig;
+import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
+import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
-import com.abavilla.fpi.load.service.load.RewardsSvc;
+import com.abavilla.fpi.load.service.load.gl.RewardsCallbackSvc;
+import com.fasterxml.jackson.databind.JsonNode;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.smallrye.mutiny.Uni;
+import org.apache.commons.lang3.StringUtils;
 
-@Path("/fpi/load/reload")
-public class FPILoadResource extends AbsResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
-  // Testonly
+/**
+ * Endpoints for receiving the status for the load transaction.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Path("/fpi/load")
+public class CallbackResource
+    extends AbsResource<GLRewardsCallbackDto, RewardsTransStatus, RewardsCallbackSvc> {
   @Inject
-  PromoSkuRepo promoSkuRepo;
+  ApiKeyConfig apiKeyConfig;
 
+  @Path("callback/{apiKey}")
   @POST
-  public Uni<Response> loadUp(LoadReqDto loadReq) {
-//
-//    PromoSku promoSku = new PromoSku();
-//    promoSku.setType(SkuType.CREDITS);
-//    promoSku.setSrp(NumberUtils.toScaledBigDecimal("100.00"));
-//    promoSku.setName("Regular 100");
-//
-//    var offer1 = new ProviderOffer();
-//    offer1.setProductCode("FPI100");
-//    offer1.setWalletCost(NumberUtils.toScaledBigDecimal("95.45"));
-//    offer1.setProviderName("GlobeLabs");
-//
-//    var offer2 = new ProviderOffer();
-//    offer2.setProductCode("4749");
-//    offer2.setWalletCost(NumberUtils.toScaledBigDecimal("98.00"));
-//    offer2.setProviderName("DTOne");
-//
-//    promoSku.setOffers(List.of(offer1, offer2));
-//
-//    promoSku.setDenomination(NumberUtils.toScaledBigDecimal("100.00"));
-//    promoSku.setTelco(Telco.GLOBE);
-//
-//    return promoSkuRepo.persist(promoSku).replaceWithVoid();
-    return service.reloadNumber(loadReq);
+  public Uni<Void> callback(@PathParam("apiKey") String apiKey,
+                            JsonNode body) {
+    if (StringUtils.equals(apiKey, apiKeyConfig.getGenericApiKey())) {
+      return service.storeCallback(MapperUtil.convert(body, GLRewardsCallbackDto.class));
+    } else if (StringUtils.equals(apiKey, "intlprov")) {
+      return service.storeCallback(MapperUtil.convert(body, DVSCallbackDto.class));
+    } else {
+      throw new WebApplicationException(Response
+          .status(HttpResponseStatus.UNAUTHORIZED.code())
+          .build());
+    }
   }
 }
