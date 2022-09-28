@@ -25,7 +25,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.controller.AbsResource;
+import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.util.MapperUtil;
 import com.abavilla.fpi.load.config.ApiKeyConfig;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
@@ -44,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Path("/fpi/load/callback")
 public class CallbackResource
-    extends AbsResource<GLRewardsCallbackDto, RewardsTransStatus, RewardsCallbackSvc> {
+    extends AbsBaseResource<GLRewardsCallbackDto, RewardsTransStatus, RewardsCallbackSvc> {
   @Inject
   ApiKeyConfig apiKeyConfig;
 

@@ -27,7 +27,9 @@ import com.abavilla.fpi.load.service.ErrorLogSvc;
 import io.smallrye.mutiny.Uni;
 
 @Path("/fpi/log/error")
-public class ErrorLogResource extends AbsResource<ErrorLogDto, ErrorLog, ErrorLogSvc> {
+public class ErrorLogResource
+    extends AbsResource<ErrorLogDto, ErrorLog, ErrorLogSvc> {
+
   public Uni<ErrorLogDto> post(ErrorLogDto dto) {
     return service.post(dto);
   }

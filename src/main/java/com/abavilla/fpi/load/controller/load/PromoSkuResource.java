@@ -31,6 +31,7 @@ import com.abavilla.fpi.load.service.load.PromoSkuSvc;
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @Path("/fpi/load/sku")
-public class PromoSkuResource extends AbsResource<PromoSkuDto, PromoSku, PromoSkuSvc> {
+public class PromoSkuResource
+    extends AbsResource<PromoSkuDto, PromoSku, PromoSkuSvc> {
 
 }

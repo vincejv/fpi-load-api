@@ -22,7 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.controller.AbsResource;
+import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
@@ -35,7 +35,8 @@ import io.smallrye.mutiny.Uni;
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @Path("/fpi/load/reload")
-public class LoadResource extends AbsResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
+public class LoadResource
+    extends AbsBaseResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
 
   @POST
   public Uni<Response> loadUp(LoadReqDto loadReq) {
