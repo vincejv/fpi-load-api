@@ -18,7 +18,7 @@
 
 package com.abavilla.fpi.load.mapper.load;
 
-import com.abavilla.fpi.fw.mapper.IMapper;
+import com.abavilla.fpi.fw.mapper.IMongoItemMapper;
 import com.abavilla.fpi.load.dto.load.PromoSkuDto;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.load.entity.enums.Telco;
@@ -34,7 +34,7 @@ import org.mapstruct.MappingConstants;
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface PromoSkuMapper extends IMapper<PromoSkuDto, PromoSku> {
+public interface PromoSkuMapper extends IMongoItemMapper<PromoSkuDto, PromoSku> {
 
   /**
    * Mapping for {@link Telco} to {@link String} and vice versa
@@ -55,4 +55,5 @@ public interface PromoSkuMapper extends IMapper<PromoSkuDto, PromoSku> {
   default SkuType strToSku(String skuStr) {
     return SkuType.fromValue(skuStr);
   }
+
 }

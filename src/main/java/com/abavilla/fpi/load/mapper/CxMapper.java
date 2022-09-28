@@ -18,7 +18,7 @@
 
 package com.abavilla.fpi.load.mapper;
 
-import com.abavilla.fpi.fw.mapper.IMapper;
+import com.abavilla.fpi.fw.mapper.IMongoItemMapper;
 import com.abavilla.fpi.load.dto.CustomerDto;
 import com.abavilla.fpi.load.entity.Customer;
 import org.mapstruct.InjectionStrategy;
@@ -27,5 +27,6 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface CxMapper extends IMapper<CustomerDto, Customer> {
+public interface CxMapper extends IMongoItemMapper<CustomerDto, Customer> {
+
 }
