@@ -16,27 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.gl;
+package com.abavilla.fpi.load.repo.sms;
 
-import java.time.LocalDateTime;
+import javax.ws.rs.POST;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import com.abavilla.fpi.load.dto.sms.MsgReqDto;
+import com.abavilla.fpi.load.dto.sms.MsgReqStatusDto;
+import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-@BsonDiscriminator
-public class GLRewardsResp extends AbsMongoField {
-  private Long transactionId;
-  private String status;
-  private String address;
-  private String promo;
-  private LocalDateTime timestamp;
-  private String error;
+/**
+ * Resource access for authenticating with sending SMS through SMS service
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@RegisterRestClient(configKey = "sms-api")
+@RegisterClientHeaders(SmsRepoHeaders.class)
+public interface SmsRepo {
+
+  /**
+   * Send an SMS through SMS service
+   * @param msgReqDto {@link MsgReqDto} object
+   *
+   * @return {@link MsgReqDto} future object containing the status
+   */
+  @POST
+  Uni<MsgReqStatusDto> sendSms(MsgReqDto msgReqDto);
 }

@@ -28,16 +28,19 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
+@BsonDiscriminator
 @MongoEntity(collection="rewards_log")
 public class RewardsTransStatus extends AbsMongoItem {
   private LoadReq loadRequest;
   private String loadProvider;
   private String transactionId;
+  private String loadSmsId;
   private AbsMongoField apiRequest;
   private AbsMongoField apiResponse;
   private List<CallBack> apiCallback;

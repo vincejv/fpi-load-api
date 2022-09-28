@@ -20,6 +20,7 @@ package com.abavilla.fpi.load.config;
 
 import com.abavilla.fpi.fw.config.BaseReflectionConfig;
 import com.dtone.dvs.dto.Amount;
+import com.dtone.dvs.dto.AmountValue;
 import com.dtone.dvs.dto.ApiRequest;
 import com.dtone.dvs.dto.ApiResponse;
 import com.dtone.dvs.dto.Balance;
@@ -67,6 +68,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
  */
 @RegisterForReflection(targets = {
     Amount.class,
+    AmountValue.class,
     ApiRequest.class,
     ApiResponse.class,
     Balance.class,

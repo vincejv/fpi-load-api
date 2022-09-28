@@ -24,12 +24,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @RegisterForReflection
 @NoArgsConstructor
 @AllArgsConstructor
+@BsonDiscriminator
 public class GLRewardsReq extends AbsMongoField {
   private String address;
   private String sku;

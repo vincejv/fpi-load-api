@@ -23,11 +23,13 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
+@BsonDiscriminator
 public class GLAccessKey extends AbsMongoItem {
   private String accessToken;
 }

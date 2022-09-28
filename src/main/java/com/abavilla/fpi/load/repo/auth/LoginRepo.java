@@ -16,27 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.gl;
+package com.abavilla.fpi.load.repo.auth;
 
-import java.time.LocalDateTime;
+import javax.ws.rs.POST;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import com.abavilla.fpi.load.dto.auth.LoginDto;
+import com.abavilla.fpi.load.dto.auth.SessionDto;
+import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-@BsonDiscriminator
-public class GLRewardsResp extends AbsMongoField {
-  private Long transactionId;
-  private String status;
-  private String address;
-  private String promo;
-  private LocalDateTime timestamp;
-  private String error;
+/**
+ * Resource access for authenticating with other services.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@RegisterRestClient(configKey = "login-api")
+public interface LoginRepo {
+
+  /**
+   * Obtain a session token from authentication service.
+   * @param login {@link LoginDto} object
+   *
+   * @return {@link SessionDto} object containing the session info
+   */
+  @POST
+  Uni<SessionDto> authenticate(LoginDto login);
 }

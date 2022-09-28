@@ -37,6 +37,7 @@ public enum ApiStatus {
   DEL(1, "Delivered"),
   UND(2, "Undelivered"),
   ACK(8, "Acknowledged"),
+  INV(15, "Invalid"),
   REJ(16, "Rejected"),
   CREATED(200, "Created"),
   UNKNOWN(-1, ""),
@@ -55,11 +56,13 @@ public enum ApiStatus {
 
   @JsonCreator
   public static ApiStatus fromValue(String value) {
-    return ENUM_MAP.getOrDefault(value, ApiStatus.UNKNOWN.setValue(value));
+    return ENUM_MAP.getOrDefault(value, ApiStatus.UNKNOWN.setValue(
+        String.format("Unknown (%s)", value)));
   }
 
   public static ApiStatus fromId(int id) {
-    return ENUM_MAP.values().stream().filter(ApiStatus -> ApiStatus.getId() == id).findAny()
+    return ENUM_MAP.values().stream()
+        .filter(ApiStatus -> ApiStatus.getId() == id).findAny()
         .orElse(getDefaultValue().setValue(String.format("Unknown (%d)", id)));
   }
 

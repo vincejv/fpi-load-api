@@ -25,12 +25,46 @@ import javax.enterprise.context.ApplicationScoped;
 import com.abavilla.fpi.fw.repo.IMongoRepo;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
 public class PromoSkuRepo implements IMongoRepo<PromoSku> {
-  public Uni<Optional<PromoSku>> findByTelcoAndKeyword(Telco telco, String keyword) {
-    return find("telco = ?1 and keywords = ?2",
-        telco.getValue(), keyword).firstResultOptional();
+
+  public Uni<Optional<PromoSku>> findByTelcoAndDenomination(Telco telco, String keyword) {
+    return find("""
+            {
+              $and: [
+                { 'telco.value': ?1 },
+                {
+                  $or: [
+                    {
+                       $and: [
+                         {'keywords': ?2},
+                         {
+                           $or: [
+                             {'type.value': 'Bundle' },
+                             {'type.value': 'Credits' }
+                           ]
+                         }
+                       ]
+                    },
+                    {
+                       $and: [
+                         { 'type.value': 'Ranged' },
+                         { 'denomination.min': { $lte: ?3 } },
+                         { 'denomination.max': { $gte: ?3 } }
+                       ]
+                    }
+                  ]
+                }
+              ]
+            }
+            """,
+        Sort.ascending("type.ord", "offers.wholesaleDiscount"),
+        telco.getValue(),
+        keyword,
+        Integer.parseInt(keyword)
+    ).firstResultOptional();
   }
 }

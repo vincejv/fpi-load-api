@@ -24,6 +24,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.entity.dtone.DVSCallback;
 import com.abavilla.fpi.load.entity.dtone.DVSReq;
@@ -38,7 +39,7 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface DTOneMapper {
+public interface DTOneMapper extends IMapper {
 
   DVSReq copyTransactionReqToDVSReq(TransactionRequest dto);
 

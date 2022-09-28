@@ -26,6 +26,7 @@ import com.abavilla.fpi.load.entity.Customer;
 import com.abavilla.fpi.load.service.CxSvc;
 
 @Path("/fpi/cx")
-public class CxResource extends AbsResource<CustomerDto, Customer, CxSvc> {
+public class CxResource
+    extends AbsResource<CustomerDto, Customer, CxSvc> {
 
 }

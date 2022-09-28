@@ -18,49 +18,20 @@
 
 package com.abavilla.fpi.load.controller.load;
 
-import javax.inject.Inject;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.controller.AbsResource;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
-import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
-import com.abavilla.fpi.load.service.load.RewardsSvc;
-import io.smallrye.mutiny.Uni;
+import com.abavilla.fpi.load.dto.load.PromoSkuDto;
+import com.abavilla.fpi.load.entity.load.PromoSku;
+import com.abavilla.fpi.load.service.load.PromoSkuSvc;
 
-@Path("/fpi/load/reload")
-public class FPILoadResource extends AbsResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
-  // Testonly
-  @Inject
-  PromoSkuRepo promoSkuRepo;
+/**
+ * Endpoints for doing operations with {@link PromoSku} items.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Path("/fpi/load/sku")
+public class PromoSkuResource
+    extends AbsResource<PromoSkuDto, PromoSku, PromoSkuSvc> {
 
-  @POST
-  public Uni<Response> loadUp(LoadReqDto loadReq) {
-//
-//    PromoSku promoSku = new PromoSku();
-//    promoSku.setType(SkuType.CREDITS);
-//    promoSku.setSrp(NumberUtils.toScaledBigDecimal("100.00"));
-//    promoSku.setName("Regular 100");
-//
-//    var offer1 = new ProviderOffer();
-//    offer1.setProductCode("FPI100");
-//    offer1.setWalletCost(NumberUtils.toScaledBigDecimal("95.45"));
-//    offer1.setProviderName("GlobeLabs");
-//
-//    var offer2 = new ProviderOffer();
-//    offer2.setProductCode("4749");
-//    offer2.setWalletCost(NumberUtils.toScaledBigDecimal("98.00"));
-//    offer2.setProviderName("DTOne");
-//
-//    promoSku.setOffers(List.of(offer1, offer2));
-//
-//    promoSku.setDenomination(NumberUtils.toScaledBigDecimal("100.00"));
-//    promoSku.setTelco(Telco.GLOBE);
-//
-//    return promoSkuRepo.persist(promoSku).replaceWithVoid();
-    return service.reloadNumber(loadReq);
-  }
 }

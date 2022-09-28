@@ -16,52 +16,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.dtone;
+package com.abavilla.fpi.load.entity.load;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.math.BigDecimal;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.dtone.dvs.dto.Benefit;
-import com.dtone.dvs.dto.Party;
-import com.dtone.dvs.dto.PartyIdentifier;
-import com.dtone.dvs.dto.Pin;
-import com.dtone.dvs.dto.Prices;
-import com.dtone.dvs.dto.Product;
-import com.dtone.dvs.dto.Promotion;
-import com.dtone.dvs.dto.Rates;
-import com.dtone.dvs.dto.Status;
-import com.dtone.dvs.dto.Values;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
+/**
+ * Contains the pricing for the promo, if ranged, contains the possible minimum and absolute maximum denomination.
+ * For fixed products minimum and maximum should be equal.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
 @BsonDiscriminator
-public class DVSResp extends AbsMongoField {
-  private Long dtOneId;
-  private String externalId;
-  private LocalDateTime creationDate;
-  private LocalDateTime confirmationExpirationDate;
-  private LocalDateTime confirmationDate;
-  private Status status;
-  private String operatorReference;
-  private Pin pin;
-  private Product product;
-  private Prices prices;
-  private Rates rates;
-  private List<Benefit> benefits;
-  private List<Promotion> promotions;
-  private Values requestedValues;
-  private Values adjustedValues;
-  private Party sender;
-  private Party beneficiary;
-  private PartyIdentifier debitPartyIdentifier;
-  private PartyIdentifier creditPartyIdentifier;
-  private String loadProvider;
+public class Pricing extends AbsMongoField {
+
+  /**
+   * Minimum Price
+   */
+  private BigDecimal min;
+
+  /**
+   * Maximum Price
+   */
+  private BigDecimal max;
 }

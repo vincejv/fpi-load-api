@@ -16,52 +16,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.dtone;
+package com.abavilla.fpi.load.dto.auth;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.dtone.dvs.dto.Benefit;
-import com.dtone.dvs.dto.Party;
-import com.dtone.dvs.dto.PartyIdentifier;
-import com.dtone.dvs.dto.Pin;
-import com.dtone.dvs.dto.Prices;
-import com.dtone.dvs.dto.Product;
-import com.dtone.dvs.dto.Promotion;
-import com.dtone.dvs.dto.Rates;
-import com.dtone.dvs.dto.Status;
-import com.dtone.dvs.dto.Values;
+import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
+/**
+ * Data transfer object containing the information to create and validate a login session.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
 @NoArgsConstructor
-@BsonDiscriminator
-public class DVSResp extends AbsMongoField {
-  private Long dtOneId;
-  private String externalId;
-  private LocalDateTime creationDate;
-  private LocalDateTime confirmationExpirationDate;
-  private LocalDateTime confirmationDate;
-  private Status status;
-  private String operatorReference;
-  private Pin pin;
-  private Product product;
-  private Prices prices;
-  private Rates rates;
-  private List<Benefit> benefits;
-  private List<Promotion> promotions;
-  private Values requestedValues;
-  private Values adjustedValues;
-  private Party sender;
-  private Party beneficiary;
-  private PartyIdentifier debitPartyIdentifier;
-  private PartyIdentifier creditPartyIdentifier;
-  private String loadProvider;
+@RegisterForReflection
+public class LoginDto extends AbsMongoItem {
+
+  /**
+   * Username for login
+   */
+  private String username;
+
+  /**
+   * Password for login
+   */
+  private String password;
+
+  /**
+   * IP Address of client trying to login
+   */
+  private String remoteAddress;
+
+  /**
+   * Browser User-agent of client trying to login
+   */
+  private String userAgent;
 }

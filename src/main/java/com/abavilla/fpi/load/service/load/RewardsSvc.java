@@ -20,7 +20,6 @@ package com.abavilla.fpi.load.service.load;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -40,8 +39,8 @@ import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.load.util.LoadUtil;
 import io.smallrye.mutiny.Uni;
-import org.apache.commons.lang3.NotImplementedException;
 
 @ApplicationScoped
 public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
@@ -76,7 +75,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(reloadAndUpdateDb(loadReqDto, log, promo, loadSvc))
+            .chain(reloadAndUpdateDb(loadReqDto, log, promo.get(), loadSvc))
             .map(determineReloadResponse());
       } else {
         return buildRejectedResponse();
@@ -84,10 +83,10 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     });
   }
 
-  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, Optional<PromoSku> promo, ILoadProviderSvc loadSvcProvider) {
+  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
     return logEntity -> {
       loadReqDto.setTransactionId(logEntity.getId().toString());
-      return loadSvcProvider.reload(loadReqDto, promo.get())
+      return loadSvcProvider.reload(loadReqDto, promo)
           .onFailure(ApiSvcEx.class)
           .recoverWithItem(handleReloadException(logEntity))
           .chain(saveRequestToDb(log, logEntity));
@@ -118,6 +117,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
       dtoToEntityMapper.mapLoadRespDtoToEntity(
           loadRespDto, logEntity
       );
+      log.setLoadSmsId(LoadUtil.encodeId(log.getLoadProvider(), log.getTransactionId()));
       log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
       return repo.persistOrUpdate(logEntity)
           .map(res -> loadRespDto);
@@ -135,13 +135,4 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     };
   }
 
-  @Override
-  public GLRewardsReqDto mapToDto(RewardsTransStatus entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public RewardsTransStatus mapToEntity(GLRewardsReqDto dto) {
-    throw new NotImplementedException();
-  }
 }

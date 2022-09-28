@@ -25,30 +25,47 @@ import javax.inject.Inject;
 
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
+import com.abavilla.fpi.load.dto.load.PromoSkuDto;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
+import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
 import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
 import io.smallrye.mutiny.Uni;
-import org.apache.commons.lang3.NotImplementedException;
 
+/**
+ * Service layer for operating on {@link PromoSku} items.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @ApplicationScoped
-public class PromoSkuSvc extends AbsSvc<LoadReqDto, PromoSku> {
+public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
+
+  @Inject
+  PromoSkuMapper mapper;
 
   @Inject
   PromoSkuRepo advRepo;
 
   public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return advRepo.findByTelcoAndKeyword(
+    return advRepo.findByTelcoAndDenomination(
         Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
   }
 
   @Override
-  public LoadReqDto mapToDto(PromoSku entity) {
-    throw new NotImplementedException();
+  public PromoSkuDto mapToDto(PromoSku entity) {
+    return mapper.mapToDto(entity);
   }
 
   @Override
-  public PromoSku mapToEntity(LoadReqDto dto) {
-    throw new NotImplementedException();
+  public PromoSku mapToEntity(PromoSkuDto dto) {
+    return mapper.mapToEntity(dto);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void patchEntityFromDto(PromoSku entity, PromoSkuDto dto) {
+    mapper.patchEntity(entity, dto);
   }
 }

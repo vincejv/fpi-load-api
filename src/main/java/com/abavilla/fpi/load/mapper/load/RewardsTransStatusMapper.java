@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
+import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
@@ -44,7 +45,7 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public abstract class RewardsTransStatusMapper {
+public abstract class RewardsTransStatusMapper implements IMapper {
 
   @Inject
   DTOneMapper dtOneMapper;

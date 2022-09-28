@@ -16,52 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.dtone;
+package com.abavilla.fpi.load.dto.load;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.math.BigDecimal;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.dtone.dvs.dto.Benefit;
-import com.dtone.dvs.dto.Party;
-import com.dtone.dvs.dto.PartyIdentifier;
-import com.dtone.dvs.dto.Pin;
-import com.dtone.dvs.dto.Prices;
-import com.dtone.dvs.dto.Product;
-import com.dtone.dvs.dto.Promotion;
-import com.dtone.dvs.dto.Rates;
-import com.dtone.dvs.dto.Status;
-import com.dtone.dvs.dto.Values;
+import com.abavilla.fpi.fw.dto.AbsFieldDto;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
+/**
+ * Data transfer object containing the providers offering the promo or package.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @RegisterForReflection
 @NoArgsConstructor
+@AllArgsConstructor
 @BsonDiscriminator
-public class DVSResp extends AbsMongoField {
-  private Long dtOneId;
-  private String externalId;
-  private LocalDateTime creationDate;
-  private LocalDateTime confirmationExpirationDate;
-  private LocalDateTime confirmationDate;
-  private Status status;
-  private String operatorReference;
-  private Pin pin;
-  private Product product;
-  private Prices prices;
-  private Rates rates;
-  private List<Benefit> benefits;
-  private List<Promotion> promotions;
-  private Values requestedValues;
-  private Values adjustedValues;
-  private Party sender;
-  private Party beneficiary;
-  private PartyIdentifier debitPartyIdentifier;
-  private PartyIdentifier creditPartyIdentifier;
-  private String loadProvider;
+public class ProviderOfferDto extends AbsFieldDto {
+  private String providerName;
+  private BigDecimal wholesaleDiscount;
+  private String productCode;
 }

@@ -16,27 +16,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.gl;
+package com.abavilla.fpi.load.util;
 
-import java.time.LocalDateTime;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+/**
+ * Utility methods for the Load API Service.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+public abstract class LoadUtil {
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-@BsonDiscriminator
-public class GLRewardsResp extends AbsMongoField {
-  private Long transactionId;
-  private String status;
-  private String address;
-  private String promo;
-  private LocalDateTime timestamp;
-  private String error;
+  public static final int STANDARD_ID_LENGTH = 8;
+
+  /**
+   * Compress and encodes a string to Bse64 given the provider and provider id.
+   * @param prov Load Provider
+   * @param provId Provider Id
+   *
+   * @return Encoded string
+   */
+  public static String encodeId(String prov, String provId) {
+    if (!NumberUtils.isDigits(provId)) {
+      throw new IllegalArgumentException("Supports only integer provider ids, given: " + provId);
+    }
+    if (StringUtils.isBlank(prov)) {
+      throw new IllegalArgumentException("Must provide a provider, given empty string");
+    }
+
+    return prov.charAt(0) + B32Util.encode(Long.parseLong(provId), false, STANDARD_ID_LENGTH, STANDARD_ID_LENGTH);
+  }
 }

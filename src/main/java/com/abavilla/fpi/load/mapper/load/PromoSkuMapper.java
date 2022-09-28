@@ -16,27 +16,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.entity.gl;
+package com.abavilla.fpi.load.mapper.load;
 
-import java.time.LocalDateTime;
+import com.abavilla.fpi.fw.mapper.IMongoItemMapper;
+import com.abavilla.fpi.load.dto.load.PromoSkuDto;
+import com.abavilla.fpi.load.entity.enums.SkuType;
+import com.abavilla.fpi.load.entity.enums.Telco;
+import com.abavilla.fpi.load.entity.load.PromoSku;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+/**
+ * Mapping definition between conversion of {@link PromoSku} and {@link PromoSkuDto}
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Mapper(componentModel = MappingConstants.ComponentModel.CDI,
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface PromoSkuMapper extends IMongoItemMapper<PromoSkuDto, PromoSku> {
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@RegisterForReflection
-@NoArgsConstructor
-@BsonDiscriminator
-public class GLRewardsResp extends AbsMongoField {
-  private Long transactionId;
-  private String status;
-  private String address;
-  private String promo;
-  private LocalDateTime timestamp;
-  private String error;
+  /**
+   * Mapping for {@link Telco} to {@link String} and vice versa
+   *
+   * @param telcoStr The telco string containing the value
+   * @return Equivalent {@link Telco} enum value
+   */
+  default Telco strToTelco(String telcoStr) {
+    return Telco.fromValue(telcoStr);
+  }
+
+  /**
+   * Mapping for {@link Telco} to {@link String} and vice versa
+   *
+   * @param skuStr The sku string containing the value
+   * @return Equivalent {@link Telco} enum value
+   */
+  default SkuType strToSku(String skuStr) {
+    return SkuType.fromValue(skuStr);
+  }
+
 }

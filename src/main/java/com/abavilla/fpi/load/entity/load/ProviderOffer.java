@@ -26,14 +26,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @RegisterForReflection
 @NoArgsConstructor
 @AllArgsConstructor
+@BsonDiscriminator
 public class ProviderOffer extends AbsMongoField {
   private String providerName;
-  private BigDecimal walletCost;
+  private BigDecimal wholesaleDiscount;
   private String productCode;
 }
