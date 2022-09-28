@@ -201,7 +201,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         }
         req.setContent(
             String.format(
-                "You have purchased %s of load. Thank you for visiting Florenz Pension Inn! " +
+                "%s was loaded to your account. Thank you for visiting Florenz Pension Inn! " +
                 "For reservations message us at https://m.me/florenzpensioninn" +
                 "\n\nRef: %s", rewardsTransStatus.getLoadRequest().getSku(),
                 rewardsTransStatus.getLoadSmsId()));
