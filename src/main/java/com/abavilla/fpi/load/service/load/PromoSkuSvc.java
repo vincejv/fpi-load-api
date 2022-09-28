@@ -60,4 +60,12 @@ public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
   public PromoSku mapToEntity(PromoSkuDto dto) {
     return mapper.mapToEntity(dto);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void patchEntityFromDto(PromoSku entity, PromoSkuDto dto) {
+    mapper.patchEntity(entity, dto);
+  }
 }

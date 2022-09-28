@@ -41,7 +41,6 @@ import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
 import io.smallrye.mutiny.Uni;
-import org.apache.commons.lang3.NotImplementedException;
 
 @ApplicationScoped
 public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
@@ -136,13 +135,4 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     };
   }
 
-  @Override
-  public GLRewardsReqDto mapToDto(RewardsTransStatus entity) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public RewardsTransStatus mapToEntity(GLRewardsReqDto dto) {
-    throw new NotImplementedException();
-  }
 }
