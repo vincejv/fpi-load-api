@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
@@ -38,7 +39,7 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface GLMapper {
+public interface GLMapper extends IMapper {
 
   String GL_TIMESTAMP_FORMAT = "EEE, MMM dd yyyy HH:mm:ss 'GMT'Z (z)";
 

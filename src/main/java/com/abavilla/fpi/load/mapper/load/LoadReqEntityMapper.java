@@ -18,7 +18,7 @@
 
 package com.abavilla.fpi.load.mapper.load;
 
-import com.abavilla.fpi.fw.mapper.IMapper;
+import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.LoadReq;
@@ -28,7 +28,7 @@ import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface LoadReqEntityMapper extends IMapper<LoadReqDto, LoadReq> {
+public interface LoadReqEntityMapper extends IDtoToEntityMapper<LoadReqDto, LoadReq> {
   default Telco strToTelco(String telcoStr) {
     return Telco.fromValue(telcoStr);
   }
