@@ -65,7 +65,7 @@ public interface LoadRespMapper {
       if (StringUtils.isNotBlank(source)) {
         return DateUtil.convertStrDateToFormat(source,
             DateTimeFormatter.ofPattern(GLMapper.GL_TIMESTAMP_FORMAT),
-            DateTimeFormatter.ofPattern(DateUtil.DEFAULT_TIMESTAMP_FORMAT));
+            DateTimeFormatter.ofPattern(DateUtil.DEFAULT_TIMESTAMP_FORMAT_WITH_TIMEZONE));
       }
     return null;
   }
