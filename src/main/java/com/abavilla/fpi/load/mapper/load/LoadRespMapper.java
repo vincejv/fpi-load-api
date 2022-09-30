@@ -18,8 +18,6 @@
 
 package com.abavilla.fpi.load.mapper.load;
 
-import java.time.format.DateTimeFormatter;
-
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
@@ -65,9 +63,9 @@ public interface LoadRespMapper {
   @Named("formatGlTimestamp")
   default String formatGlTimestamp(String source) {
       if (StringUtils.isNotBlank(source)) {
-        return DateUtil.convertStrDateToFormat(source,
-            DateTimeFormatter.ofPattern(GLMapper.GL_TIMESTAMP_FORMAT),
-            DateTimeFormatter.ofPattern(DateUtil.DEFAULT_TIMESTAMP_FORMAT_WITH_TIMEZONE));
+        return DateUtil.modStrDateToFormat(source,
+            GLMapper.GL_TIMESTAMP_FORMAT,
+            DateUtil.DEFAULT_TIMESTAMP_FORMAT_WITH_TIMEZONE);
       }
     return null;
   }

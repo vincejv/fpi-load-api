@@ -20,11 +20,9 @@ package com.abavilla.fpi.load.mapper.load.gl;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import com.abavilla.fpi.fw.mapper.IMapper;
+import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
@@ -58,20 +56,15 @@ public interface GLMapper extends IMapper {
 
   default String glLdtToStr(LocalDateTime ldtTimestamp) {
     if (ldtTimestamp != null) {
-      var formatter = DateTimeFormatter
-          .ofPattern(GL_TIMESTAMP_FORMAT);
-      return ZonedDateTime.of(ldtTimestamp, ZoneId.of("UTC")).format(formatter);
+      return DateUtil.convertLdtToStr(ldtTimestamp, DateUtil.UTC_ZULU_TIMEZONE);
     } else {
       return null;
     }
   }
 
   default LocalDateTime glStrToLdt(String strTimestamp) {
-    var formatter = DateTimeFormatter
-        .ofPattern(GL_TIMESTAMP_FORMAT);
     try {
-      var zdt = ZonedDateTime.parse(strTimestamp, formatter);
-      return zdt.withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
+      return DateUtil.parseStrDateWTzToLdt(strTimestamp, GL_TIMESTAMP_FORMAT, DateUtil.UTC_ZULU_TIMEZONE);
     } catch (DateTimeException | NullPointerException ex) {
       return null;
     }
