@@ -27,6 +27,7 @@ import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
+import org.apache.commons.lang3.math.NumberUtils;
 
 @ApplicationScoped
 public class PromoSkuRepo implements IMongoRepo<PromoSku> {
@@ -64,7 +65,7 @@ public class PromoSkuRepo implements IMongoRepo<PromoSku> {
         Sort.ascending("type.ord", "offers.wholesaleDiscount"),
         telco.getValue(),
         keyword,
-        Integer.parseInt(keyword)
+        NumberUtils.toInt(keyword)
     ).firstResultOptional();
   }
 }
