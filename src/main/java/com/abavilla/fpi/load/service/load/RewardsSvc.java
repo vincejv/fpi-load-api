@@ -18,8 +18,6 @@
 
 package com.abavilla.fpi.load.service.load;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -61,7 +59,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
     // create log to db
     var log = new RewardsTransStatus();
-    log.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
+    log.setDateCreated(DateUtil.now());
 
     return promoSkuSvc.findSku(loadReqDto).chain(promo -> {
       ILoadProviderSvc loadSvc = promo
@@ -118,9 +116,12 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
           loadRespDto, logEntity
       );
       log.setLoadSmsId(LoadUtil.encodeId(log.getLoadProvider(), log.getTransactionId()));
-      log.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+      log.setDateUpdated(DateUtil.now());
       return repo.persistOrUpdate(logEntity)
-          .map(res -> loadRespDto);
+          .map(res -> {
+            loadRespDto.setSmsTransactionId(log.getLoadSmsId());
+            return loadRespDto;
+          });
     };
   }
 

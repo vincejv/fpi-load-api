@@ -18,14 +18,13 @@
 
 package com.abavilla.fpi.load.mapper.load;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import com.abavilla.fpi.fw.mapper.IMapper;
+import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
@@ -68,7 +67,7 @@ public abstract class RewardsTransStatusMapper implements IMapper {
   List<CallBack> addInitialCallbackStatus(ApiStatus apiStatus) {
     CallBack callBack = new CallBack();
     callBack.setStatus(apiStatus);
-    callBack.setDateReceived(LocalDateTime.now(ZoneOffset.UTC));
+    callBack.setDateReceived(DateUtil.now());
     return List.of(callBack);
   }
 

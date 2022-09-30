@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
+import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.dto.sms.MsgReqDto;
@@ -154,7 +155,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
       CallBack callBack = new CallBack();
       callBack.setContent(field);
-      callBack.setDateReceived(LocalDateTime.now(ZoneOffset.UTC));
+      callBack.setDateReceived(DateUtil.now());
       callBack.setStatus(status);
       rewardsTrans.getApiCallback().add(callBack);
       rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
@@ -172,8 +173,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   private Function<Throwable, Uni<?>> saveCallbackAsLeak(AbsMongoItem field, Long transactionId) {
     return ex -> { // leaks/delay
       Log.error("Rewards leak " + transactionId, ex);
-      field.setDateCreated(LocalDateTime.now(ZoneOffset.UTC));
-      field.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+      field.setDateCreated(DateUtil.now());
+      field.setDateUpdated(DateUtil.now());
       return leakRepo.persist(field)
           .onFailure().recoverWithNull();
     };

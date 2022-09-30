@@ -35,6 +35,7 @@ public class LoadRespDto extends AbsDto {
   private String timestamp;
   private String transactionId;
   private String extTransactionId;
+  private String smsTransactionId;
   private transient Object apiResponse;
   private transient Object apiRequest;
 }

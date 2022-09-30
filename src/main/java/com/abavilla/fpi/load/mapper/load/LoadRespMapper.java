@@ -39,6 +39,7 @@ import org.mapstruct.Named;
 public interface LoadRespMapper {
 
   @Mappings(value = {
+      @Mapping(target = "id", ignore = true),
       @Mapping(target = "extTransactionId", source = "body.transactionId"),
       @Mapping(target = "transactionId", ignore = true),
       @Mapping(target = "status", ignore = true), // TODO: temporarily ignore
@@ -50,6 +51,7 @@ public interface LoadRespMapper {
   void mapGLRespToDto(GLRewardsRespDto source,
                       @MappingTarget LoadRespDto dest);
   @Mappings(value = {
+      @Mapping(target = "id", ignore = true),
       @Mapping(target = "extTransactionId", source = "id"),
       // @Mapping(target = "status", source = "status.message"),
       @Mapping(target = "timestamp", source = "creationDate"),
