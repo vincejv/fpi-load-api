@@ -31,7 +31,7 @@ import com.abavilla.fpi.load.config.ApiKeyConfig;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
-import com.abavilla.fpi.load.service.load.gl.RewardsCallbackSvc;
+import com.abavilla.fpi.load.service.load.RewardsCallbackSvc;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.smallrye.mutiny.Uni;

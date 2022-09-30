@@ -74,7 +74,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(reloadAndUpdateDb(loadReqDto, log, promo.get(), loadSvc))
+            .chain(reloadAndUpdateDb(loadReqDto, promo.get(), loadSvc))
             .map(determineReloadResponse());
       } else {
         return buildRejectedResponse();
@@ -82,13 +82,13 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     });
   }
 
-  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, RewardsTransStatus log, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
-    return logEntity -> {
-      loadReqDto.setTransactionId(logEntity.getId().toString());
+  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
+    return savedLog -> {
+      loadReqDto.setTransactionId(savedLog.getId().toString());
       return loadSvcProvider.reload(loadReqDto, promo)
           .onFailure(ApiSvcEx.class)
-          .recoverWithItem(handleReloadException(logEntity))
-          .chain(saveRequestToDb(log, logEntity));
+          .recoverWithItem(handleReloadException(savedLog))
+          .chain(updateRequestInDb(savedLog));
     };
   }
 
@@ -111,16 +111,16 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
             .build();
   }
 
-  private Function<LoadRespDto, Uni<? extends LoadRespDto>> saveRequestToDb(RewardsTransStatus log, RewardsTransStatus logEntity) {
+  private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(RewardsTransStatus logEntity) {
     return loadRespDto -> {
       dtoToEntityMapper.mapLoadRespDtoToEntity(
           loadRespDto, logEntity
       );
-      log.setLoadSmsId(LoadUtil.encodeId(log.getLoadProvider(), log.getTransactionId()));
-      log.setDateUpdated(DateUtil.now());
+      logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
+      logEntity.setDateUpdated(DateUtil.now());
       return repo.persistOrUpdate(logEntity)
           .map(res -> {
-            loadRespDto.setSmsTransactionId(log.getLoadSmsId());
+            loadRespDto.setSmsTransactionId(res.getLoadSmsId());
             return loadRespDto;
           });
     };

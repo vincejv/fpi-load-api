@@ -95,17 +95,6 @@ public class GLRewardsSvc extends AbsLoadProviderSvc {
           rewardsMapper.mapGLRespToDto(resp, loadResp);
           loadResp.setApiResponse(resp);
           return loadResp;
-          //var dtoResp = loadRespMapper.mapToDto(rewardsTransStatus.getResponse());
-          //if (rewardsTransStatus.lastEx() == null) {
-    //        return Response.ok().entity(dtoResp).build();
-    //      } else {
-    //        if (rewardsTransStatus.lastEx() instanceof ApiSvcEx) {
-    //          return Response.status(((ApiSvcEx)rewardsTransStatus.lastEx())
-    //              .getHttpResponseStatus().code()).entity(dtoResp).build();
-    //        } else {
-    //          return Response.serverError().entity(dtoResp).build();
-    //        }
-    //      }
         });
   }
 

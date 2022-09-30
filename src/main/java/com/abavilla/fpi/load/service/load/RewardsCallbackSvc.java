@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load.gl;
+package com.abavilla.fpi.load.service.load;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -203,7 +203,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         req.setContent(
             String.format(
                 "%s was loaded to your account. Thank you for visiting Florenz Pension Inn! " +
-                "For reservations message us at https://m.me/florenzpensioninn" +
+                "For reservations, message us at https://m.me/florenzpensioninn" +
                 "\n\nRef: %s", rewardsTransStatus.getLoadRequest().getSku(),
                 rewardsTransStatus.getLoadSmsId()));
         return smsRepo.sendSms(req);
@@ -211,16 +211,5 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         return Uni.createFrom().voidItem();
       }
     };
-  }
-
-  @Override
-  public GLRewardsCallbackDto mapToDto(RewardsTransStatus entity) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public RewardsTransStatus mapToEntity(GLRewardsCallbackDto dto) {
-    //return rewardsMapper.mapCallbackDtoToEntity(dto);
-    throw new UnsupportedOperationException();
   }
 }

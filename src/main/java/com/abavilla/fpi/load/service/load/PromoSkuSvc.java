@@ -51,11 +51,17 @@ public class PromoSkuSvc extends AbsSvc<PromoSkuDto, PromoSku> {
         Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public PromoSkuDto mapToDto(PromoSku entity) {
     return mapper.mapToDto(entity);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public PromoSku mapToEntity(PromoSkuDto dto) {
     return mapper.mapToEntity(dto);

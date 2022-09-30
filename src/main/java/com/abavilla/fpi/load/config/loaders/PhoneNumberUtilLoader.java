@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.config;
+package com.abavilla.fpi.load.config.loaders;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
