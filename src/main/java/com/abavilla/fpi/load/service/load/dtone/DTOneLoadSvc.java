@@ -84,6 +84,7 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
           loadResp.setStatus(ApiStatus.WAIT);
           loadRespMapper.mapDTRespToDto(dvsResp.getResult(), loadResp);
         } else {
+          loadResp.setStatus(ApiStatus.REJ);
           loadResp.setError(dvsResp.getErrors()
               .stream().map(Error::getMessage)
               .collect(Collectors.joining(FWConst.COMMA_SEP)));

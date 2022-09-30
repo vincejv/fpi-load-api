@@ -116,7 +116,13 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
       dtoToEntityMapper.mapLoadRespDtoToEntity(
           loadRespDto, logEntity
       );
-      logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
+
+      if (loadRespDto.getStatus() == ApiStatus.WAIT || loadRespDto.getStatus() == ApiStatus.CREATED) {
+        // only generate a load sms id if there was no error encountered during load transaction during external
+        // load api call
+        logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
+      }
+
       logEntity.setDateUpdated(DateUtil.now());
       return repo.persistOrUpdate(logEntity)
           .map(res -> {
