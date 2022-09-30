@@ -38,6 +38,7 @@ import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
@@ -56,7 +57,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
   LoadEngine loadEngine;
 
   public Uni<Response> reloadNumber(LoadReqDto loadReqDto) {
-
+    Log.info("Charging :" + loadReqDto);
     // create log to db
     var log = new RewardsTransStatus();
     log.setDateCreated(DateUtil.now());
