@@ -75,7 +75,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   PhoneNumberUtil phoneNumberUtil;
 
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
-    ApiStatus status = ApiStatus.UNKNOWN;
+    ApiStatus status;
 
     if (StringUtils.equals(dto.getBody().getStatus(),
         LoadConst.GL_SUCCESS_STS)) {
@@ -92,7 +92,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   }
 
   public Uni<Void> storeCallback(DVSCallbackDto dto) {
-    ApiStatus status = ApiStatus.UNKNOWN;
+    ApiStatus status;
 
     if (dto.getStatus().getId() == LoadConst.DT_SUCCESS_STS) {
       status = ApiStatus.DEL;
@@ -188,7 +188,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    */
   private Function<RewardsTransStatus, Uni<?>> sendFPIAckMsg(ApiStatus status) {
     return rewardsTransStatus -> {
-      Log.info("Sending ack message for " +
+      Log.info("Received callback for " +
           rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
       if (status == ApiStatus.DEL) {
         var req = new MsgReqDto();

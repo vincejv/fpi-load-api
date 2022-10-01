@@ -57,7 +57,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
   LoadEngine loadEngine;
 
   public Uni<Response> reloadNumber(LoadReqDto loadReqDto) {
-    Log.info("Charging :" + loadReqDto);
+    Log.info("Charging credits to :" + loadReqDto);
     // create log to db
     var log = new RewardsTransStatus();
     log.setDateCreated(DateUtil.now());
@@ -111,15 +111,17 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
             .build();
   }
 
-  private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(RewardsTransStatus logEntity) {
+  private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(
+      RewardsTransStatus logEntity) {
     return loadRespDto -> {
       dtoToEntityMapper.mapLoadRespDtoToEntity(
           loadRespDto, logEntity
       );
 
-      if (loadRespDto.getStatus() == ApiStatus.WAIT || loadRespDto.getStatus() == ApiStatus.CREATED) {
-        // only generate a load sms id if there was no error encountered during load transaction during external
-        // load api call
+      if (loadRespDto.getStatus() == ApiStatus.WAIT ||
+          loadRespDto.getStatus() == ApiStatus.CREATED) {
+        // only generate a load sms id if there was no error encountered
+        // during load transaction during external load api call
         logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
       }
 
@@ -131,6 +133,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
           });
     };
   }
+
 
   private Function<Throwable, LoadRespDto> handleReloadException(RewardsTransStatus logEntity) {
     return apiEx -> {

@@ -48,10 +48,12 @@ public abstract class RewardsTransStatusMapper implements IMapper {
 
   @Inject
   DTOneMapper dtOneMapper;
+
   @Inject
   GLMapper glMapper;
 
   @Mappings(value = {
+      @Mapping(target = "id", ignore = true), // do not copy id from dto
       @Mapping(target = "dateCreated", ignore = true),
       @Mapping(target = "dateUpdated", ignore = true),
       @Mapping(target = "apiCallback", source = "status"),
