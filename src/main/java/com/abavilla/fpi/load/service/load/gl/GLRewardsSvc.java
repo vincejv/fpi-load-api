@@ -35,6 +35,7 @@ import com.abavilla.fpi.load.util.LoadConst;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -103,6 +104,9 @@ public class GLRewardsSvc extends AbsLoadProviderSvc {
   @Override
   protected void parsePhoneNumber(LoadReqDto loadReqDto) {
     var number = phoneNumberUtil.parse(loadReqDto.getMobile(), LoadConst.PH_REGION_CODE);
-    loadReqDto.setMobile(phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.NATIONAL));
+    String sanitizedNumber = phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+    sanitizedNumber = StringUtils.deleteWhitespace(sanitizedNumber); // remove all white spaces
+    sanitizedNumber = StringUtils.substring(sanitizedNumber, 1); // remove first digit 0
+    loadReqDto.setMobile(sanitizedNumber);
   }
 }
