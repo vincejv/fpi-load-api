@@ -80,11 +80,11 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     if (StringUtils.equals(dto.getBody().getStatus(),
         LoadConst.GL_SUCCESS_STS)) {
       status = ApiStatus.DEL;
-    } else if (StringUtils.equals(dto.getBody().getSku(),
+    } else if (StringUtils.equals(dto.getBody().getStatus(),
         LoadConst.GL_FAILED_STS)) {
       status = ApiStatus.REJ;
     } else {
-      ApiStatus.fromValue(dto.getBody().getStatus());
+      status = ApiStatus.fromValue(dto.getBody().getStatus());
     }
 
     return storeCallback(glMapper.mapGLCallbackDtoToEntity(dto),
@@ -103,7 +103,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       // operator and mobile number mismatch
       status = ApiStatus.REJ;
     } else {
-      ApiStatus.fromValue(dto.getStatus().getMessage());
+      status = ApiStatus.fromValue(dto.getStatus().getMessage());
     }
 
     return storeCallback(dtOneMapper.mapDTOneRespToEntity(dto),
