@@ -108,6 +108,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
 
         return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
           resp.setResp(svcResponse);
+          resp.setStatus(svcResponse.getStatus().toString());
           return Uni.createFrom().item(resp);
         });
       } else {
