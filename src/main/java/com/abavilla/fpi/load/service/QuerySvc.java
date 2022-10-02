@@ -31,6 +31,7 @@ import com.abavilla.fpi.load.dto.QueryDto;
 import com.abavilla.fpi.load.dto.QueryRespDto;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.Query;
+import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.mapper.QueryMapper;
 import com.abavilla.fpi.load.repo.QueryRepo;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
@@ -82,6 +83,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    */
   public Uni<RespDto<AbsDto>> processQuery(QueryDto query) {
     RespDto<AbsDto> resp = buildResponse();
+    var tokens = StringUtils.split(query.getQuery(), null, 3);
 
     return repo.findByQuery(query.getQuery()).chain(found->{
       if (found.isPresent()) {
@@ -98,13 +100,12 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
       return repo.persist(log);
     })
     .chain(savedItem -> {
-      var tokens = StringUtils.split(query.getQuery(), null, 3);
       if (tokens.length >= 2) {
         var sku = tokens[0];
         var msisdn = tokens[1];
         var network = tokens.length == 2 ? StringUtils.EMPTY : tokens[3];
-
         var loadReq = buildLoadRequest(msisdn, sku, network);
+
         return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
           resp.setResp((AbsDto) svcResponse.getEntity());
           return Uni.createFrom().item(resp);
@@ -148,10 +149,12 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
 
     if (phoneNumberUtil.isValidNumber(number)) {
       loadReq.setMobile(mobile);
-      if (StringUtils.isBlank(network)) {
+      // check if network given is blank or of unknown value
+      if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
         carrier = carrierMapper.getNameForNumber(number, LoadConst.DEFAULT_LOCALE);
       }
     }
+
     loadReq.setAccountNo(mobile);
     loadReq.setTelco(carrier);
 

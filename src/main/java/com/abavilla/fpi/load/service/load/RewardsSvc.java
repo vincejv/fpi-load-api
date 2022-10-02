@@ -66,7 +66,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
     Uni<Optional<PromoSku>> skuLookup;
     if (StringUtils.isBlank(loadReqDto.getTelco())) {
-      // if no telco is provided in request, use the default telco
+      // if no telco is provided in request, use the promo found first using keywords
       skuLookup = promoSkuSvc.findSkuByDefaultOperator(loadReqDto);
     } else {
       skuLookup = promoSkuSvc.findSku(loadReqDto);
