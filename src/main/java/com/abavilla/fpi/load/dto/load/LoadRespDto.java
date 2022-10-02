@@ -32,7 +32,6 @@ import lombok.NoArgsConstructor;
 public class LoadRespDto extends AbsDto {
   private ApiStatus status;
   private String error;
-  private String timestamp;
   private String transactionId;
   private String extTransactionId;
   private String smsTransactionId;
