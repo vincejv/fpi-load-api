@@ -45,7 +45,7 @@ quarkus:
   native:
     resources:
       includes:
-        com/google/i18n/phonenumbers/data/**,com/google/i18n/phonenumbers/carrier/**
+        com/google/i18n/phonenumbers/data/**,com/google/i18n/phonenumbers/carrier/data/**
 
 fpi:
   app-to-app:
