@@ -76,17 +76,21 @@ public enum ApiStatus implements IBaseEnum {
    */
   @JsonCreator
   public static ApiStatus fromValue(String value) {
-    return ENUM_MAP.values().stream().filter(enumItem ->
-            StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
-        .orElseGet(() -> {
-          var unknown = UNKNOWN;
-          String enumValue = value;
-          if (StringUtils.startsWithIgnoreCase(enumValue, UNKNOWN_PREFIX)) {
-            enumValue = StringUtils.removeStart(enumValue, UNKNOWN_PREFIX);
-          }
-          unknown.value = UNKNOWN_PREFIX + enumValue;
-          return unknown;
-        });
+    if (StringUtils.isBlank(value)) {
+      return null;
+    } else {
+      return ENUM_MAP.values().stream().filter(enumItem ->
+              StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
+          .orElseGet(() -> {
+            var unknown = UNKNOWN;
+            String enumValue = value;
+            if (StringUtils.startsWithIgnoreCase(enumValue, UNKNOWN_PREFIX)) {
+              enumValue = StringUtils.removeStart(enumValue, UNKNOWN_PREFIX);
+            }
+            unknown.value = UNKNOWN_PREFIX + enumValue;
+            return unknown;
+          });
+    }
   }
 
   /**
