@@ -107,7 +107,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
         var loadReq = buildLoadRequest(msisdn, sku, network);
 
         return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
-          resp.setResp((AbsDto) svcResponse.getEntity());
+          resp.setResp(svcResponse);
           return Uni.createFrom().item(resp);
         });
       } else {

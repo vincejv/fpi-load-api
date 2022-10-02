@@ -23,9 +23,8 @@ import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
+import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
@@ -58,7 +57,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
   @Inject
   LoadEngine loadEngine;
 
-  public Uni<Response> reloadNumber(LoadReqDto loadReqDto) {
+  public Uni<LoadRespDto> reloadNumber(LoadReqDto loadReqDto) {
     Log.info("Charging credits to :" + loadReqDto);
     // create log to db
     var log = new RewardsTransStatus();
@@ -84,8 +83,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(reloadAndUpdateDb(loadReqDto, promo.get(), loadSvc))
-            .map(determineReloadResponse());
+            .chain(reloadAndUpdateDb(loadReqDto, promo.get(), loadSvc));
       } else {
         return buildRejectedResponse();
       }
@@ -94,32 +92,28 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
   private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
     return savedLog -> {
-      loadReqDto.setTransactionId(savedLog.getId().toString());
+      loadReqDto.setTransactionId(savedLog.getId().toString()); // map mongo id to load request
       return loadSvcProvider.reload(loadReqDto, promo)
-          .onFailure(ApiSvcEx.class)
-          .recoverWithItem(handleReloadException(savedLog))
           .chain(updateRequestInDb(savedLog));
     };
   }
 
-  private Uni<Response> buildRejectedResponse() {
+  private Uni<LoadRespDto> buildRejectedResponse() {
     var resp = new LoadRespDto();
     resp.setStatus(ApiStatus.REJ);
     resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
-    resp.setTimestamp(DateUtil.nowAsStr());
-    return Uni.createFrom().item(Response
-        .status(Response.Status.NOT_ACCEPTABLE)
-        .entity(resp)
-        .build());
+    var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
+    ex.setEntity(resp);
+    return Uni.createFrom().failure(ex);
   }
 
-  private Function<LoadRespDto, Response> determineReloadResponse() {
-    return loadRespDto ->
-        Response.status(loadRespDto.getError() == null ?
-                Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
-            .entity(loadRespDto)
-            .build();
-  }
+//  private Function<LoadRespDto, Response> determineReloadResponse() {
+//    return loadRespDto ->
+//        Response.status(loadRespDto.getError() == null ?
+//                Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
+//            .entity(loadRespDto)
+//            .build();
+//  }
 
   private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(
       RewardsTransStatus logEntity) {
@@ -144,16 +138,15 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     };
   }
 
-
-  private Function<Throwable, LoadRespDto> handleReloadException(RewardsTransStatus logEntity) {
-    return apiEx -> {
-      var errorResp = new LoadRespDto();
-      errorResp.setError(apiEx.getMessage());
-      errorResp.setTimestamp(DateUtil.nowAsStr());
-      errorResp.setTransactionId(logEntity.getTransactionId());
-      errorResp.setStatus(ApiStatus.REJ);
-      return errorResp;
-    };
-  }
+//  private Function<Throwable, LoadRespDto> handleReloadException(RewardsTransStatus logEntity) {
+//    return apiEx -> {
+//      var errorResp = new LoadRespDto();
+//      errorResp.setError(apiEx.getMessage());
+//      errorResp.setTimestamp(DateUtil.nowAsStr());
+//      errorResp.setTransactionId(logEntity.getTransactionId());
+//      errorResp.setStatus(ApiStatus.REJ);
+//      return errorResp;
+//    };
+//  }
 
 }

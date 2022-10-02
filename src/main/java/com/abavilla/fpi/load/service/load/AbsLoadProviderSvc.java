@@ -20,8 +20,9 @@ package com.abavilla.fpi.load.service.load;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
+import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.entity.load.PromoSku;
@@ -31,7 +32,6 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 
 public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
   protected long priority;
@@ -67,8 +67,10 @@ public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
       if (isValidPhoneNo(req)) {
         parsePhoneNumber(req);
       } else {
-        return Uni.createFrom().failure(
-            new ApiSvcEx("Invalid phone number", HttpStatus.SC_NOT_ACCEPTABLE));
+        var ex = new FPISvcEx("Invalid phone number",
+            Response.Status.BAD_REQUEST.getStatusCode());
+        ex.setEntity(req);
+        return Uni.createFrom().failure(ex);
       }
     }
 

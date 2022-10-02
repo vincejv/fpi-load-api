@@ -20,14 +20,19 @@ package com.abavilla.fpi.load.controller.load;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
+import com.abavilla.fpi.fw.dto.impl.RespDto;
+import com.abavilla.fpi.fw.exceptions.FPISvcEx;
+import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
+import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
 import io.smallrye.mutiny.Uni;
+import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
 /**
  * Endpoints for doing reload transactions.
@@ -39,7 +44,22 @@ public class LoadResource
     extends AbsBaseResource<GLRewardsReqDto, RewardsTransStatus, RewardsSvc> {
 
   @POST
-  public Uni<Response> loadUp(LoadReqDto loadReq) {
-    return service.reloadNumber(loadReq);
+  public Uni<RespDto<LoadRespDto>> loadUp(LoadReqDto loadReq) {
+    return service.reloadNumber(loadReq).map(loadRespDto -> {
+      var resp = new RespDto<LoadRespDto>();
+      resp.setResp(loadRespDto);
+      resp.setTimestamp(DateUtil.nowAsStr());
+      resp.setStatus(loadRespDto.getStatus().toString());
+      return resp;
+    });
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @ServerExceptionMapper
+  protected RestResponse<RespDto<Object>> mapException(FPISvcEx x) {
+    return super.mapException(x);
   }
 }
