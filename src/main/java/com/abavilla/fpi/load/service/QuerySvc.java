@@ -148,7 +148,8 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
     if (phoneNumberUtil.isValidNumber(number)) {
       loadReq.setMobile(mobile);
       // check if network given is blank or of unknown value
-      if (StringUtils.isBlank(network)) {
+      if (StringUtils.isBlank(network) ||
+          Telco.fromValue(network) == Telco.UNKNOWN) {
         carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
       }
     }
