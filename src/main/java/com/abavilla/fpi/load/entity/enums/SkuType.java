@@ -77,7 +77,11 @@ public enum SkuType implements IBaseEnum {
     return ENUM_MAP.values().stream().filter(enumItem -> StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
         .orElseGet(() -> {
           var unknown = UNKNOWN;
-          unknown.value = StringUtils.removeStart(value, UNKNOWN_PREFIX);
+          String enumValue = value;
+          if (StringUtils.startsWithIgnoreCase(enumValue, UNKNOWN_PREFIX)) {
+            enumValue = StringUtils.removeStart(enumValue, UNKNOWN_PREFIX);
+          }
+          unknown.value = UNKNOWN_PREFIX + enumValue;
           return unknown;
         });
   }
@@ -92,7 +96,7 @@ public enum SkuType implements IBaseEnum {
     return ENUM_MAP.values().stream().filter(enumItem -> id == enumItem.getId()).findAny()
         .orElseGet(() -> {
           var unknown = UNKNOWN;
-          unknown.value = String.valueOf(id);
+          unknown.value = UNKNOWN_PREFIX + id;
           return unknown;
         });
   }
