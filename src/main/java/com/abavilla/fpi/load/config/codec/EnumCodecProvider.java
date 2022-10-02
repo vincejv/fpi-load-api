@@ -39,6 +39,7 @@ public class EnumCodecProvider implements IEnumCodecProvider {
    * @param <T> Type of {@link Codec}
    */
   @Override
+  @SuppressWarnings("unchecked")
   public <T> Codec<T> getCodecProvider(Class<T> clazz) {
     if (clazz == Telco.class) {
       return (Codec<T>) new TelcoCodec();

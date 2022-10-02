@@ -18,7 +18,7 @@
 
 package com.abavilla.fpi.load.config.codec;
 
-import com.abavilla.fpi.fw.config.codec.AbsCodec;
+import com.abavilla.fpi.fw.config.codec.AbsEnumCodec;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 
 /**
@@ -26,7 +26,7 @@ import com.abavilla.fpi.load.entity.enums.SkuType;
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-public class SkuTypeCodec extends AbsCodec<SkuType> {
+public class SkuTypeCodec extends AbsEnumCodec<SkuType> {
 
   /**
    * {@inheritDoc}

@@ -18,7 +18,7 @@
 
 package com.abavilla.fpi.load.config.codec;
 
-import com.abavilla.fpi.fw.config.codec.AbsCodec;
+import com.abavilla.fpi.fw.config.codec.AbsEnumCodec;
 import com.abavilla.fpi.load.entity.enums.Telco;
 
 /**
@@ -26,7 +26,7 @@ import com.abavilla.fpi.load.entity.enums.Telco;
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
-public class TelcoCodec extends AbsCodec<Telco> {
+public class TelcoCodec extends AbsEnumCodec<Telco> {
 
   /**
    * {@inheritDoc}

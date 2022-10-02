@@ -22,63 +22,88 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.abavilla.fpi.fw.entity.enums.IBaseEnum;
+import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Enum for storing which type of Promo or SKU for {@link PromoSku} entity
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
 @Getter
 @AllArgsConstructor
 @RegisterForReflection
-public enum SkuType {
+public enum SkuType implements IBaseEnum {
+
   BUNDLE(2, "Bundle"),
   RANGED(5, "Ranged"),
   CREDITS(10, "Credits"),
   UNKNOWN(-1, "");
-  private static final Map<String, SkuType> ENUM_MAP = new HashMap<>();
+
+  /**
+   * Ordinal id to enum mapping
+   */
+  private static final Map<Integer, SkuType> ENUM_MAP = new HashMap<>();
 
   static {
     for(SkuType w : EnumSet.allOf(SkuType.class))
-      ENUM_MAP.put(w.getValue(), w);
+      ENUM_MAP.put(w.getId(), w);
   }
 
+  /**
+   * The enum ordinal id
+   */
   private final int id;
-  @Accessors(chain = true)
-  @Setter
+
+  /**
+   * The enum value
+   */
   private String value;
 
+  /**
+   * Creates an enum based from given string value
+   *
+   * @param value the string value
+   * @return the created enum
+   */
   @JsonCreator
   public static SkuType fromValue(String value) {
-    return ENUM_MAP.getOrDefault(value, SkuType.UNKNOWN.setValue(
-        String.format("Unknown (%s)", value)));
-  }
-
-  public static SkuType fromId(int id) {
-    return ENUM_MAP.values().stream().filter(telco -> telco.getId() == id).findAny()
-        .orElse(getDefaultValue().setValue(String.format("Unknown (%d)", id)));
+    return ENUM_MAP.values().stream().filter(enumItem -> StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
+        .orElseGet(() -> {
+          var unknown = UNKNOWN;
+          unknown.value = StringUtils.removeStart(value, UNKNOWN_PREFIX);
+          return unknown;
+        });
   }
 
   /**
-   * Used by the Mongo codec
+   * Creates an enum based from given an ordinal id
    *
-   * @return
+   * @param id the ordinal id
+   * @return the created enum
    */
-  public static SkuType getDefaultValue() {
-    return UNKNOWN;
+  public static SkuType fromId(int id) {
+    return ENUM_MAP.values().stream().filter(enumItem -> id == enumItem.getId()).findAny()
+        .orElseGet(() -> {
+          var unknown = UNKNOWN;
+          unknown.value = String.valueOf(id);
+          return unknown;
+        });
   }
 
   /**
-   * Required to properly convert Java Enum name to value.
-   * Value is used by front-end and usually uses <br>
-   * 1. lowercase <br>
-   * 2. dashes instead of underscores <br> <br>
+   * {@inheritDoc}
    */
   @Override
   @JsonValue
   public String toString() {
-    return this.value;
+    return value;
   }
+
 }
