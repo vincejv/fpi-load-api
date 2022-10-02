@@ -103,7 +103,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
       if (tokens.length >= 2) {
         var sku = tokens[0];
         var msisdn = tokens[1];
-        var network = tokens.length == 2 ? StringUtils.EMPTY : tokens[3];
+        var network = tokens.length == 2 ? StringUtils.EMPTY : tokens[2];
         var loadReq = buildLoadRequest(msisdn, sku, network);
 
         return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
