@@ -18,6 +18,7 @@
 
 package com.abavilla.fpi.load.service.load;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -40,6 +41,7 @@ import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import org.apache.commons.lang3.StringUtils;
 
 @ApplicationScoped
 public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
@@ -62,7 +64,15 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     var log = new RewardsTransStatus();
     log.setDateCreated(DateUtil.now());
 
-    return promoSkuSvc.findSku(loadReqDto).chain(promo -> {
+    Uni<Optional<PromoSku>> skuLookup;
+    if (StringUtils.isBlank(loadReqDto.getTelco())) {
+      // if no telco is provided in request, use the default telco
+      skuLookup = promoSkuSvc.findSkuByDefaultOperator(loadReqDto);
+    } else {
+      skuLookup = promoSkuSvc.findSku(loadReqDto);
+    }
+
+    return skuLookup.chain(promo -> {
       ILoadProviderSvc loadSvc = promo
           .map(promoSku -> loadEngine.getProvider(promoSku))
           .orElse(null);

@@ -16,69 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.repo;
 
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
-import com.abavilla.fpi.fw.service.AbsRepoSvc;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.PromoSkuDto;
-import com.abavilla.fpi.load.entity.enums.Telco;
-import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
-import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
+import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.load.entity.Query;
 import io.smallrye.mutiny.Uni;
 
 /**
- * Service layer for operating on {@link PromoSku} items.
+ * Repository later for doing CRUD Database operations for {@link Query}
  *
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @ApplicationScoped
-public class PromoSkuSvc extends AbsRepoSvc<PromoSkuDto, PromoSku, PromoSkuRepo> {
-
-  @Inject
-  PromoSkuMapper mapper;
-
-  public Uni<Optional<PromoSku>> findSku(LoadReqDto loadReq) {
-    return repo.findByTelcoAndDenominationOrKeyword(
-        Telco.fromValue(loadReq.getTelco()), loadReq.getSku());
-  }
+public class QueryRepo implements IMongoRepo<Query> {
 
   /**
-   * Finds the {@link PromoSku} given the load request, it returns the first result found by keyword.
+   * Finds {@link Query} by query string.
    *
-   * @param loadReq {@link LoadReqDto} object containing the SKU information
-   * @return {@link PromoSku} promo found
+   * @return {@link Query} object containing the load query
    */
-  public Uni<Optional<PromoSku>> findSkuByDefaultOperator(LoadReqDto loadReq) {
-    return repo.findByKeyword(loadReq.getSku());
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public PromoSkuDto mapToDto(PromoSku entity) {
-    return mapper.mapToDto(entity);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public PromoSku mapToEntity(PromoSkuDto dto) {
-    return mapper.mapToEntity(dto);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void patchEntityFromDto(PromoSku entity, PromoSkuDto dto) {
-    mapper.patchEntity(entity, dto);
+  public Uni<Optional<Query>> findByQuery(String query) {
+    return find("{ 'query' : ?1 }", query).firstResultOptional();
   }
 }

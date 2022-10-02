@@ -16,49 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.util;
+package com.abavilla.fpi.load.dto;
 
-import java.util.Locale;
+import com.abavilla.fpi.fw.dto.AbsDto;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-public abstract class LoadConst {
-
-  /**
-   * Default {@link Locale} to use across FPI Applications
-   */
-  public static final Locale DEFAULT_LOCALE = Locale.US;
-
-  public static final String PH_CURRENCY = "PHP";
-
-  public static final String PH_REGION_CODE = "PH";
-
-  public static final String PROV_GL = "GlobeLabs";
-
-  public static final String PROV_DTONE = "DTOne";
-
-  public static final String NO_LOAD_PROVIDER_AVAILABLE = "No Load provider available";
+/**
+ * Data transfer object used for Load Queries
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@RegisterForReflection
+public class QueryDto extends AbsDto {
 
   /**
-   * Successful status code for globelabs provider
+   * Query string
    */
-  public static final String GL_SUCCESS_STS = "SUCCESS";
-
-  /**
-   * Successful status code for dtone provider
-   */
-  public static final long DT_SUCCESS_STS = 70000L;
-
-  /**
-   * Failed status code for globelabs provider
-   */
-  public static final String GL_FAILED_STS = "FAILED";
-
-  /**
-   * Failed status code for dtone provider when reloading a postpaid number with prepaid credits
-   */
-  public static final long DT_INVPREPAID_STS = 90000L;
-
-  /**
-   * Failed status code for dtone provider when number is not in operator
-   */
-  public static final long DT_OPMISMATCH_STS = 90200L;
+  private String query;
 }

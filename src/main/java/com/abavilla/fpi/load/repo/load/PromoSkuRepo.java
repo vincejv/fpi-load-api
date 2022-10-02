@@ -32,7 +32,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 @ApplicationScoped
 public class PromoSkuRepo implements IMongoRepo<PromoSku> {
 
-  public Uni<Optional<PromoSku>> findByTelcoAndDenomination(Telco telco, String keyword) {
+  public Uni<Optional<PromoSku>> findByTelcoAndDenominationOrKeyword(Telco telco, String keyword) {
     return find("""
             {
               $and: [
@@ -68,4 +68,40 @@ public class PromoSkuRepo implements IMongoRepo<PromoSku> {
         NumberUtils.toInt(keyword)
     ).firstResultOptional();
   }
+
+  public Uni<Optional<PromoSku>> findByKeyword(String keyword) {
+    return find("""
+            {
+              $and: [
+                {
+                  $or: [
+                    {
+                       $and: [
+                         {'keywords': ?1},
+                         {
+                           $or: [
+                             {'type.value': 'Bundle' },
+                             {'type.value': 'Credits' }
+                           ]
+                         }
+                       ]
+                    },
+                    {
+                       $and: [
+                         { 'type.value': 'Ranged' },
+                         { 'denomination.min': { $lte: ?2 } },
+                         { 'denomination.max': { $gte: ?2 } }
+                       ]
+                    }
+                  ]
+                }
+              ]
+            }
+            """,
+        Sort.ascending("type.ord", "offers.wholesaleDiscount"),
+        keyword,
+        NumberUtils.toInt(keyword)
+    ).firstResultOptional();
+  }
+
 }

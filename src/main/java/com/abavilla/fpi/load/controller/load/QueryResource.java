@@ -16,49 +16,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.util;
+package com.abavilla.fpi.load.controller.load;
 
-import java.util.Locale;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
-public abstract class LoadConst {
+import com.abavilla.fpi.fw.controller.AbsBaseResource;
+import com.abavilla.fpi.fw.dto.AbsDto;
+import com.abavilla.fpi.fw.dto.impl.RespDto;
+import com.abavilla.fpi.fw.exceptions.FPISvcEx;
+import com.abavilla.fpi.load.dto.QueryDto;
+import com.abavilla.fpi.load.entity.Query;
+import com.abavilla.fpi.load.service.QuerySvc;
+import io.smallrye.mutiny.Uni;
+import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
-  /**
-   * Default {@link Locale} to use across FPI Applications
-   */
-  public static final Locale DEFAULT_LOCALE = Locale.US;
-
-  public static final String PH_CURRENCY = "PHP";
-
-  public static final String PH_REGION_CODE = "PH";
-
-  public static final String PROV_GL = "GlobeLabs";
-
-  public static final String PROV_DTONE = "DTOne";
-
-  public static final String NO_LOAD_PROVIDER_AVAILABLE = "No Load provider available";
-
-  /**
-   * Successful status code for globelabs provider
-   */
-  public static final String GL_SUCCESS_STS = "SUCCESS";
-
-  /**
-   * Successful status code for dtone provider
-   */
-  public static final long DT_SUCCESS_STS = 70000L;
+/**
+ * Resource is used to submit query strings for load requests.
+ * Endpoints for doing operations with {@link Query} items.
+ *
+ * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
+ */
+@Path("/fpi/load/query")
+public class QueryResource extends AbsBaseResource<QueryDto, Query, QuerySvc> {
 
   /**
-   * Failed status code for globelabs provider
+   * Endpoint to process the query and send to load api
+   *
+   * @param queryDto {@link QueryDto} containing the load query
+   * @return {@link RespDto} response
    */
-  public static final String GL_FAILED_STS = "FAILED";
+  @POST
+  public Uni<RespDto<AbsDto>> loadQuery(QueryDto queryDto) {
+    return service.processQuery(queryDto);
+  }
 
   /**
-   * Failed status code for dtone provider when reloading a postpaid number with prepaid credits
+   * {@inheritDoc}
    */
-  public static final long DT_INVPREPAID_STS = 90000L;
-
-  /**
-   * Failed status code for dtone provider when number is not in operator
-   */
-  public static final long DT_OPMISMATCH_STS = 90200L;
+  @ServerExceptionMapper
+  @Override
+  public RestResponse<RespDto<Object>> mapException(FPISvcEx x) {
+    return super.mapException(x);
+  }
 }

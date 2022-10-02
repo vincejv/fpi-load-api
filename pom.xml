@@ -22,12 +22,12 @@
   <parent>
     <groupId>com.abavilla</groupId>
     <artifactId>fpi-framework-pom</artifactId>
-    <version>1.0.68-RC</version>
+    <version>1.0.74-RC</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fpi-load-api</artifactId>
-  <version>1.0.23-RC</version>
+  <version>1.0.24-RC</version>
 
   <properties>
 
@@ -58,7 +58,14 @@
     <dependency>
       <groupId>com.googlecode.libphonenumber</groupId>
       <artifactId>libphonenumber</artifactId>
-      <version>8.12.55</version>
+      <version>8.12.56</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>carrier</artifactId>
+      <version>1.182</version>
     </dependency>
 
 

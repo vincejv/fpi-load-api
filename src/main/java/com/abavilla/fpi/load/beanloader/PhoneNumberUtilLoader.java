@@ -16,11 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.config.loaders;
+package com.abavilla.fpi.load.beanloader;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
 /**
@@ -39,5 +40,10 @@ public class PhoneNumberUtilLoader {
   @Produces
   PhoneNumberUtil phoneNumberUtil() {
     return PhoneNumberUtil.getInstance();
+  }
+
+  @Produces
+  PhoneNumberToCarrierMapper phoneNumberToCarrierMapper() {
+    return PhoneNumberToCarrierMapper.getInstance();
   }
 }
