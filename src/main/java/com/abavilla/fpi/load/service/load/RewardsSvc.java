@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
@@ -102,7 +103,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     var resp = new LoadRespDto();
     resp.setStatus(ApiStatus.REJ);
     resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
-    var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
+    var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE, Response.Status.BAD_REQUEST.getStatusCode());
     ex.setEntity(resp);
     return Uni.createFrom().failure(ex);
   }
