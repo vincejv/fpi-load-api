@@ -38,9 +38,9 @@ steps:
       - '--platform=managed'
       - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
       - >-
-        --update-env-vars=OIDC_CLIENT_ID=$_OIDC_CLIENT_ID,OIDC_AUTH_URL=$_OIDC_AUTH_URL,GL_REWARDS_API=$_GL_REWARDS_API,GL_APP_ID=$_GL_APP_ID,DTONE_BASEURL=$_DTONE_BASEURL,DTONE_APIKEY=$_DTONE_APIKEY,DTONE_CALLBACK_URL=$_DTONE_CALLBACK_URL,LOGIN_BASE_URI=$_LOGIN_BASE_URI,SMS_BASE_API=$_SMS_BASE_API,FPI_APP_TO_APP_USERN=$_FPI_APP_TO_APP_USERN
+        --set-env-vars=OIDC_CLIENT_ID=$_OIDC_CLIENT_ID,OIDC_AUTH_URL=$_OIDC_AUTH_URL,GL_REWARDS_API=$_GL_REWARDS_API,GL_APP_ID=$_GL_APP_ID,DTONE_BASEURL=$_DTONE_BASEURL,DTONE_APIKEY=$_DTONE_APIKEY,DTONE_CALLBACK_URL=$_DTONE_CALLBACK_URL,LOGIN_BASE_URI=$_LOGIN_BASE_URI,SMS_BASE_API=$_SMS_BASE_API,FPI_APP_TO_APP_USERN=$_FPI_APP_TO_APP_USERN
       - >-
-        --update-secrets=MONGO_CONN_STRING=vbl_mongo_connection_string:latest,OIDC_SECRET=oidc_secret_keycloak:latest,GL_APP_SEC=gl_app_secret:latest,FPI_MO_WEBHOOK_KEY=fpi_mo_incoming_webook_key:latest,FPI_DLR_WEBHOOK_KEY=fpi_dlr_incoming_webhook_key:latest,FPI_GEN_WEBHOOK_KEY=fpi_gen_incoming_webhook_key:latest,DTONE_APISECRET=dtone_api_secret:latest,GL_APP_AMAX_TOKEN=gl_app_amax_token:latest,FPI_APP_TO_APP_PASSW=fpi_load_api_creds_secret_key:latest
+        --set-secrets=MONGO_CONN_STRING=vbl_mongo_connection_string:latest,OIDC_SECRET=oidc_secret_keycloak:latest,GL_APP_SEC=gl_app_secret:latest,FPI_MO_WEBHOOK_KEY=fpi_mo_incoming_webook_key:latest,FPI_DLR_WEBHOOK_KEY=fpi_dlr_incoming_webhook_key:latest,FPI_GEN_WEBHOOK_KEY=fpi_gen_incoming_webhook_key:latest,DTONE_APISECRET=dtone_api_secret:latest,GL_APP_AMAX_TOKEN=gl_app_amax_token:latest,FPI_APP_TO_APP_PASSW=fpi_load_api_creds_secret_key:latest
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
       - '--cpu=1000m'
