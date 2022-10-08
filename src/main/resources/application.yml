@@ -33,12 +33,9 @@ quarkus:
       enable: true
       paths:
         '1':
-          path: /fpi/login/*
-          enforcement-mode: DISABLED
-        '2':
           path: /fpi/load/callback/*
           enforcement-mode: DISABLED
-        '3':
+        '2':
           # debug
           path: /fpi/load/*
           enforcement-mode: DISABLED

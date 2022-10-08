@@ -44,6 +44,7 @@ public class RewardsTransStatus extends AbsMongoItem {
   private AbsMongoField apiRequest;
   private AbsMongoField apiResponse;
   private List<CallBack> apiCallback;
+  private String fpiUser;
 
   public List<CallBack> getApiCallback() {
     if (apiCallback == null) {

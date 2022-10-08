@@ -40,6 +40,7 @@ import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
 import io.quarkus.logging.Log;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,10 +59,14 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
   @Inject
   LoadEngine loadEngine;
 
+  @Inject
+  SecurityIdentity identity;
+
   public Uni<LoadRespDto> reloadNumber(LoadReqDto loadReqDto) {
     Log.info("Charging credits to :" + loadReqDto);
     // create log to db
     var log = new RewardsTransStatus();
+    log.setFpiUser(identity.getPrincipal().getName());
     log.setDateCreated(DateUtil.now());
 
     Uni<Optional<PromoSku>> skuLookup;
