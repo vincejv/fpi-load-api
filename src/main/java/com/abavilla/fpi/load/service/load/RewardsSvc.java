@@ -64,9 +64,9 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
   public Uni<LoadRespDto> reloadNumber(LoadReqDto loadReqDto) {
     Log.info("Charging credits to :" + loadReqDto);
+    Log.info("User: " + identity.getRoles());
     // create log to db
     var log = new RewardsTransStatus();
-    log.setFpiUser(identity.getPrincipal().getName());
     log.setDateCreated(DateUtil.now());
 
     Uni<Optional<PromoSku>> skuLookup;
