@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~ FPI Application - Abavilla                                                ~
+  ~ Copyright (C) 2022  Vince Jerald Villamora                                ~
+  ~                                                                           ~
+  ~ This program is free software: you can redistribute it and/or modify      ~
+  ~ it under the terms of the GNU General Public License as published by      ~
+  ~ the Free Software Foundation, either version 3 of the License, or         ~
+  ~ (at your option) any later version.                                       ~
+  ~                                                                           ~
+  ~ This program is distributed in the hope that it will be useful,           ~
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of            ~
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             ~
+  ~ GNU General Public License for more details.                              ~
+  ~                                                                           ~
+  ~ You should have received a copy of the GNU General Public License         ~
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.    ~
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>fpi-load-api-core</artifactId>
+  <name>fpi-load-api-core</name>
+
+  <parent>
+    <groupId>com.abavilla</groupId>
+    <artifactId>fpi-load-api</artifactId>
+    <version>1.0.36-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <properties>
+
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.dtone.dvs</groupId>
+      <artifactId>dvs-apiclient</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>libphonenumber</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>carrier</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-login-api-lib</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-load-api-lib</artifactId>
+    </dependency>
+
+  </dependencies>
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+      
+    </plugins>
+  </build>
+</project>

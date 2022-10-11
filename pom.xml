@@ -18,16 +18,29 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <scm>
+    <url>https://github.com/vincejv/fpi-load-api</url>
+    <connection>scm:git:git://github.com/vincejv/fpi-load-api.git</connection>
+    <developerConnection>scm:git:git@github.com:vincejv/fpi-load-api.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <parent>
     <groupId>com.abavilla</groupId>
     <artifactId>fpi-framework-pom</artifactId>
-    <version>1.0.105-RC</version>
+    <version>1.0.112</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fpi-load-api</artifactId>
-  <version>1.0.35-RC</version>
+  <name>fpi-load-api</name>
+  <version>1.0.36-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>fpi-load-api-lib</module>
+    <module>fpi-load-api-core</module>
+  </modules>
 
   <properties>
 
@@ -41,59 +54,50 @@
     </repository>
   </repositories>
 
-  <dependencies>
+  <dependencyManagement>
+    <dependencies>
 
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
-    </dependency>
+      <dependency>
+        <groupId>com.dtone.dvs</groupId>
+        <artifactId>dvs-apiclient</artifactId>
+        <version>2.0.8-async-vincejv</version>
+      </dependency>
 
-    <dependency>
-      <groupId>com.dtone.dvs</groupId>
-      <artifactId>dvs-apiclient</artifactId>
-      <version>2.0.8-async-vincejv</version>
-    </dependency>
+      <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+      <dependency>
+        <groupId>com.googlecode.libphonenumber</groupId>
+        <artifactId>libphonenumber</artifactId>
+        <version>8.12.56</version>
+      </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
-    <dependency>
-      <groupId>com.googlecode.libphonenumber</groupId>
-      <artifactId>libphonenumber</artifactId>
-      <version>8.12.56</version>
-    </dependency>
+      <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
+      <dependency>
+        <groupId>com.googlecode.libphonenumber</groupId>
+        <artifactId>carrier</artifactId>
+        <version>1.182</version>
+      </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
-    <dependency>
-      <groupId>com.googlecode.libphonenumber</groupId>
-      <artifactId>carrier</artifactId>
-      <version>1.182</version>
-    </dependency>
+      <dependency>
+        <groupId>com.abavilla</groupId>
+        <artifactId>fpi-login-api-lib</artifactId>
+        <version>1.0.18</version>
+      </dependency>
 
+      <dependency>
+        <groupId>com.abavilla</groupId>
+        <artifactId>fpi-load-api-lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
-  </dependencies>
-  <build>
-    <plugins>
+    </dependencies>
+  </dependencyManagement>
 
-      <plugin>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-      </plugin>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>Github FPI Framework Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/vincejv/fpi-load-api</url>
+    </repository>
+  </distributionManagement>
 
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.jboss.jandex</groupId>
-        <artifactId>jandex-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>
