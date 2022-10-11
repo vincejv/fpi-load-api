@@ -19,8 +19,8 @@
 package com.abavilla.fpi.load.mapper;
 
 import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
-import com.abavilla.fpi.load.dto.QueryDto;
 import com.abavilla.fpi.load.entity.Query;
+import com.abavilla.fpi.load.ext.dto.QueryDto;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

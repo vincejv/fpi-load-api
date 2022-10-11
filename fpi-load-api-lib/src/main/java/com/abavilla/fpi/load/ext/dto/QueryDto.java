@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.dto;
+package com.abavilla.fpi.load.ext.dto;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
 import io.quarkus.runtime.annotations.RegisterForReflection;
