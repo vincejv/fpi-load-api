@@ -3,6 +3,9 @@ FROM quay.io/quarkus/ubi-quarkus-native-image:22.2-java17 AS build
 COPY --chown=quarkus:quarkus mvnw /code/mvnw
 COPY --chown=quarkus:quarkus .mvn /code/.mvn
 COPY --chown=quarkus:quarkus pom.xml /code/
+# Copy the modules
+COPY --chown=quarkus:quarkus fpi-load-api-core /code/fpi-load-api-core
+COPY --chown=quarkus:quarkus fpi-load-api-lib /code/fpi-load-api-lib
 USER quarkus
 WORKDIR /code
 RUN chmod +x ./mvnw
@@ -10,7 +13,6 @@ RUN chmod +x ./mvnw
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 # RUN ./mvnw -s ./.mvn/wrapper/settings.xml -B org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline
-COPY src /code/src
 RUN ./mvnw -s ./.mvn/wrapper/settings.xml -B package -Pnative
 
 ## Stage 2 : create the docker final image
