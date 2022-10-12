@@ -19,7 +19,7 @@
 package com.abavilla.fpi.load.config.codec;
 
 import com.abavilla.fpi.fw.config.codec.AbsEnumCodec;
-import com.abavilla.fpi.load.entity.enums.ApiStatus;
+import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 
 /**
  * MongoDB Codec for {@link ApiStatus} enum.

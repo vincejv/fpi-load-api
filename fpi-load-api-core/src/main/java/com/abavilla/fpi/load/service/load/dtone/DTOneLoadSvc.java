@@ -25,10 +25,10 @@ import javax.inject.Inject;
 
 import com.abavilla.fpi.fw.util.FWConst;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.LoadRespDto;
-import com.abavilla.fpi.load.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.load.entity.load.PromoSku;
+import com.abavilla.fpi.load.ext.dto.LoadRespDto;
+import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;

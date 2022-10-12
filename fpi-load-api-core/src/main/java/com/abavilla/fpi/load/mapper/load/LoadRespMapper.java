@@ -19,8 +19,8 @@
 package com.abavilla.fpi.load.mapper.load;
 
 import com.abavilla.fpi.fw.util.DateUtil;
-import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
+import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.dtone.dvs.dto.TransactionResponse;
 import org.apache.commons.lang3.StringUtils;

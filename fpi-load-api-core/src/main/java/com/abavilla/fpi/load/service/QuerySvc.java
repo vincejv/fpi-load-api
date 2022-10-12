@@ -30,6 +30,7 @@ import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.entity.enums.Telco;
+import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
 import com.abavilla.fpi.load.ext.dto.QueryRespDto;
 import com.abavilla.fpi.load.mapper.QueryMapper;
@@ -81,40 +82,37 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    * @param query {@link QueryDto} containing the query
    * @return {@link RespDto}
    */
-  public Uni<RespDto<AbsDto>> processQuery(QueryDto query) {
+  public Uni<LoadRespDto> processQuery(QueryDto query) {
     RespDto<AbsDto> resp = buildResponse();
     var tokens = StringUtils.split(query.getQuery(), null, 3);
 
-    return repo.findByQuery(query.getQuery()).chain(found->{
+    return repo.findByQuery(query.getQuery()).chain(found -> {
       if (found.isPresent()) {
         return Uni.createFrom().failure(new FPISvcEx("Duplicate load request detected!",
-            Response.Status.BAD_REQUEST.getStatusCode()));
+          Response.Status.BAD_REQUEST.getStatusCode()));
       }
       return Uni.createFrom().voidItem();
-    })
-    .chain(v -> {
+    }).chain(v -> {
       Query log = mapToEntity(query);
       log.setExpiry(DateUtil.now().plusMinutes(30));
       log.setDateCreated(DateUtil.now());
       log.setDateUpdated(DateUtil.now());
       return repo.persist(log);
-    })
-    .chain(savedItem -> {
+    }).chain(savedItem -> {
       if (tokens.length >= 2) {
         var sku = tokens[0];
         var msisdn = tokens[1];
         var network = tokens.length == 2 ? StringUtils.EMPTY : tokens[2];
         var loadReq = buildLoadRequest(msisdn, sku, network);
 
-        return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
-          resp.setResp(svcResponse);
-          resp.setStatus(svcResponse.getStatus().toString());
-          return Uni.createFrom().item(resp);
-        });
-      } else {
-        return Uni.createFrom().failure(new FPISvcEx("Invalid query",
-            Response.Status.BAD_REQUEST.getStatusCode()));
+        return rewardsSvc.reloadNumber(loadReq);
+//        return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
+//          resp.setResp(svcResponse);
+//          resp.setStatus(svcResponse.getStatus().toString());
+//          return Uni.createFrom().item(resp);
+//        });
       }
+      throw new FPISvcEx("Invalid query", Response.Status.BAD_REQUEST.getStatusCode());
     });
   }
 
@@ -135,8 +133,8 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
   /**
    * Creates the load request based on given parameters, determines the network if missing
    *
-   * @param mobile Mobile or account number
-   * @param sku Promo to avail
+   * @param mobile  Mobile or account number
+   * @param sku     Promo to avail
    * @param network Telco or operator for mobile or account number
    * @return {@link LoadReqDto} Load request
    */
@@ -149,8 +147,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
     if (phoneNumberUtil.isValidNumber(number)) {
       loadReq.setMobile(mobile);
       // check if network given is blank or of unknown value
-      if (StringUtils.isBlank(network) ||
-          Telco.fromValue(network) == Telco.UNKNOWN) {
+      if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
         carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
       }
     }

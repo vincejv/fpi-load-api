@@ -1,6 +1,8 @@
 quarkus:
   http:
     port: ${PORT:8080}
+  arc:
+    exclude-types: com.abavilla.fpi.load.ext.rest.*
   mongodb:
     read-timeout: 120S
     connect-timeout: 120S

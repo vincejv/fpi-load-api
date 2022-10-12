@@ -16,25 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.dto.load;
+package com.abavilla.fpi.load.ext.rest;
 
-import com.abavilla.fpi.fw.dto.AbsDto;
-import com.abavilla.fpi.load.entity.enums.ApiStatus;
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@RegisterForReflection
-public class LoadRespDto extends AbsDto {
-  private ApiStatus status;
-  private String error;
-  private String transactionId;
-  private String extTransactionId;
-  private String smsTransactionId;
-  private transient Object apiResponse;
-  private transient Object apiRequest;
+import com.abavilla.fpi.fw.dto.impl.RespDto;
+import com.abavilla.fpi.load.ext.dto.LoadRespDto;
+import com.abavilla.fpi.load.ext.dto.QueryDto;
+import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+
+@RegisterRestClient(configKey = "load-api")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public interface LoadQueryApi {
+
+  @POST
+  @Path("query")
+  Uni<RespDto<LoadRespDto>> query(QueryDto query);
+
 }

@@ -25,6 +25,7 @@ import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
+import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
 import com.abavilla.fpi.load.service.QuerySvc;
@@ -49,7 +50,13 @@ public class QueryResource extends AbsBaseResource<QueryDto, Query, QuerySvc> {
    */
   @POST
   public Uni<RespDto<AbsDto>> loadQuery(QueryDto queryDto) {
-    return service.processQuery(queryDto);
+    return service.processQuery(queryDto).map(resp -> {
+      RespDto<AbsDto> queryResp = new RespDto<>();
+      queryResp.setResp(resp);
+      queryResp.setStatus(String.valueOf(resp.getStatus()));
+      queryResp.setTimestamp(DateUtil.nowAsStr());
+      return queryResp;
+    });
   }
 
   /**

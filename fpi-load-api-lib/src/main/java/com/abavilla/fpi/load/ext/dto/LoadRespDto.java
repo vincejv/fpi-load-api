@@ -16,17 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.     *
  ******************************************************************************/
 
-package com.abavilla.fpi.load.service.load;
+package com.abavilla.fpi.load.ext.dto;
 
-import com.abavilla.fpi.fw.service.IProviderSvc;
-import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.entity.load.PromoSku;
-import com.abavilla.fpi.load.ext.dto.LoadRespDto;
-import io.smallrye.mutiny.Uni;
+import com.abavilla.fpi.fw.dto.AbsDto;
+import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-public interface ILoadProviderSvc extends IProviderSvc {
-  Uni<LoadRespDto> reload(LoadReqDto req, PromoSku promo);
-  default boolean isEnabled() {
-    return true;
-  }
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@RegisterForReflection
+public class LoadRespDto extends AbsDto {
+  private ApiStatus status;
+  private String error;
+  private String transactionId;
+  private String extTransactionId;
+  private String smsTransactionId;
+  private transient Object apiResponse;
+  private transient Object apiRequest;
 }

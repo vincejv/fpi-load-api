@@ -23,11 +23,11 @@ import javax.inject.Inject;
 
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
-import com.abavilla.fpi.load.dto.load.LoadRespDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
-import com.abavilla.fpi.load.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.entity.load.PromoSku;
+import com.abavilla.fpi.load.ext.dto.LoadRespDto;
+import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.repo.load.gl.GLLoadApiRepo;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
