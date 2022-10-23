@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.abavilla.fpi.fw.entity.enums.IBaseEnum;
+import com.abavilla.fpi.fw.util.FWConst;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Enum for storing the operator or telco assigned to an entity
@@ -44,12 +44,12 @@ public enum Telco implements IBaseEnum {
   SUN(3, "Sun"),
   DITO(4, "DITO"),
   CIGNAL(200, "Cignal"),
-  UNKNOWN(-1, "");
+  UNKNOWN(-1, FWConst.UNKNOWN_PREFIX);
 
   /**
    * Ordinal id to enum mapping
    */
-  private static final Map<Integer, Telco> ENUM_MAP = new HashMap<>();
+  private static final Map<Integer, IBaseEnum> ENUM_MAP = new HashMap<>();
 
   static {
     for(Telco w : EnumSet.allOf(Telco.class))
@@ -64,7 +64,7 @@ public enum Telco implements IBaseEnum {
   /**
    * The enum value
    */
-  private String value;
+  private final String value;
 
   /**
    * Creates an enum based from given string value
@@ -74,20 +74,7 @@ public enum Telco implements IBaseEnum {
    */
   @JsonCreator
   public static Telco fromValue(String value) {
-    if (StringUtils.isBlank(value)) {
-      return null;
-    } else {
-      return ENUM_MAP.values().stream().filter(enumItem -> StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
-          .orElseGet(() -> {
-            var unknown = UNKNOWN;
-            String enumValue = value;
-            if (StringUtils.startsWithIgnoreCase(enumValue, UNKNOWN_PREFIX)) {
-              enumValue = StringUtils.removeStart(enumValue, UNKNOWN_PREFIX);
-            }
-            unknown.value = UNKNOWN_PREFIX + enumValue;
-            return unknown;
-          });
-    }
+    return (Telco) IBaseEnum.fromValue(value, ENUM_MAP, UNKNOWN);
   }
 
   /**
@@ -96,13 +83,8 @@ public enum Telco implements IBaseEnum {
    * @param id the ordinal id
    * @return the created enum
    */
-  public static Telco fromId(int id) {
-    return ENUM_MAP.values().stream().filter(enumItem -> id == enumItem.getId()).findAny()
-        .orElseGet(() -> {
-          var unknown = UNKNOWN;
-          unknown.value = UNKNOWN_PREFIX + id;
-          return unknown;
-        });
+  public static IBaseEnum fromId(int id) {
+    return IBaseEnum.fromId(id, ENUM_MAP, UNKNOWN);
   }
 
   /**

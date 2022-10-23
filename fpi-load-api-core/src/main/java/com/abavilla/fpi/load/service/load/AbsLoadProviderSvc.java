@@ -68,8 +68,7 @@ public abstract class AbsLoadProviderSvc implements ILoadProviderSvc {
         parsePhoneNumber(req);
       } else {
         var ex = new FPISvcEx("Invalid phone number",
-            Response.Status.BAD_REQUEST.getStatusCode());
-        ex.setEntity(req);
+            Response.Status.BAD_REQUEST.getStatusCode(), req);
         return Uni.createFrom().failure(ex);
       }
     }

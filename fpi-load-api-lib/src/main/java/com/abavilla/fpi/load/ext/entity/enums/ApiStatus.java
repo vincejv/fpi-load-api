@@ -18,6 +18,8 @@
 
 package com.abavilla.fpi.load.ext.entity.enums;
 
+import static com.abavilla.fpi.fw.util.FWConst.UNKNOWN_PREFIX;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;

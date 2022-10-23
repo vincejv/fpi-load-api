@@ -22,12 +22,12 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
-public class RewardsTransRepo implements IMongoRepo<RewardsTransStatus> {
+public class RewardsTransRepo extends AbsMongoRepo<RewardsTransStatus> {
   public Uni<Optional<RewardsTransStatus>> findByRespTransIdAndProvider(String transId, String provider) {
     return find("transactionId = ?1 and loadProvider = ?2", transId, provider).firstResultOptional();
   }

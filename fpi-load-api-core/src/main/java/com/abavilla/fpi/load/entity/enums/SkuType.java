@@ -23,13 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.abavilla.fpi.fw.entity.enums.IBaseEnum;
+import com.abavilla.fpi.fw.util.FWConst;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Enum for storing which type of Promo or SKU for {@link PromoSku} entity
@@ -44,12 +44,12 @@ public enum SkuType implements IBaseEnum {
   BUNDLE(2, "Bundle"),
   RANGED(5, "Ranged"),
   CREDITS(10, "Credits"),
-  UNKNOWN(-1, "");
+  UNKNOWN(-1, FWConst.UNKNOWN_PREFIX);
 
   /**
    * Ordinal id to enum mapping
    */
-  private static final Map<Integer, SkuType> ENUM_MAP = new HashMap<>();
+  private static final Map<Integer, IBaseEnum> ENUM_MAP = new HashMap<>();
 
   static {
     for(SkuType w : EnumSet.allOf(SkuType.class))
@@ -64,7 +64,7 @@ public enum SkuType implements IBaseEnum {
   /**
    * The enum value
    */
-  private String value;
+  private final String value;
 
   /**
    * Creates an enum based from given string value
@@ -74,20 +74,7 @@ public enum SkuType implements IBaseEnum {
    */
   @JsonCreator
   public static SkuType fromValue(String value) {
-    if (StringUtils.isBlank(value)) {
-      return null;
-    } else {
-      return ENUM_MAP.values().stream().filter(enumItem -> StringUtils.equalsIgnoreCase(value, enumItem.getValue())).findAny()
-          .orElseGet(() -> {
-            var unknown = UNKNOWN;
-            String enumValue = value;
-            if (StringUtils.startsWithIgnoreCase(enumValue, UNKNOWN_PREFIX)) {
-              enumValue = StringUtils.removeStart(enumValue, UNKNOWN_PREFIX);
-            }
-            unknown.value = UNKNOWN_PREFIX + enumValue;
-            return unknown;
-          });
-    }
+    return (SkuType) IBaseEnum.fromValue(value, ENUM_MAP, UNKNOWN);
   }
 
   /**
@@ -97,12 +84,7 @@ public enum SkuType implements IBaseEnum {
    * @return the created enum
    */
   public static SkuType fromId(int id) {
-    return ENUM_MAP.values().stream().filter(enumItem -> id == enumItem.getId()).findAny()
-        .orElseGet(() -> {
-          var unknown = UNKNOWN;
-          unknown.value = UNKNOWN_PREFIX + id;
-          return unknown;
-        });
+    return (SkuType) IBaseEnum.fromId(id, ENUM_MAP, UNKNOWN);
   }
 
   /**

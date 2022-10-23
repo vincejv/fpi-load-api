@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.Query;
 import io.smallrye.mutiny.Uni;
 
@@ -32,7 +32,7 @@ import io.smallrye.mutiny.Uni;
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @ApplicationScoped
-public class QueryRepo implements IMongoRepo<Query> {
+public class QueryRepo extends AbsMongoRepo<Query> {
 
   /**
    * Finds {@link Query} by query string.

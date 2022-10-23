@@ -32,12 +32,4 @@ public interface LoadReqEntityMapper extends IDtoToEntityMapper<LoadReqDto, Load
   default Telco strToTelco(String telcoStr) {
     return Telco.fromValue(telcoStr);
   }
-
-//  @Override
-//  @Mapping(source = "address", target = "mobile")
-//  LoadReqDto mapToDto(RewardsReq rewardsReq);
-//
-//  @Override
-//  @Mapping(source = "mobile", target = "address")
-//  RewardsReq mapToEntity(LoadReqDto loadReqDto);
 }
