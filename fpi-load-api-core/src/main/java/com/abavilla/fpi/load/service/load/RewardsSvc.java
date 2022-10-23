@@ -64,7 +64,6 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
   public Uni<LoadRespDto> reloadNumber(LoadReqDto loadReqDto) {
     Log.info("Charging credits to :" + loadReqDto);
-    Log.info("User: " + identity.getRoles());
     // create log to db
     var log = new RewardsTransStatus();
     log.setDateCreated(DateUtil.now());
@@ -84,6 +83,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
       var loadReq = loadReqMapper.mapToEntity(loadReqDto);
       log.setLoadRequest(loadReq);
+      log.setFpiUser(identity.getPrincipal().getName());
 
       if (loadSvc != null) {
         log.setLoadProvider(loadSvc.getProviderName());
@@ -108,8 +108,9 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     var resp = new LoadRespDto();
     resp.setStatus(ApiStatus.REJ);
     resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
-    var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE, Response.Status.BAD_REQUEST.getStatusCode());
-    ex.setEntity(resp);
+    var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE,
+      Response.Status.BAD_REQUEST.getStatusCode(),
+      resp);
     return Uni.createFrom().failure(ex);
   }
 

@@ -23,6 +23,7 @@ import javax.ws.rs.Path;
 
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.dto.AbsDto;
+import com.abavilla.fpi.fw.dto.IDto;
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.util.DateUtil;
@@ -64,7 +65,7 @@ public class QueryResource extends AbsBaseResource<QueryDto, Query, QuerySvc> {
    */
   @ServerExceptionMapper
   @Override
-  public RestResponse<RespDto<Object>> mapException(FPISvcEx x) {
+  public RestResponse<RespDto<IDto>> mapException(FPISvcEx x) {
     return super.mapException(x);
   }
 }

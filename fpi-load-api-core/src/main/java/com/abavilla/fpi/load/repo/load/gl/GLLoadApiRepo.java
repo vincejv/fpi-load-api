@@ -20,16 +20,14 @@ package com.abavilla.fpi.load.repo.load.gl;
 
 import javax.ws.rs.POST;
 
+import com.abavilla.fpi.fw.rest.IApi;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
-import com.abavilla.fpi.load.exceptions.handler.ApiRepoExHandler;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "gl-rewards-api")
-@RegisterProvider(value = ApiRepoExHandler.class)
-public interface GLLoadApiRepo {
+public interface GLLoadApiRepo extends IApi {
   @POST
   Uni<GLRewardsRespDto> sendLoad(GLRewardsReqDto req);
 }

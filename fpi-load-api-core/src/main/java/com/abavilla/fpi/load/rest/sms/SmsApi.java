@@ -20,10 +20,10 @@ package com.abavilla.fpi.load.rest.sms;
 
 import javax.ws.rs.POST;
 
+import com.abavilla.fpi.fw.rest.IApi;
 import com.abavilla.fpi.load.dto.sms.MsgReqDto;
 import com.abavilla.fpi.load.dto.sms.MsgReqStatusDto;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 /**
@@ -32,8 +32,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * @author <a href="mailto:vincevillamora@gmail.com">Vince Villamora</a>
  */
 @RegisterRestClient(configKey = "sms-api")
-@RegisterClientHeaders(SmsRepoHeaders.class)
-public interface SmsApi {
+public interface SmsApi extends IApi {
 
   /**
    * Send an SMS through SMS service

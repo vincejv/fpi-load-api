@@ -21,8 +21,8 @@ package com.abavilla.fpi.load.repo.load;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
-import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 
 @ApplicationScoped
-public class RewardsLeakRepo implements IMongoRepo<AbsMongoItem> {
+public class RewardsLeakRepo extends AbsMongoRepo<AbsMongoItem> {
 }

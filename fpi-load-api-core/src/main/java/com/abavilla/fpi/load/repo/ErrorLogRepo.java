@@ -20,10 +20,10 @@ package com.abavilla.fpi.load.repo;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.ErrorLog;
 
 @ApplicationScoped
-public class ErrorLogRepo implements IMongoRepo<ErrorLog> {
+public class ErrorLogRepo extends AbsMongoRepo<ErrorLog> {
 
 }

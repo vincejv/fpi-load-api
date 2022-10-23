@@ -22,6 +22,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
+import com.abavilla.fpi.fw.dto.IDto;
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.util.DateUtil;
@@ -59,7 +60,7 @@ public class LoadResource
    */
   @Override
   @ServerExceptionMapper
-  protected RestResponse<RespDto<Object>> mapException(FPISvcEx x) {
+  protected RestResponse<RespDto<IDto>> mapException(FPISvcEx x) {
     return super.mapException(x);
   }
 }

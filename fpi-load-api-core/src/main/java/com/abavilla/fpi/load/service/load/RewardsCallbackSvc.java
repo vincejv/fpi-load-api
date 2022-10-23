@@ -43,6 +43,7 @@ import com.abavilla.fpi.load.repo.load.RewardsLeakRepo;
 import com.abavilla.fpi.load.repo.load.RewardsTransRepo;
 import com.abavilla.fpi.load.rest.sms.SmsApi;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.login.ext.rest.UserApi;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
@@ -58,6 +59,9 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
 
   @Inject
   RewardsLeakRepo leakRepo;
+
+  @RestClient
+  UserApi userApi;
 
   @Inject
   DTOneMapper dtOneMapper;

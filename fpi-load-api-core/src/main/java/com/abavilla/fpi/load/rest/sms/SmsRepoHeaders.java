@@ -22,8 +22,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.abavilla.fpi.login.dto.PasswordLoginDto;
-import com.abavilla.fpi.login.rest.ext.LoginApi;
+import com.abavilla.fpi.login.ext.dto.PasswordLoginDto;
+import com.abavilla.fpi.login.ext.rest.LoginApi;
 import io.quarkus.rest.client.reactive.ReactiveClientHeadersFactory;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

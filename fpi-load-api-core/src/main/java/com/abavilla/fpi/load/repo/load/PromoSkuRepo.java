@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import com.abavilla.fpi.fw.repo.IMongoRepo;
+import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import io.quarkus.panache.common.Sort;
@@ -30,7 +30,7 @@ import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.math.NumberUtils;
 
 @ApplicationScoped
-public class PromoSkuRepo implements IMongoRepo<PromoSku> {
+public class PromoSkuRepo extends AbsMongoRepo<PromoSku> {
 
   public Uni<Optional<PromoSku>> findByTelcoAndDenominationOrKeyword(Telco telco, String keyword) {
     return find("""
