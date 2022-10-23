@@ -41,67 +41,86 @@
     <tag>HEAD</tag>
   </scm>
 
-  <name>FPI Load API parent POM</name>
+  <name>FPI Load API core module</name>
   <description>FPI Reactive backend Topup API, contains usage for DTOne and GlobeLabs Rewards API with callback functionality</description>
   <url>https://github.com/vincejv/fpi-load-api</url>
   <inceptionYear>2022</inceptionYear>
 
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>fpi-load-api-core</artifactId>
+  <version>0</version>
+
   <parent>
     <groupId>com.abavilla</groupId>
-    <artifactId>fpi-framework-pom</artifactId>
-    <version>1.1.21</version>
+    <artifactId>fpi-load-api</artifactId>
+    <version>0</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
-
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>fpi-load-api</artifactId>
-  <version>0</version>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>fpi-load-api-lib</module>
-    <module>fpi-load-api-core</module>
-  </modules>
 
   <properties>
 
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
+  <dependencies>
 
-      <dependency>
-        <groupId>com.vincejv</groupId>
-        <artifactId>dvs-apiclient</artifactId>
-        <version>2.1.5</version>
-      </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
+    </dependency>
 
-      <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
-      <dependency>
-        <groupId>com.googlecode.libphonenumber</groupId>
-        <artifactId>libphonenumber</artifactId>
-        <version>8.12.56</version>
-      </dependency>
+    <dependency>
+      <groupId>com.vincejv</groupId>
+      <artifactId>dvs-apiclient</artifactId>
+    </dependency>
 
-      <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
-      <dependency>
-        <groupId>com.googlecode.libphonenumber</groupId>
-        <artifactId>carrier</artifactId>
-        <version>1.182</version>
-      </dependency>
+    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>libphonenumber</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>com.abavilla</groupId>
-        <artifactId>fpi-login-api-lib</artifactId>
-        <version>1.0.24</version>
-      </dependency>
+    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
+    <dependency>
+      <groupId>com.googlecode.libphonenumber</groupId>
+      <artifactId>carrier</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>com.abavilla</groupId>
-        <artifactId>fpi-load-api-lib</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+    <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-login-api-lib</artifactId>
+    </dependency>
 
-    </dependencies>
-  </dependencyManagement>
+    <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-load-api-lib</artifactId>
+    </dependency>
 
+  </dependencies>
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+      </plugin>
+      
+    </plugins>
+  </build>
 </project>
