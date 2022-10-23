@@ -135,7 +135,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ needs.deploy_to_cloud.outputs.service_image_path }}
+          images: ${{ steps.image_version.outputs.service_image_path }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
@@ -143,7 +143,7 @@ jobs:
           context: .
           push: true
           tags: | # ${{ steps.meta.outputs.tags }} - (For public repositories like docker hub)
-            ${{ needs.deploy_to_cloud.outputs.service_image_path }}
+            ${{ steps.image_version.outputs.service_image_path }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Deploy to cloud run
@@ -152,7 +152,7 @@ jobs:
         with:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
-          image: ${{ needs.deploy_to_cloud.outputs.service_image_path }}
+          image: ${{ steps.image_version.outputs.service_image_path }}
           project_id: ${{ env.PROJECT_ID }}
           flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }}
           env_vars: |
