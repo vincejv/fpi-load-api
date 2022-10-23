@@ -12,7 +12,6 @@ env:
   REGION: asia-east1
   SONAR_PROJECT_KEY: vincejv_fpi-load-api
   NATIVE_IMAGE_BUILDER: quay.io/quarkus/ubi-quarkus-mandrel:22.2-java17
-  SERVICE_IMAGE_PATH: ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.GHUB_REPO_NAME }}/${{ env.SERVICE }}:${{ github.sha }}  # Fallback if version is not set within the job
   SERVICE_CPU: 1000m
   SERVICE_MEMORY: 384Mi
   SERVICE_ENV: dev
@@ -69,6 +68,9 @@ jobs:
     name: Deploy to Cloud Run
     runs-on: ubuntu-latest
     needs: code_quality_checks
+    outputs:
+      artifact_version: ${{ steps.gen_ver.outputs.artifact_version }}
+      service_image_path: ${{ steps.image_version.outputs.service_image_path }}
     permissions:
       contents: read
       packages: write
@@ -90,14 +92,18 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Generate native image
-        run: mvn -B package -Pnative -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=${{ env.NATIVE_IMAGE_BUILDER }}
-
-      - name: Prepare environment variables
+      - name: Prepare artifact version
         id: gen_ver
         run: |
-          echo "ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-          echo "SERVICE_IMAGE_PATH=${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.GHUB_REPO_NAME }}/${{ env.SERVICE }}:${{ env.ARTIFACT_VERSION }}" >> $GITHUB_ENV
+          echo "artifact_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+      - name: Prepare Docker image tag
+        id: image_version
+        run: |
+          echo "service_image_path=${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.GHUB_REPO_NAME }}/${{ env.SERVICE }}:${{ steps.gen_ver.outputs.artifact_version }}" >> $GITHUB_OUTPUT
+
+      - name: Generate native image
+        run: mvn -B package -Pnative -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=${{ env.NATIVE_IMAGE_BUILDER }}
 
       - name: Google Auth
         id: gcp-auth
@@ -129,7 +135,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.SERVICE_IMAGE_PATH }}
+          images: ${{ needs.deploy_to_cloud.outputs.service_image_path }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
@@ -137,7 +143,7 @@ jobs:
           context: .
           push: true
           tags: | # ${{ steps.meta.outputs.tags }} - (For public repositories like docker hub)
-            ${{ env.SERVICE_IMAGE_PATH }}
+            ${{ needs.deploy_to_cloud.outputs.service_image_path }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Deploy to cloud run
@@ -146,7 +152,7 @@ jobs:
         with:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
-          image: ${{ env.SERVICE_IMAGE_PATH }}
+          image: ${{ needs.deploy_to_cloud.outputs.service_image_path }}
           project_id: ${{ env.PROJECT_ID }}
           flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }}
           env_vars: |
@@ -230,23 +236,23 @@ jobs:
 
       - name: Update PR (Success message)
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ always() && needs.pre_job.outputs.should_skip != 'true' && env.ARTIFACT_VERSION != '' }}
+        if: ${{ always() && needs.pre_job.outputs.should_skip != 'true' && needs.deploy_to_cloud.outputs.artifact_version != '' }}
         with:
           message: |
-            ✅ Deployed to DEV environment: `${{ env.ARTIFACT_VERSION }}`
+            ✅ Deployed to DEV environment: `${{ needs.deploy_to_cloud.outputs.artifact_version }}`
 
             #### Add to your POM
             ```xml
             <dependency>
               <groupId>com.abavilla</groupId>
               <artifactId>${{ env.GHUB_REPO_NAME }}-lib</artifactId>
-              <version>${{ env.ARTIFACT_VERSION }}</version>
+              <version>${{ needs.deploy_to_cloud.outputs.artifact_version }}</version>
             </dependency>
             ```
 
       - name: Update PR (Failure message)
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ always() && needs.pre_job.outputs.should_skip != 'true' && env.ARTIFACT_VERSION == '' }}
+        if: ${{ always() && needs.pre_job.outputs.should_skip != 'true' && needs.deploy_to_cloud.outputs.artifact_version == '' }}
         with:
           message: |
             ❌ CI Build & Deployment failed, please check the [logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details
