@@ -102,7 +102,7 @@ jobs:
           echo "service_image_path=${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.GHUB_REPO_NAME }}/${{ env.SERVICE }}:${{ steps.gen_ver.outputs.artifact_version }}" >> $GITHUB_OUTPUT
 
       - name: Create JVM package
-        run: mvn -B package
+        run: mvn -B package -P allow-snapshots
 
       - name: Google Auth
         id: gcp-auth
@@ -154,7 +154,7 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ steps.image_version.outputs.service_image_path }}
           project_id: ${{ env.PROJECT_ID }}
-          flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }}
+          flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }} --timeout 900 --no-cpu-throttling
           env_vars: |
             DB_NAME=load-api-dev
             OIDC_CLIENT_ID=${{ secrets.OIDC_CLIENT_ID }}
