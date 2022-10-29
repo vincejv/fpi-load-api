@@ -102,8 +102,8 @@ jobs:
         run: |
           echo "service_image_path=${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.GHUB_REPO_NAME }}/${{ env.SERVICE }}:${{ steps.gen_ver.outputs.artifact_version }}" >> $GITHUB_OUTPUT
 
-      - name: Generate native image
-        run: mvn -B package -Pnative -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=${{ env.NATIVE_IMAGE_BUILDER }}
+      - name: Create JVM package
+        run: mvn -B package
 
       - name: Google Auth
         id: gcp-auth
@@ -141,6 +141,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          file: Dockerfile.dev
           push: true
           tags: | # ${{ steps.meta.outputs.tags }} - (For public repositories like docker hub)
             ${{ steps.image_version.outputs.service_image_path }}
@@ -156,6 +157,7 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }}
           env_vars: |
+            DB_NAME=load-api-dev
             OIDC_CLIENT_ID=${{ secrets.OIDC_CLIENT_ID }}
             OIDC_AUTH_URL=${{ secrets.OIDC_AUTH_URL }}
             GL_REWARDS_API=${{ secrets.GL_REWARDS_API }}

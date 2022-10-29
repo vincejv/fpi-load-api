@@ -198,6 +198,7 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           flags: --cpu ${{ env.SERVICE_CPU }} --memory ${{ env.SERVICE_MEMORY }}
           env_vars: |
+            DB_NAME=load-api-prod
             OIDC_CLIENT_ID=${{ secrets.OIDC_CLIENT_ID }}
             OIDC_AUTH_URL=${{ secrets.OIDC_AUTH_URL }}
             GL_REWARDS_API=${{ secrets.GL_REWARDS_API }}
