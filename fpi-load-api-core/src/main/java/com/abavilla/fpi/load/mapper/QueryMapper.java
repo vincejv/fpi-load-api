@@ -21,9 +21,14 @@ package com.abavilla.fpi.load.mapper;
 import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
 import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 /**
  * Entity to DTO mapper for converting and mapping between {@link Query} and {@link QueryDto}
@@ -33,4 +38,30 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface QueryMapper extends IDtoToEntityMapper<QueryDto, Query> {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Mappings(
+    @Mapping(target = "query", source = "body")
+  )
+  QueryDto mapToDto(Query entity);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Mapping(target = "body", source = "query")
+  Query mapToEntity(QueryDto dto);
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  @Mapping(target = "body", source = "query")
+  @BeanMapping(
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+  )
+  void patchEntity(@MappingTarget Query entity, QueryDto dto);
 }
