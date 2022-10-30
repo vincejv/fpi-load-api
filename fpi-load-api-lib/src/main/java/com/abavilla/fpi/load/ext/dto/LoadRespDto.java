@@ -20,6 +20,7 @@ package com.abavilla.fpi.load.ext.dto;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @RegisterForReflection
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = LoadRespDto.class)
 public class LoadRespDto extends AbsDto {
   private ApiStatus status;
   private String error;

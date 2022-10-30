@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.load.entity.load.ProviderOffer;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,6 +37,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @RegisterForReflection
 @NoArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = PromoSkuDto.class)
 public class PromoSkuDto extends AbsDto {
 
   /**

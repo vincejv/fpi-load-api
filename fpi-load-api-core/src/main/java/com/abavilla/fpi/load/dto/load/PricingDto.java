@@ -21,6 +21,7 @@ package com.abavilla.fpi.load.dto.load;
 import java.math.BigDecimal;
 
 import com.abavilla.fpi.fw.dto.AbsFieldDto;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,6 +39,7 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 @RegisterForReflection
 @NoArgsConstructor
 @BsonDiscriminator
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = PricingDto.class)
 public class PricingDto extends AbsFieldDto {
 
   /**

@@ -32,6 +32,7 @@ import com.dtone.dvs.dto.Rates;
 import com.dtone.dvs.dto.Status;
 import com.dtone.dvs.dto.Values;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,6 +42,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @RegisterForReflection
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = DVSCallbackDto.class)
 public class DVSCallbackDto extends AbsDto {
   @JsonProperty("id")
   private Long dtOneId;
