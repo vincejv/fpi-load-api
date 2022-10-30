@@ -101,6 +101,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
       log.setExpiry(DateUtil.now().plusMinutes(30));
       log.setDateCreated(DateUtil.now());
       log.setDateUpdated(DateUtil.now());
+      log.setFpiUser(identity.getPrincipal().getName());
       return repo.persist(log);
     }).chain(savedItem -> {
       if (tokens.length >= 2) {
