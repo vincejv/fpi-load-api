@@ -49,4 +49,17 @@
 
   </changeSet>
 
+  <changeSet id="2" author="vincejv" labels="query_log" context="main">
+    <comment>each user has a unique query, instead of global query uniqueness</comment>
+
+    <ext:dropIndex collectionName="query_log">
+      <ext:keys>{query: 1}</ext:keys>
+      <ext:options>{unique: true, name: "query"}</ext:options>
+    </ext:dropIndex>
+    <ext:createIndex collectionName="query_log">
+      <ext:keys>{query: 1, fpiUser: 1}</ext:keys>
+      <ext:options>{unique: true, name: "query"}</ext:options>
+    </ext:createIndex>
+  </changeSet>
+
 </databaseChangeLog>

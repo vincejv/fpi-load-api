@@ -45,6 +45,11 @@ public class Query extends AbsMongoItem {
   private String query;
 
   /**
+   * FPI System user id
+   */
+  private String fpiUser;
+
+  /**
    * Time and date when query will expire for duplicate detection.
    */
   private LocalDateTime expiry;

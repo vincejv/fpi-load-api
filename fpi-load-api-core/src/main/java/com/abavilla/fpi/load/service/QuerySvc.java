@@ -22,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsRepoSvc;
@@ -32,13 +31,13 @@ import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
-import com.abavilla.fpi.load.ext.dto.QueryRespDto;
 import com.abavilla.fpi.load.mapper.QueryMapper;
 import com.abavilla.fpi.load.repo.QueryRepo;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
@@ -77,16 +76,21 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
   PhoneNumberToCarrierMapper carrierMapper;
 
   /**
+   * OIDC Identity provider
+   */
+  @Inject
+  SecurityIdentity identity;
+
+  /**
    * Process the load query to invoke load service.
    *
    * @param query {@link QueryDto} containing the query
    * @return {@link RespDto}
    */
   public Uni<LoadRespDto> processQuery(QueryDto query) {
-    RespDto<AbsDto> resp = buildResponse();
     var tokens = StringUtils.split(query.getQuery(), null, 3);
 
-    return repo.findByQuery(query.getQuery()).chain(found -> {
+    return repo.findByQuery(query.getQuery(), identity.getPrincipal().getName()).chain(found -> {
       if (found.isPresent()) {
         return Uni.createFrom().failure(new FPISvcEx("Duplicate load request detected!",
           Response.Status.BAD_REQUEST.getStatusCode()));
@@ -106,28 +110,9 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
         var loadReq = buildLoadRequest(msisdn, sku, network);
 
         return rewardsSvc.reloadNumber(loadReq);
-//        return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
-//          resp.setResp(svcResponse);
-//          resp.setStatus(svcResponse.getStatus().toString());
-//          return Uni.createFrom().item(resp);
-//        });
       }
       throw new FPISvcEx("Invalid query", Response.Status.BAD_REQUEST.getStatusCode());
     });
-  }
-
-  /**
-   * Creates the API Response.
-   *
-   * @return {@link QueryRespDto} Status for query request
-   */
-  private RespDto<AbsDto> buildResponse() {
-    var resp = new RespDto<AbsDto>();
-    var queryResp = new QueryRespDto();
-
-    resp.setResp(queryResp);
-    resp.setTimestamp(DateUtil.nowAsStr());
-    return resp;
   }
 
   /**
