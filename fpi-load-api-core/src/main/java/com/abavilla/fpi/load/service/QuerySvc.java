@@ -112,7 +112,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
 
         return rewardsSvc.reloadNumber(loadReq);
       }
-      throw new FPISvcEx("Invalid query", Response.Status.BAD_REQUEST.getStatusCode());
+      throw new FPISvcEx("Invalid query: " + query.getQuery(), Response.Status.BAD_REQUEST.getStatusCode());
     });
   }
 
