@@ -24,7 +24,9 @@ import com.abavilla.fpi.fw.exceptions.handler.ApiRepoExHandler;
 import com.abavilla.fpi.fw.rest.IApi;
 import com.abavilla.fpi.load.dto.sms.MsgReqDto;
 import com.abavilla.fpi.load.dto.sms.MsgReqStatusDto;
+import com.abavilla.fpi.login.ext.rest.AppToAppPreAuth;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -35,6 +37,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  */
 @RegisterRestClient(configKey = "sms-api")
 @RegisterProvider(value = ApiRepoExHandler.class)
+@RegisterClientHeaders(AppToAppPreAuth.class)
 public interface SmsApi extends IApi {
 
   /**
