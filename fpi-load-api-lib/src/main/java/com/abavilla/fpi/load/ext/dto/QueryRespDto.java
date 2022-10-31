@@ -19,7 +19,6 @@
 package com.abavilla.fpi.load.ext.dto;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +33,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @RegisterForReflection
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, defaultImpl = QueryRespDto.class)
 public class QueryRespDto extends AbsDto {
 
   /**
