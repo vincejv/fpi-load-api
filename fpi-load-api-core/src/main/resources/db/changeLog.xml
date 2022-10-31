@@ -62,14 +62,14 @@
     </ext:createIndex>
   </changeSet>
 
-  <changeSet id="3" author="vincejv" labels="query_log" context="main">
+  <changeSet id="3" author="vincejv" labels="promo_sku" context="main">
     <comment>fix parallel array indexing</comment>
 
-    <ext:dropIndex collectionName="query_log">
+    <ext:dropIndex collectionName="promo_sku">
       <ext:keys>{ 'telco.value': 1, 'keywords': 1, 'type.value': 1, 'denomination.min': 1, 'denomination.max': 1, 'offers.wholesaleDiscount': 1 }</ext:keys>
       <ext:options>{name: "promoLookupNdx"}</ext:options>
     </ext:dropIndex>
-    <ext:createIndex collectionName="query_log">
+    <ext:createIndex collectionName="promo_sku">
       <ext:keys>{ 'telco.value': 1, 'keywords': 1, 'type.value': 1, 'denomination.min': 1, 'denomination.max': 1 }</ext:keys>
       <ext:options>{name: "promoLookupNdx"}</ext:options>
     </ext:createIndex>
