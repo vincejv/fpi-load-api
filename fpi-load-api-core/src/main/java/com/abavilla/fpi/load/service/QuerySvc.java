@@ -35,12 +35,13 @@ import com.abavilla.fpi.load.mapper.QueryMapper;
 import com.abavilla.fpi.load.repo.QueryRepo;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.quarkus.logging.Log;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -124,18 +125,21 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    * @param network Telco or operator for mobile or account number
    * @return {@link LoadReqDto} Load request
    */
-  @SneakyThrows
   private LoadReqDto buildLoadRequest(String mobile, String sku, @Nullable String network) {
     var loadReq = new LoadReqDto();
     var carrier = network;
-    var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
 
-    if (phoneNumberUtil.isValidNumber(number)) {
-      loadReq.setMobile(mobile);
-      // check if network given is blank or of unknown value
-      if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
-        carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+    try {
+      var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
+      if (phoneNumberUtil.isValidNumber(number)) {
+        loadReq.setMobile(mobile);
+        // check if network given is blank or of unknown value
+        if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
+          carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+        }
       }
+    } catch (NumberParseException ex) {
+      Log.warn("Invalid number: " + mobile);
     }
 
     loadReq.setSku(sku);
