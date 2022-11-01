@@ -1,0 +1,78 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+  <changeSet id="1" author="vincejv" labels="load_api" context="main">
+    <comment>initial load api schema</comment>
+    <ext:createCollection collectionName="rewards_leak"/>
+    <ext:createCollection collectionName="customers"/>
+    <ext:createCollection collectionName="load_error_log"/>
+    <ext:createCollection collectionName="query_log"/>
+    <ext:createCollection collectionName="promo_sku"/>
+    <ext:createCollection collectionName="rewards_log"/>
+
+    <ext:createIndex collectionName="customers">
+      <ext:keys>{name: 1}</ext:keys>
+      <ext:options>{unique: true, name: "name"}</ext:options> <!-- every customer name is unique -->
+    </ext:createIndex>
+
+    <ext:createIndex collectionName="query_log">
+      <ext:keys>{expiry: -1}</ext:keys>
+      <ext:options>{name: "queryExpiry", expireAfterSeconds: 0}</ext:options>
+    </ext:createIndex>
+    <ext:createIndex collectionName="query_log">
+      <ext:keys>{query: 1}</ext:keys>
+      <ext:options>{unique: true, name: "query"}</ext:options>
+    </ext:createIndex>
+
+    <ext:createIndex collectionName="promo_sku">
+      <ext:keys>{ 'telco.value': 1, 'keywords': 1, 'type.value': 1, 'denomination.min': 1, 'denomination.max': 1, 'offers.wholesaleDiscount': 1 }</ext:keys>
+      <ext:options>{name: "promoLookupNdx"}</ext:options>
+    </ext:createIndex>
+    <ext:createIndex collectionName="promo_sku">
+      <ext:keys>{ 'offers.wholesaleDiscount': 1 }</ext:keys>
+      <ext:options>{name: "wholesaleDiscount"}</ext:options>
+    </ext:createIndex>
+    <ext:createIndex collectionName="promo_sku">
+      <ext:keys>{ 'type.ord': 1 }</ext:keys>
+      <ext:options>{name: "skuType"}</ext:options>
+    </ext:createIndex>
+
+    <ext:createIndex collectionName="rewards_log">
+      <ext:keys>{transactionId: 1, loadProvider: 1}</ext:keys>
+      <ext:options>{name: "transactionId_loadProvider", sparse: true}</ext:options>
+    </ext:createIndex>
+
+  </changeSet>
+
+  <changeSet id="2" author="vincejv" labels="query_log" context="main">
+    <comment>each user has a unique query, instead of global query uniqueness</comment>
+
+    <ext:dropIndex collectionName="query_log">
+      <ext:keys>{query: 1}</ext:keys>
+      <ext:options>{unique: true, name: "query"}</ext:options>
+    </ext:dropIndex>
+    <ext:createIndex collectionName="query_log">
+      <ext:keys>{query: 1, fpiUser: 1}</ext:keys>
+      <ext:options>{unique: true, name: "query"}</ext:options>
+    </ext:createIndex>
+  </changeSet>
+
+  <changeSet id="3" author="vincejv" labels="promo_sku" context="main">
+    <comment>fix parallel array indexing</comment>
+
+    <ext:dropIndex collectionName="promo_sku">
+      <ext:keys>{ 'telco.value': 1, 'keywords': 1, 'type.value': 1, 'denomination.min': 1, 'denomination.max': 1, 'offers.wholesaleDiscount': 1 }</ext:keys>
+      <ext:options>{name: "promoLookupNdx"}</ext:options>
+    </ext:dropIndex>
+    <ext:createIndex collectionName="promo_sku">
+      <ext:keys>{ 'telco.value': 1, 'keywords': 1, 'type.value': 1, 'denomination.min': 1, 'denomination.max': 1 }</ext:keys>
+      <ext:options>{name: "promoLookupNdx"}</ext:options>
+    </ext:createIndex>
+  </changeSet>
+
+</databaseChangeLog>

@@ -72,7 +72,7 @@ public enum SkuType implements IBaseEnum {
    * @param value the string value
    * @return the created enum
    */
-  @JsonCreator
+  @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
   public static SkuType fromValue(String value) {
     return (SkuType) IBaseEnum.fromValue(value, ENUM_MAP, UNKNOWN);
   }

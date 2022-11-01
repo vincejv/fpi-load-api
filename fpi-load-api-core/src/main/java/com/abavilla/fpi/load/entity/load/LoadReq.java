@@ -19,7 +19,7 @@
 package com.abavilla.fpi.load.entity.load;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
-import com.abavilla.fpi.load.entity.enums.Telco;
+import com.abavilla.fpi.telco.ext.entity.enums.Telco;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

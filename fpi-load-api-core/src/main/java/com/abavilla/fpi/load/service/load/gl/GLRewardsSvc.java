@@ -27,11 +27,11 @@ import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
-import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.repo.load.gl.GLLoadApiRepo;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
@@ -80,7 +80,6 @@ public class GLRewardsSvc extends AbsLoadProviderSvc {
     loadResp.setApiRequest(apiReq);
     loadResp.setStatus(ApiStatus.CREATED);
 
-    // rewardsMapper.mapRequestDtoToEntity(apiReq, log);
     return loadApi.sendLoad(apiReq)
         .onFailure(ApiSvcEx.class).recoverWithItem(ex -> {
           var apiEx = (ApiSvcEx) ex; // error encountered

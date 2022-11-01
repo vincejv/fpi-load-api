@@ -26,6 +26,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 /**
  * Entity object for storing load queries
@@ -42,7 +43,13 @@ public class Query extends AbsMongoItem {
   /**
    * Query string
    */
-  private String query;
+  @BsonProperty(value = "query")
+  private String body;
+
+  /**
+   * FPI System user id
+   */
+  private String fpiUser;
 
   /**
    * Time and date when query will expire for duplicate detection.
