@@ -63,8 +63,13 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-telco-plugin-lib</artifactId>
+    </dependency>
 
   </dependencies>
+
   <build>
     <plugins>
 

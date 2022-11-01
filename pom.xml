@@ -49,7 +49,7 @@
   <parent>
     <groupId>com.abavilla</groupId>
     <artifactId>fpi-framework-pom</artifactId>
-    <version>1.1.21</version>
+    <version>1.1.33</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -68,6 +68,12 @@
 
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>com.abavilla</groupId>
+        <artifactId>fpi-load-api-lib</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.vincejv</groupId>
@@ -92,13 +98,19 @@
       <dependency>
         <groupId>com.abavilla</groupId>
         <artifactId>fpi-login-api-lib</artifactId>
-        <version>1.0.24</version>
+        <version>1.0.27</version>
       </dependency>
 
       <dependency>
         <groupId>com.abavilla</groupId>
-        <artifactId>fpi-load-api-lib</artifactId>
-        <version>${project.version}</version>
+        <artifactId>fpi-sms-api-lib</artifactId>
+        <version>1.1.9</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.abavilla</groupId>
+        <artifactId>fpi-telco-plugin-lib</artifactId>
+        <version>1.0.2</version>
       </dependency>
 
     </dependencies>

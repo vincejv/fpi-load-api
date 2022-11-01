@@ -39,7 +39,7 @@ public class QueryRepo extends AbsMongoRepo<Query> {
    *
    * @return {@link Query} object containing the load query
    */
-  public Uni<Optional<Query>> findByQuery(String query) {
-    return find("{ 'query' : ?1 }", query).firstResultOptional();
+  public Uni<Optional<Query>> findByQuery(String query, String fpiUser) {
+    return find("{ 'query' : ?1, 'fpiUser' : ?2 }", query, fpiUser).firstResultOptional();
   }
 }

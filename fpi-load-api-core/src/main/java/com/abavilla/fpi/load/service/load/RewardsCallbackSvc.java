@@ -21,7 +21,6 @@ package com.abavilla.fpi.load.service.load;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -33,17 +32,17 @@ import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
-import com.abavilla.fpi.load.dto.sms.MsgReqDto;
 import com.abavilla.fpi.load.entity.load.CallBack;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
-import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.abavilla.fpi.load.repo.load.RewardsLeakRepo;
 import com.abavilla.fpi.load.repo.load.RewardsTransRepo;
-import com.abavilla.fpi.load.rest.sms.SmsApi;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.login.ext.rest.UserApi;
+import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
+import com.abavilla.fpi.sms.ext.rest.SmsApi;
+import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
@@ -73,7 +72,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    * Service for sending SMS
    */
   @RestClient
-  SmsApi smsRepo;
+  SmsApi smsApi;
 
   @Inject
   PhoneNumberUtil phoneNumberUtil;
@@ -119,13 +118,14 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     var byTransId = advRepo.findByRespTransIdAndProvider(
         String.valueOf(transactionId), provider);
 
-    byTransId.chain(checkIfTxExists(transactionId))
+    byTransId.chain(transPulled -> checkIfTxExists(transPulled.orElse(null), transactionId))
       .onFailure(ApiSvcEx.class).retry().withBackOff(
           Duration.ofSeconds(3)).withJitter(0.2)
       .atMost(5) // Retry for item not found and nothing else
-      .chain(updateTransWithCallback(field, status))
-      .chain(sendFPIAckMsg(status)).onFailure()
-      .call(saveCallbackAsLeak(field, transactionId))
+      .chain(transFound -> updateTransWithCallback(transFound, field, status))
+      .chain(updatedTrans -> sendLoaderAckMsg(updatedTrans, status))
+      .chain(updatedTrans -> sendFPIAckMsg(updatedTrans, status)).onFailure()
+      .call(ex -> saveCallbackAsLeak(ex, field, transactionId))
       .subscribe().with(ignored->{});
 
     return Uni.createFrom().voidItem();
@@ -134,64 +134,60 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   /**
    * Checks if rewards transaction have been logged in the db, if not, throw an {@link ApiSvcEx} exception.
    *
+   * @param rewardsTransStatus Entity in DB found
    * @param transactionId External transaction id
    * @return @return {@link Function} callback
    */
-  private static Function<Optional<RewardsTransStatus>, Uni<? extends RewardsTransStatus>> checkIfTxExists(Long transactionId) {
-    return rewardsTransStatusOpt -> {
-      if (rewardsTransStatusOpt.isPresent()) {
-        return Uni.createFrom().item(rewardsTransStatusOpt.get());
+  private Uni<? extends RewardsTransStatus> checkIfTxExists(RewardsTransStatus rewardsTransStatus, Long transactionId) {
+      if (rewardsTransStatus != null) {
+        return Uni.createFrom().item(rewardsTransStatus);
       } else {
         throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
       }
-    };
   }
 
   /**
    * Updates the rewards transaction with the callback status.
    *
-   * @param field Rewards transaction
+   * @param rewardsTrans Rewards transaction
+   * @param field Callback status
    * @param status Status of transaction
    * @return {@link Function} callback
    */
-  private Function<RewardsTransStatus, Uni<? extends RewardsTransStatus>> updateTransWithCallback(AbsMongoItem field, ApiStatus status) {
-    return rewardsTrans -> {
-      //rewardsMapper.mapCallbackDtoToEntity(dto, rewardsTrans);
-      CallBack callBack = new CallBack();
-      callBack.setContent(field);
-      callBack.setDateReceived(DateUtil.now());
-      callBack.setStatus(status);
-      rewardsTrans.getApiCallback().add(callBack);
-      rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-      return repo.persistOrUpdate(rewardsTrans);
-    };
+  private Uni<? extends RewardsTransStatus> updateTransWithCallback(RewardsTransStatus rewardsTrans, AbsMongoItem field, ApiStatus status) {
+    CallBack callBack = new CallBack();
+    callBack.setContent(field);
+    callBack.setDateReceived(DateUtil.now());
+    callBack.setStatus(status);
+    rewardsTrans.getApiCallback().add(callBack);
+    rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
+    return repo.persistOrUpdate(rewardsTrans);
   }
 
   /**
    * Logs the load transaction as a failed in the database
    *
+   * @param ex Failed transaction
    * @param field Load transaction
    * @param transactionId External transaction id
    * @return {@link Function} callback
    */
-  private Function<Throwable, Uni<?>> saveCallbackAsLeak(AbsMongoItem field, Long transactionId) {
-    return ex -> { // leaks/delay
+  private Uni<?> saveCallbackAsLeak(Throwable ex, AbsMongoItem field, Long transactionId) {
       Log.error("Rewards leak " + transactionId, ex);
       field.setDateCreated(DateUtil.now());
       field.setDateUpdated(DateUtil.now());
       return leakRepo.persist(field)
           .onFailure().recoverWithNull();
-    };
   }
 
   /**
    * Sends an acknowledgement message for successful load transfer
    *
+   * @param rewardsTransStatus Rewards transaction
    * @param status Load status
    * @return {@link Function} callback
    */
-  private Function<RewardsTransStatus, Uni<?>> sendFPIAckMsg(ApiStatus status) {
-    return rewardsTransStatus -> {
+  private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, ApiStatus status) {
       Log.info("Received callback for " +
           rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
       if (status == ApiStatus.DEL) {
@@ -205,15 +201,38 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           return Uni.createFrom().failure(e);
         }
         req.setContent(
-            String.format(
-                "%s was loaded to your account. Thank you for visiting Florenz Pension Inn! " +
-                "For reservations, message us at https://m.me/florenzpensioninn" +
-                "\n\nRef: %s", rewardsTransStatus.getLoadRequest().getSku(),
+            String.format("""
+                %s was loaded to your account. Thank you for visiting Florenz Pension Inn!
+                For reservations, message us at https://m.me/florenzpensioninn
+                
+                Ref: %s""", rewardsTransStatus.getLoadRequest().getSku(),
                 rewardsTransStatus.getLoadSmsId()));
-        return smsRepo.sendSms(req);
+        return smsApi.sendSms(req);
       } else {
         return Uni.createFrom().voidItem();
       }
-    };
   }
+
+  private Uni<? extends RewardsTransStatus> sendLoaderAckMsg(RewardsTransStatus rewardsTransStatus,
+                                                             ApiStatus status) {
+    Log.info("Sending ack message to loader: " + rewardsTransStatus);
+    String fpiUser = rewardsTransStatus.getFpiUser();
+    return userApi.getByMetaId(fpiUser).chain(resp -> {
+      if (StringUtils.isNotBlank(resp.getResp().getMobile())) {
+        var msg = new MsgReqDto();
+        msg.setMobileNumber(resp.getResp().getMobile());
+        msg.setContent("""
+          Loaded %s to %s
+          
+          S: %s
+          Ref: %s""".formatted(
+            rewardsTransStatus.getLoadRequest().getSku(),
+            rewardsTransStatus.getLoadRequest().getMobile(),
+            String.valueOf(status), rewardsTransStatus.getLoadSmsId()));
+        return smsApi.sendSms(msg);
+      }
+      return Uni.createFrom().voidItem();
+    }).chain(() -> Uni.createFrom().item(rewardsTransStatus));
+  }
+
 }

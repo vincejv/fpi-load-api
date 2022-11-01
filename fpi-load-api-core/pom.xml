@@ -64,6 +64,11 @@
   <dependencies>
 
     <dependency>
+      <groupId>com.abavilla</groupId>
+      <artifactId>fpi-load-api-lib</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
     </dependency>
@@ -92,7 +97,7 @@
 
     <dependency>
       <groupId>com.abavilla</groupId>
-      <artifactId>fpi-load-api-lib</artifactId>
+      <artifactId>fpi-sms-api-lib</artifactId>
     </dependency>
 
   </dependencies>

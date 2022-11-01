@@ -22,26 +22,26 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsRepoSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.Query;
-import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
-import com.abavilla.fpi.load.ext.dto.QueryRespDto;
 import com.abavilla.fpi.load.mapper.QueryMapper;
 import com.abavilla.fpi.load.repo.QueryRepo;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.telco.ext.entity.enums.Telco;
+import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.quarkus.logging.Log;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -77,16 +77,21 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
   PhoneNumberToCarrierMapper carrierMapper;
 
   /**
+   * OIDC Identity provider
+   */
+  @Inject
+  SecurityIdentity identity;
+
+  /**
    * Process the load query to invoke load service.
    *
    * @param query {@link QueryDto} containing the query
    * @return {@link RespDto}
    */
   public Uni<LoadRespDto> processQuery(QueryDto query) {
-    RespDto<AbsDto> resp = buildResponse();
     var tokens = StringUtils.split(query.getQuery(), null, 3);
 
-    return repo.findByQuery(query.getQuery()).chain(found -> {
+    return repo.findByQuery(query.getQuery(), identity.getPrincipal().getName()).chain(found -> {
       if (found.isPresent()) {
         return Uni.createFrom().failure(new FPISvcEx("Duplicate load request detected!",
           Response.Status.BAD_REQUEST.getStatusCode()));
@@ -97,6 +102,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
       log.setExpiry(DateUtil.now().plusMinutes(30));
       log.setDateCreated(DateUtil.now());
       log.setDateUpdated(DateUtil.now());
+      log.setFpiUser(identity.getPrincipal().getName());
       return repo.persist(log);
     }).chain(savedItem -> {
       if (tokens.length >= 2) {
@@ -106,28 +112,9 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
         var loadReq = buildLoadRequest(msisdn, sku, network);
 
         return rewardsSvc.reloadNumber(loadReq);
-//        return rewardsSvc.reloadNumber(loadReq).chain(svcResponse -> {
-//          resp.setResp(svcResponse);
-//          resp.setStatus(svcResponse.getStatus().toString());
-//          return Uni.createFrom().item(resp);
-//        });
       }
-      throw new FPISvcEx("Invalid query", Response.Status.BAD_REQUEST.getStatusCode());
+      throw new FPISvcEx("Invalid query: " + query.getQuery(), Response.Status.BAD_REQUEST.getStatusCode());
     });
-  }
-
-  /**
-   * Creates the API Response.
-   *
-   * @return {@link QueryRespDto} Status for query request
-   */
-  private RespDto<AbsDto> buildResponse() {
-    var resp = new RespDto<AbsDto>();
-    var queryResp = new QueryRespDto();
-
-    resp.setResp(queryResp);
-    resp.setTimestamp(DateUtil.nowAsStr());
-    return resp;
   }
 
   /**
@@ -138,18 +125,21 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    * @param network Telco or operator for mobile or account number
    * @return {@link LoadReqDto} Load request
    */
-  @SneakyThrows
   private LoadReqDto buildLoadRequest(String mobile, String sku, @Nullable String network) {
     var loadReq = new LoadReqDto();
     var carrier = network;
-    var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
 
-    if (phoneNumberUtil.isValidNumber(number)) {
-      loadReq.setMobile(mobile);
-      // check if network given is blank or of unknown value
-      if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
-        carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+    try {
+      var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
+      if (phoneNumberUtil.isValidNumber(number)) {
+        loadReq.setMobile(mobile);
+        // check if network given is blank or of unknown value
+        if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
+          carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+        }
       }
+    } catch (NumberParseException ex) {
+      Log.warn("Invalid number: " + mobile);
     }
 
     loadReq.setSku(sku);
