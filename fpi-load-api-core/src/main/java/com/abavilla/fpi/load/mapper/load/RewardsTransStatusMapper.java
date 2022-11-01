@@ -30,9 +30,9 @@ import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
 import com.abavilla.fpi.load.entity.load.CallBack;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
-import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
+import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
 import com.dtone.dvs.dto.TransactionRequest;
 import com.dtone.dvs.dto.TransactionResponse;
 import org.mapstruct.InjectionStrategy;
@@ -75,14 +75,14 @@ public abstract class RewardsTransStatusMapper implements IMapper {
 
   AbsMongoField anyObjectToAbsField(Object dto) {
     AbsMongoField field = null;
-    if (dto instanceof GLRewardsReqDto) {
-      field = glMapper.mapGLRewardsReqToEntity((GLRewardsReqDto)dto);
-    } else if (dto instanceof GLRewardsRespDto) {
-      field = glMapper.mapGLRewardsRespToEntity((GLRewardsRespDto) dto);
-    } else if (dto instanceof TransactionRequest) {
-      field = dtOneMapper.copyTransactionReqToDVSReq((TransactionRequest) dto);
-    } else if (dto instanceof TransactionResponse) {
-      field = dtOneMapper.copyTransactionRespToDVSResp((TransactionResponse) dto);
+    if (dto instanceof GLRewardsReqDto glReqDto) {
+      field = glMapper.mapGLRewardsReqToEntity(glReqDto);
+    } else if (dto instanceof GLRewardsRespDto glRespDto) {
+      field = glMapper.mapGLRewardsRespToEntity(glRespDto);
+    } else if (dto instanceof TransactionRequest transReq) {
+      field = dtOneMapper.copyTransactionReqToDVSReq(transReq);
+    } else if (dto instanceof TransactionResponse transResp) {
+      field = dtOneMapper.copyTransactionRespToDVSResp(transResp);
     }
     return field;
   }

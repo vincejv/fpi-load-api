@@ -34,11 +34,11 @@ import com.abavilla.fpi.load.engine.load.LoadEngine;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
-import com.abavilla.fpi.load.ext.entity.enums.ApiStatus;
 import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
+import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
 import io.quarkus.logging.Log;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
@@ -114,14 +114,6 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     return Uni.createFrom().failure(ex);
   }
 
-//  private Function<LoadRespDto, Response> determineReloadResponse() {
-//    return loadRespDto ->
-//        Response.status(loadRespDto.getError() == null ?
-//                Response.Status.CREATED : Response.Status.NOT_ACCEPTABLE)
-//            .entity(loadRespDto)
-//            .build();
-//  }
-
   private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(
       RewardsTransStatus logEntity) {
     return loadRespDto -> {
@@ -144,16 +136,5 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
           });
     };
   }
-
-//  private Function<Throwable, LoadRespDto> handleReloadException(RewardsTransStatus logEntity) {
-//    return apiEx -> {
-//      var errorResp = new LoadRespDto();
-//      errorResp.setError(apiEx.getMessage());
-//      errorResp.setTimestamp(DateUtil.nowAsStr());
-//      errorResp.setTransactionId(logEntity.getTransactionId());
-//      errorResp.setStatus(ApiStatus.REJ);
-//      return errorResp;
-//    };
-//  }
 
 }

@@ -26,10 +26,10 @@ import javax.inject.Inject;
 import com.abavilla.fpi.fw.service.AbsRepoSvc;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.PromoSkuDto;
-import com.abavilla.fpi.load.entity.enums.Telco;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
 import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
+import com.abavilla.fpi.telco.ext.entity.enums.Telco;
 import io.smallrye.mutiny.Uni;
 
 /**
