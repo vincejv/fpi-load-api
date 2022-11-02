@@ -188,7 +188,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    * @return {@link Function} callback
    */
   private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, ApiStatus status) {
-      Log.info("Received callback for " +
+      Log.info("Sending FPI acknowledgement message " +
           rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
       if (status == ApiStatus.DEL) {
         var req = new MsgReqDto();
@@ -198,11 +198,14 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           req.setMobileNumber(phoneNumberUtil
               .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
         } catch (NumberParseException e) {
-          return Uni.createFrom().failure(e);
+          Log.warn("Invalid recipient number, not sending ack message: " +
+            rewardsTransStatus.getLoadRequest().getMobile());
+          return Uni.createFrom().voidItem();
         }
         req.setContent(
             String.format("""
-                %s was loaded to your account. Thank you for visiting Florenz Pension Inn!
+                %s was loaded to your account.
+                Thank you for visiting Florenz Pension Inn!
                 For reservations, message us at https://m.me/florenzpensioninn
                 
                 Ref: %s""", rewardsTransStatus.getLoadRequest().getSku(),
@@ -227,7 +230,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           S: %s
           Ref: %s""".formatted(
             rewardsTransStatus.getLoadRequest().getSku(),
-            rewardsTransStatus.getLoadRequest().getMobile(),
+            StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
+              rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
             String.valueOf(status), rewardsTransStatus.getLoadSmsId()));
         return smsApi.sendSms(msg);
       }
