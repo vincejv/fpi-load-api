@@ -168,6 +168,7 @@ jobs:
             SMS_BASE_URI=${{ secrets.SMS_BASE_URI }}
             FPI_APP_TO_APP_USERN=${{ secrets.FPI_APP_TO_APP_USERN }}
             USER_BASE_URI=${{ secrets.USER_BASE_URI }}
+            MSGR_API_BASE_URI=${{ secret.MSGR_API_BASE_URI }}
           secrets: |
             MONGO_CONN_STRING=vbl_mongo_connection_string:latest
             OIDC_SECRET=oidc_secret_keycloak:latest

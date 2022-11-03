@@ -40,6 +40,8 @@ import com.abavilla.fpi.load.repo.load.RewardsLeakRepo;
 import com.abavilla.fpi.load.repo.load.RewardsTransRepo;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.login.ext.rest.UserApi;
+import com.abavilla.fpi.msgr.ext.dto.MsgrMsgReqDto;
+import com.abavilla.fpi.msgr.ext.rest.MsgrReqApi;
 import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
 import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
@@ -48,10 +50,14 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTransStatus> {
+
+  @ConfigProperty(name = "fpi.app-to-app.auth.username")
+  String fpiSystemId;
 
   @Inject
   RewardsTransRepo advRepo;
@@ -73,6 +79,9 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    */
   @RestClient
   SmsApi smsApi;
+
+  @RestClient
+  MsgrReqApi msgrApi;
 
   @Inject
   PhoneNumberUtil phoneNumberUtil;
@@ -223,6 +232,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     return userApi.getByMetaId(fpiUser).chain(resp -> {
       if (StringUtils.isNotBlank(resp.getResp().getMobile())) {
         var msg = new MsgReqDto();
+        var msgrMsg = new MsgrMsgReqDto();
+        msgrMsg.setRecipient(resp.getResp().getMetaId());
         msg.setMobileNumber(resp.getResp().getMobile());
         msg.setContent("""
           Loaded %s to %s
@@ -233,7 +244,12 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
               rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
             String.valueOf(status), rewardsTransStatus.getLoadSmsId()));
-        return smsApi.sendSms(msg);
+        msgrMsg.setContent(msg.getContent());
+        return
+          msgrApi.toggleTyping(resp.getResp().getMetaId(), true)
+            .chain(() -> msgrApi.sendMsg(msgrMsg, fpiSystemId))
+            .chain(()-> msgrApi.toggleTyping(resp.getResp().getMetaId(), false))
+            .chain(() -> smsApi.sendSms(msg));
       }
       return Uni.createFrom().voidItem();
     }).chain(() -> Uni.createFrom().item(rewardsTransStatus));
