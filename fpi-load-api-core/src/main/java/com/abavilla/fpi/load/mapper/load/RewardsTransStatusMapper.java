@@ -22,9 +22,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.fw.util.DateUtil;
+import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
 import com.abavilla.fpi.load.entity.load.CallBack;
@@ -35,15 +37,16 @@ import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
 import com.dtone.dvs.dto.TransactionRequest;
 import com.dtone.dvs.dto.TransactionResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
-    injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR, uses = LoadReqEntityMapper.class)
 public abstract class RewardsTransStatusMapper implements IMapper {
 
   @Inject
@@ -52,15 +55,19 @@ public abstract class RewardsTransStatusMapper implements IMapper {
   @Inject
   GLMapper glMapper;
 
-  @Mappings(value = {
-      @Mapping(target = "id", ignore = true), // do not copy id from dto
-      @Mapping(target = "dateCreated", ignore = true),
-      @Mapping(target = "dateUpdated", ignore = true),
-      @Mapping(target = "apiCallback", source = "status"),
-      @Mapping(target = "transactionId", source = "extTransactionId")
-  })
+  @Mapping(target = "id", ignore = true) // do not copy id from dto
+  @Mapping(target = "dateCreated", ignore = true)
+  @Mapping(target = "dateUpdated", ignore = true)
+  @Mapping(target = "apiCallback", source = "status")
+  @Mapping(target = "transactionId", source = "extTransactionId")
   public abstract void mapLoadRespDtoToEntity(LoadRespDto loadRespDto,
                                               @MappingTarget RewardsTransStatus dest);
+
+  @BeanMapping(ignoreByDefault = true)
+  @Mapping(target = "loadRequest", source = ".", qualifiedByName = "mapToEntity")
+  @Mapping(target = "source", source = "botSource")
+  public abstract void mapLoadReqToEntity(LoadReqDto loadReqDto,
+                                          @MappingTarget RewardsTransStatus dest);
 
   /**
    * Adds initial callback
@@ -85,6 +92,14 @@ public abstract class RewardsTransStatusMapper implements IMapper {
       field = dtOneMapper.copyTransactionRespToDVSResp(transResp);
     }
     return field;
+  }
+
+  BotSource strToBotSource(String value) {
+    return StringUtils.isNotBlank(value) ? BotSource.fromValue(value) : null;
+  }
+
+  String botSourceToStr(BotSource botSource) {
+    return botSource == null ? null : botSource.toString();
   }
 
 }

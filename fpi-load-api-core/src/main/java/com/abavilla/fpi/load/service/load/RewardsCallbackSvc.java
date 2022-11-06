@@ -39,9 +39,11 @@ import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.abavilla.fpi.load.repo.load.RewardsLeakRepo;
 import com.abavilla.fpi.load.repo.load.RewardsTransRepo;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.abavilla.fpi.login.ext.dto.UserDto;
 import com.abavilla.fpi.login.ext.rest.UserApi;
 import com.abavilla.fpi.msgr.ext.dto.MsgrMsgReqDto;
 import com.abavilla.fpi.msgr.ext.rest.MsgrReqApi;
+import com.abavilla.fpi.msgr.ext.rest.TelegramReqApi;
 import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
 import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
@@ -50,14 +52,10 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTransStatus> {
-
-  @ConfigProperty(name = "fpi.app-to-app.auth.username")
-  String fpiSystemId;
 
   @Inject
   RewardsTransRepo advRepo;
@@ -83,43 +81,24 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   @RestClient
   MsgrReqApi msgrApi;
 
+  @RestClient
+  TelegramReqApi telegramReqApi;
+
   @Inject
   PhoneNumberUtil phoneNumberUtil;
 
   public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
-    ApiStatus status;
-
-    if (StringUtils.equals(dto.getBody().getStatus(),
-        LoadConst.GL_SUCCESS_STS)) {
-      status = ApiStatus.DEL;
-    } else if (StringUtils.equals(dto.getBody().getStatus(),
-        LoadConst.GL_FAILED_STS)) {
-      status = ApiStatus.REJ;
-    } else {
-      status = ApiStatus.fromValue(dto.getBody().getStatus());
-    }
-
-    return storeCallback(glMapper.mapGLCallbackDtoToEntity(dto),
-        status, LoadConst.PROV_GL, dto.getBody().getTransactionId());
+    return storeCallback(
+      glMapper.mapGLCallbackDtoToEntity(dto),
+      ApiStatus.fromGL(dto.getBody().getStatus()),
+      LoadConst.PROV_GL, dto.getBody().getTransactionId());
   }
 
   public Uni<Void> storeCallback(DVSCallbackDto dto) {
-    ApiStatus status;
-
-    if (dto.getStatus().getId() == LoadConst.DT_SUCCESS_STS) {
-      status = ApiStatus.DEL;
-    } else if (dto.getStatus().getId() == LoadConst.DT_INVPREPAID_STS) {
-      // postpaid number is reloaded with prepaid credits
-      status = ApiStatus.INV;
-    }else if (dto.getStatus().getId() == LoadConst.DT_OPMISMATCH_STS) {
-      // operator and mobile number mismatch
-      status = ApiStatus.REJ;
-    } else {
-      status = ApiStatus.fromValue(dto.getStatus().getMessage());
-    }
-
-    return storeCallback(dtOneMapper.mapDTOneRespToEntity(dto),
-        status, LoadConst.PROV_DTONE, dto.getDtOneId());
+    return storeCallback(
+      dtOneMapper.mapDTOneRespToEntity(dto),
+      ApiStatus.fromDtOne(dto.getStatus().getId()),
+      LoadConst.PROV_DTONE, dto.getDtOneId());
   }
 
   private Uni<Void> storeCallback(AbsMongoItem field, ApiStatus status,
@@ -170,7 +149,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     callBack.setStatus(status);
     rewardsTrans.getApiCallback().add(callBack);
     rewardsTrans.setDateUpdated(LocalDateTime.now(ZoneOffset.UTC));
-    return repo.persistOrUpdate(rewardsTrans);
+    return repo.update(rewardsTrans);
   }
 
   /**
@@ -229,30 +208,45 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
                                                              ApiStatus status) {
     Log.info("Sending ack message to loader: " + rewardsTransStatus);
     String fpiUser = rewardsTransStatus.getFpiUser();
-    return userApi.getByMetaId(fpiUser).chain(resp -> {
+    String msgContent = """
+        Loaded %s to %s
+                  
+        S: %s
+        Ref: %s""".formatted(
+      rewardsTransStatus.getLoadRequest().getSku(),
+      StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
+        rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
+      String.valueOf(status), rewardsTransStatus.getLoadSmsId());
+
+    return userApi.getById(fpiUser).chain(resp -> {
+      var botMsg = new MsgrMsgReqDto();
+      botMsg.setContent(msgContent);
+      var sendLoaderMsg = sendToBotSource(rewardsTransStatus, resp.getResp(), botMsg);
       if (StringUtils.isNotBlank(resp.getResp().getMobile())) {
         var msg = new MsgReqDto();
-        var msgrMsg = new MsgrMsgReqDto();
-        msgrMsg.setRecipient(resp.getResp().getMetaId());
+        msg.setContent(msgContent);
         msg.setMobileNumber(resp.getResp().getMobile());
-        msg.setContent("""
-          Loaded %s to %s
-          
-          S: %s
-          Ref: %s""".formatted(
-            rewardsTransStatus.getLoadRequest().getSku(),
-            StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
-              rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
-            String.valueOf(status), rewardsTransStatus.getLoadSmsId()));
-        msgrMsg.setContent(msg.getContent());
-        return
-          msgrApi.toggleTyping(resp.getResp().getMetaId(), true)
-            .chain(() -> msgrApi.sendMsg(msgrMsg, fpiSystemId))
-            .chain(()-> msgrApi.toggleTyping(resp.getResp().getMetaId(), false))
-            .chain(() -> smsApi.sendSms(msg));
+        sendLoaderMsg = sendLoaderMsg.chain(() -> smsApi.sendSms(msg));
       }
-      return Uni.createFrom().voidItem();
+      return sendLoaderMsg;
     }).chain(() -> Uni.createFrom().item(rewardsTransStatus));
+  }
+
+  private Uni<?> sendToBotSource(RewardsTransStatus rewardsTransStatus, UserDto user, MsgrMsgReqDto msgrMsg) {
+    return switch (rewardsTransStatus.getSource()) {
+      case FB_MSGR -> {
+        msgrMsg.setRecipient(user.getMetaId());
+        yield msgrApi.toggleTyping(user.getMetaId(), true)
+          .chain(() -> msgrApi.sendMsg(msgrMsg, user.getId()))
+          .chain(() -> msgrApi.toggleTyping(user.getMetaId(), false));
+      }
+      case TELEGRAM -> {
+        msgrMsg.setRecipient(user.getTelegramId());
+        yield telegramReqApi.toggleTyping(user.getTelegramId())
+          .chain(() -> telegramReqApi.sendMsg(msgrMsg, user.getId()));
+      }
+      default -> Uni.createFrom().voidItem();
+    };
   }
 
 }

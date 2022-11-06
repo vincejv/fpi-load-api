@@ -18,6 +18,8 @@
 
 package com.abavilla.fpi.load.config.codec;
 
+import com.abavilla.fpi.bot.ext.codec.BotSourceCodec;
+import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.config.codec.IEnumCodecProvider;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.telco.ext.codec.ApiStatusCodec;
@@ -49,6 +51,8 @@ public class EnumCodecProvider implements IEnumCodecProvider {
       return (Codec<T>) new ApiStatusCodec();
     }else if (clazz == SkuType.class) {
       return (Codec<T>) new SkuTypeCodec();
+    } else if (clazz == BotSource.class) {
+      return (Codec<T>) new BotSourceCodec();
     }
     return null; // Don't throw here, this tells Mongo this provider doesn't provide a decoder for the requested clazz
   }

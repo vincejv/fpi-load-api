@@ -33,6 +33,9 @@ quarkus:
     msgr-api:
       url: ${MSGR_API_BASE_URI}
       scope: javax.inject.Singleton
+    telegram-api:
+      url: ${TG_API_BASE_URI}
+      scope: javax.inject.Singleton
   oidc:
     auth-server-url: ${OIDC_AUTH_URL:https://localhost:8543/realms/quarkus}
     client-id: ${OIDC_CLIENT_ID:backend-api}

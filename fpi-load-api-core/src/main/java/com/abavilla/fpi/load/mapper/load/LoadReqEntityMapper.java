@@ -25,11 +25,18 @@ import com.abavilla.fpi.telco.ext.entity.enums.Telco;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.Named;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface LoadReqEntityMapper extends IDtoToEntityMapper<LoadReqDto, LoadReq> {
+
+  @Override
+  @Named("mapToEntity")
+  LoadReq mapToEntity(LoadReqDto dto);
+
   default Telco strToTelco(String telcoStr) {
     return Telco.fromValue(telcoStr);
   }
+
 }

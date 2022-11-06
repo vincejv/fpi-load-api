@@ -98,7 +98,7 @@
       <dependency>
         <groupId>com.abavilla</groupId>
         <artifactId>fpi-login-api-lib</artifactId>
-        <version>1.0.28</version>
+        <version>1.0.30-a8d4435-SNAPSHOT</version>
       </dependency>
 
       <dependency>
@@ -110,13 +110,19 @@
       <dependency>
         <groupId>com.abavilla</groupId>
         <artifactId>fpi-telco-plugin-lib</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.1</version>
       </dependency>
 
       <dependency>
         <groupId>com.abavilla</groupId>
         <artifactId>fpi-msgr-api-lib</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.2-3172ae0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.abavilla</groupId>
+        <artifactId>fpi-bot-api-lib</artifactId>
+        <version>1.1.0-46fea89-SNAPSHOT</version>
       </dependency>
 
     </dependencies>
