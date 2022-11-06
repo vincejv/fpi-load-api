@@ -20,6 +20,7 @@ package com.abavilla.fpi.load.entity;
 
 import java.time.LocalDateTime;
 
+import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Data;
@@ -45,6 +46,11 @@ public class Query extends AbsMongoItem {
    */
   @BsonProperty(value = "query")
   private String body;
+
+  /**
+   * Source where the query request is originating from
+   */
+  private BotSource source;
 
   /**
    * FPI System user id

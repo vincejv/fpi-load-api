@@ -21,6 +21,7 @@ package com.abavilla.fpi.load.entity.load;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -44,6 +45,7 @@ public class RewardsTransStatus extends AbsMongoItem {
   private AbsMongoField apiRequest;
   private AbsMongoField apiResponse;
   private List<CallBack> apiCallback;
+  private BotSource source;
   private String fpiUser;
 
   public List<CallBack> getApiCallback() {

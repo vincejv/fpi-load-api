@@ -39,4 +39,6 @@ public class QueryDto extends AbsDto {
    * Query string
    */
   private String query;
+
+  private String botSource;
 }
