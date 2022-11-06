@@ -18,16 +18,17 @@
 
 package com.abavilla.fpi.load.mapper;
 
+import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
 import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 /**
@@ -43,9 +44,8 @@ public interface QueryMapper extends IDtoToEntityMapper<QueryDto, Query> {
    * {@inheritDoc}
    */
   @Override
-  @Mappings(
-    @Mapping(target = "query", source = "body")
-  )
+  @Mapping(target = "query", source = "body")
+  @Mapping(target = "botSource", source = "source")
   QueryDto mapToDto(Query entity);
 
   /**
@@ -53,6 +53,7 @@ public interface QueryMapper extends IDtoToEntityMapper<QueryDto, Query> {
    */
   @Override
   @Mapping(target = "body", source = "query")
+  @Mapping(target = "source", source = "botSource")
   Query mapToEntity(QueryDto dto);
 
   /**
@@ -60,8 +61,18 @@ public interface QueryMapper extends IDtoToEntityMapper<QueryDto, Query> {
    */
   @Override
   @Mapping(target = "body", source = "query")
+  @Mapping(target = "source", source = "botSource")
   @BeanMapping(
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
   )
   void patchEntity(@MappingTarget Query entity, QueryDto dto);
+
+  default BotSource strToBotSource(String value) {
+    return StringUtils.isNotBlank(value) ? BotSource.fromValue(value) : null;
+  }
+
+  default String botSourceToStr(BotSource botSource) {
+    return botSource == null ? null : botSource.toString();
+  }
+
 }

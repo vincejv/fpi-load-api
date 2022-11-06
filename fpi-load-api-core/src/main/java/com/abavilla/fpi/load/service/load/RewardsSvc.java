@@ -19,11 +19,9 @@
 package com.abavilla.fpi.load.service.load;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
@@ -34,7 +32,6 @@ import com.abavilla.fpi.load.engine.load.LoadEngine;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
-import com.abavilla.fpi.load.mapper.load.LoadReqEntityMapper;
 import com.abavilla.fpi.load.mapper.load.RewardsTransStatusMapper;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.load.util.LoadUtil;
@@ -43,15 +40,13 @@ import io.quarkus.logging.Log;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.resteasy.reactive.RestResponse;
 
 @ApplicationScoped
 public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
   @Inject
-  LoadReqEntityMapper loadReqMapper;
-
-  @Inject
-  RewardsTransStatusMapper dtoToEntityMapper;
+  RewardsTransStatusMapper rewardsMapper;
 
   @Inject
   PromoSkuSvc promoSkuSvc;
@@ -66,6 +61,8 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     Log.info("Charging credits to :" + loadReqDto);
     // create log to db
     var log = new RewardsTransStatus();
+    rewardsMapper.mapLoadReqToEntity(loadReqDto, log);
+    log.setFpiUser(identity.getPrincipal().getName());
     log.setDateCreated(DateUtil.now());
 
     Uni<Optional<PromoSku>> skuLookup;
@@ -81,27 +78,22 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
           .map(promoSku -> loadEngine.getProvider(promoSku))
           .orElse(null);
 
-      var loadReq = loadReqMapper.mapToEntity(loadReqDto);
-      log.setLoadRequest(loadReq);
-      log.setFpiUser(identity.getPrincipal().getName());
-
       if (loadSvc != null) {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(reloadAndUpdateDb(loadReqDto, promo.get(), loadSvc));
+            .chain(savedLog -> reloadAndUpdateDb(savedLog, loadReqDto, promo.get(), loadSvc));
       } else {
         return buildRejectedResponse();
       }
     });
   }
 
-  private Function<RewardsTransStatus, Uni<? extends LoadRespDto>> reloadAndUpdateDb(LoadReqDto loadReqDto, PromoSku promo, ILoadProviderSvc loadSvcProvider) {
-    return savedLog -> {
-      loadReqDto.setTransactionId(savedLog.getId().toString()); // map mongo id to load request
-      return loadSvcProvider.reload(loadReqDto, promo)
-          .chain(updateRequestInDb(savedLog));
-    };
+  private Uni<? extends LoadRespDto> reloadAndUpdateDb(RewardsTransStatus savedLog, LoadReqDto loadReqDto,
+                                                       PromoSku promo, ILoadProviderSvc loadSvcProvider) {
+    loadReqDto.setTransactionId(savedLog.getId().toString()); // map mongo id to load request
+    return loadSvcProvider.reload(loadReqDto, promo)
+        .chain(resp -> updateRequestInDb(resp, savedLog));
   }
 
   private Uni<LoadRespDto> buildRejectedResponse() {
@@ -109,17 +101,15 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     resp.setStatus(ApiStatus.REJ);
     resp.setError(LoadConst.NO_LOAD_PROVIDER_AVAILABLE);
     var ex = new FPISvcEx(LoadConst.NO_LOAD_PROVIDER_AVAILABLE,
-      Response.Status.BAD_REQUEST.getStatusCode(),
-      resp);
+      RestResponse.StatusCode.BAD_REQUEST, resp);
     return Uni.createFrom().failure(ex);
   }
 
-  private Function<LoadRespDto, Uni<? extends LoadRespDto>> updateRequestInDb(
+  private Uni<? extends LoadRespDto> updateRequestInDb(
+      LoadRespDto loadRespDto,
       RewardsTransStatus logEntity) {
-    return loadRespDto -> {
-      dtoToEntityMapper.mapLoadRespDtoToEntity(
-          loadRespDto, logEntity
-      );
+      rewardsMapper.mapLoadRespDtoToEntity(
+        loadRespDto, logEntity);
 
       if (loadRespDto.getStatus() == ApiStatus.WAIT ||
           loadRespDto.getStatus() == ApiStatus.CREATED) {
@@ -129,12 +119,11 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
       }
 
       logEntity.setDateUpdated(DateUtil.now());
-      return repo.persistOrUpdate(logEntity)
-          .map(res -> {
-            loadRespDto.setSmsTransactionId(res.getLoadSmsId());
-            return loadRespDto;
-          });
-    };
+      return repo.update(logEntity)
+        .map(res -> {
+          loadRespDto.setSmsTransactionId(res.getLoadSmsId());
+          return loadRespDto;
+        });
   }
 
 }

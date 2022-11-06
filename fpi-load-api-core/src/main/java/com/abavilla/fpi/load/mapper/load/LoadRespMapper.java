@@ -29,32 +29,27 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.CDI,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface LoadRespMapper {
 
-  @Mappings(value = {
-      @Mapping(target = "id", ignore = true),
-      @Mapping(target = "extTransactionId", source = "body.transactionId"),
-      @Mapping(target = "transactionId", ignore = true),
-      @Mapping(target = "status", ignore = true), // TODO: temporarily ignore
-      @Mapping(target = ".", source = "body."),
-      @Mapping(target = "dateCreated", ignore = true),
-      @Mapping(target = "dateUpdated", ignore = true),
-  })
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "extTransactionId", source = "body.transactionId")
+  @Mapping(target = "transactionId", ignore = true)
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = ".", source = "body.")
+  @Mapping(target = "dateCreated", ignore = true)
+  @Mapping(target = "dateUpdated", ignore = true)
   void mapGLRespToDto(GLRewardsRespDto source,
                       @MappingTarget LoadRespDto dest);
-  @Mappings(value = {
-      @Mapping(target = "id", ignore = true),
-      @Mapping(target = "extTransactionId", source = "id"),
-      // @Mapping(target = "status", source = "status.message"),
-      @Mapping(target = "status", ignore = true),  // TODO: temporarily ignore
-      @Mapping(target = "dateCreated", ignore = true),
-      @Mapping(target = "dateUpdated", ignore = true),
-  })
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "extTransactionId", source = "id")
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = "dateCreated", ignore = true)
+  @Mapping(target = "dateUpdated", ignore = true)
   void mapDTRespToDto(TransactionResponse source,
                       @MappingTarget LoadRespDto dest);
 
