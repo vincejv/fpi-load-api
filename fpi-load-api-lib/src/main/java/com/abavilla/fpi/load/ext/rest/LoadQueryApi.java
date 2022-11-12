@@ -18,6 +18,8 @@
 
 package com.abavilla.fpi.load.ext.rest;
 
+import java.time.temporal.ChronoUnit;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -26,11 +28,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.abavilla.fpi.fw.dto.impl.RespDto;
+import com.abavilla.fpi.fw.exceptions.AuthApiSvcEx;
 import com.abavilla.fpi.fw.exceptions.handler.ApiRepoExHandler;
 import com.abavilla.fpi.fw.rest.IApi;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
+import io.smallrye.faulttolerance.api.ExponentialBackoff;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -38,6 +43,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RegisterProvider(value = ApiRepoExHandler.class)
+@Retry(maxRetries = 8, retryOn = AuthApiSvcEx.class, delay = 3,
+  delayUnit = ChronoUnit.SECONDS, jitter = 1500L)
+@ExponentialBackoff(maxDelay = 25, maxDelayUnit = ChronoUnit.SECONDS)
 public interface LoadQueryApi extends IApi {
 
   @POST
