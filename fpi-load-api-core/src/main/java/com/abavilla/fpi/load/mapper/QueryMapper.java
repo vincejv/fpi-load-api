@@ -18,10 +18,10 @@
 
 package com.abavilla.fpi.load.mapper;
 
-import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
 import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
+import com.abavilla.fpi.telco.ext.enums.BotSource;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;

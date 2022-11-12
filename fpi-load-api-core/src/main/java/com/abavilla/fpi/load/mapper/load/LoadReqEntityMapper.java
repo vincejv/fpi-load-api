@@ -21,7 +21,7 @@ package com.abavilla.fpi.load.mapper.load;
 import com.abavilla.fpi.fw.mapper.IDtoToEntityMapper;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.load.LoadReq;
-import com.abavilla.fpi.telco.ext.entity.enums.Telco;
+import com.abavilla.fpi.telco.ext.enums.Telco;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

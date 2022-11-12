@@ -34,7 +34,7 @@ import com.abavilla.fpi.load.mapper.QueryMapper;
 import com.abavilla.fpi.load.repo.QueryRepo;
 import com.abavilla.fpi.load.service.load.RewardsSvc;
 import com.abavilla.fpi.load.util.LoadConst;
-import com.abavilla.fpi.telco.ext.entity.enums.Telco;
+import com.abavilla.fpi.telco.ext.enums.Telco;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

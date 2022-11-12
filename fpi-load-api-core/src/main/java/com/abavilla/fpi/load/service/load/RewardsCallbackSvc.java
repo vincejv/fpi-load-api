@@ -46,7 +46,7 @@ import com.abavilla.fpi.msgr.ext.rest.MsgrReqApi;
 import com.abavilla.fpi.msgr.ext.rest.TelegramReqApi;
 import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
@@ -142,7 +142,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    * @param status Status of transaction
    * @return {@link Function} callback
    */
-  private Uni<? extends RewardsTransStatus> updateTransWithCallback(RewardsTransStatus rewardsTrans, AbsMongoItem field, ApiStatus status) {
+  private Uni<? extends RewardsTransStatus> updateTransWithCallback(RewardsTransStatus rewardsTrans, AbsMongoItem field,
+                                                                    ApiStatus status) {
     CallBack callBack = new CallBack();
     callBack.setContent(field);
     callBack.setDateReceived(DateUtil.now());

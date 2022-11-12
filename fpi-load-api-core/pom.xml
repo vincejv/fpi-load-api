@@ -105,11 +105,6 @@
       <artifactId>fpi-msgr-api-lib</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.abavilla</groupId>
-      <artifactId>fpi-bot-api-lib</artifactId>
-    </dependency>
-
   </dependencies>
   <build>
     <plugins>
