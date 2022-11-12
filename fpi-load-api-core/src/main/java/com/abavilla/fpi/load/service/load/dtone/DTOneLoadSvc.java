@@ -31,7 +31,7 @@ import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.dtone.dvs.DvsApiClientAsync;
 import com.dtone.dvs.dto.CalculationMode;
 import com.dtone.dvs.dto.Error;

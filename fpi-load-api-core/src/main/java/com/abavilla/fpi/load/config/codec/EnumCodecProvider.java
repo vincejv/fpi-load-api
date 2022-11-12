@@ -18,14 +18,14 @@
 
 package com.abavilla.fpi.load.config.codec;
 
-import com.abavilla.fpi.bot.ext.codec.BotSourceCodec;
-import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.config.codec.IEnumCodecProvider;
 import com.abavilla.fpi.load.entity.enums.SkuType;
 import com.abavilla.fpi.telco.ext.codec.ApiStatusCodec;
+import com.abavilla.fpi.telco.ext.codec.BotSourceCodec;
 import com.abavilla.fpi.telco.ext.codec.TelcoCodec;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
-import com.abavilla.fpi.telco.ext.entity.enums.Telco;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.BotSource;
+import com.abavilla.fpi.telco.ext.enums.Telco;
 import org.bson.codecs.Codec;
 
 /**

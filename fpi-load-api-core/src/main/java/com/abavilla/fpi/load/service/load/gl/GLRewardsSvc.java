@@ -31,7 +31,7 @@ import com.abavilla.fpi.load.mapper.load.LoadRespMapper;
 import com.abavilla.fpi.load.repo.load.gl.GLLoadApiRepo;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
 import lombok.SneakyThrows;
