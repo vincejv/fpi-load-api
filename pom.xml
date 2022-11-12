@@ -116,7 +116,7 @@
       <dependency>
         <groupId>com.abavilla</groupId>
         <artifactId>fpi-msgr-api-lib</artifactId>
-        <version>1.1.2-3172ae0-SNAPSHOT</version>
+        <version>1.2.0</version>
       </dependency>
 
     </dependencies>
