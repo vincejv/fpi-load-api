@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.fw.util.DateUtil;
@@ -34,7 +33,8 @@ import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.BotSource;
 import com.dtone.dvs.dto.TransactionRequest;
 import com.dtone.dvs.dto.TransactionResponse;
 import org.apache.commons.lang3.StringUtils;

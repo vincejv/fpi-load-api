@@ -19,7 +19,7 @@
 package com.abavilla.fpi.load.ext.dto;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
-import com.abavilla.fpi.telco.ext.entity.enums.ApiStatus;
+import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

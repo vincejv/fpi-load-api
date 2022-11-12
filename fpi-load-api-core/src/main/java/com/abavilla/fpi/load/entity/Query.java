@@ -20,8 +20,8 @@ package com.abavilla.fpi.load.entity;
 
 import java.time.LocalDateTime;
 
-import com.abavilla.fpi.bot.ext.entity.enums.BotSource;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
+import com.abavilla.fpi.telco.ext.enums.BotSource;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
