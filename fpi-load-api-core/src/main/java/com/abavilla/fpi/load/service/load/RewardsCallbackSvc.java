@@ -251,7 +251,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           .chain(() -> telegramReqApi.sendMsg(msgrMsg, user.getId()));
       }
       case VIBER -> {
-        msgrMsg.setRecipient(user.getTelegramId());
+        msgrMsg.setRecipient(user.getViberId());
         yield viberReqApi.sendMsg(msgrMsg, user.getId());
       }
       default -> Uni.createFrom().voidItem();
