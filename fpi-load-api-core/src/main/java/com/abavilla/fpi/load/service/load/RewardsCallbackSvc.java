@@ -44,6 +44,7 @@ import com.abavilla.fpi.login.ext.rest.UserApi;
 import com.abavilla.fpi.msgr.ext.dto.MsgrMsgReqDto;
 import com.abavilla.fpi.msgr.ext.rest.MsgrReqApi;
 import com.abavilla.fpi.msgr.ext.rest.TelegramReqApi;
+import com.abavilla.fpi.msgr.ext.rest.ViberReqApi;
 import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
@@ -83,6 +84,9 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
 
   @RestClient
   TelegramReqApi telegramReqApi;
+
+  @RestClient
+  ViberReqApi viberReqApi;
 
   @Inject
   PhoneNumberUtil phoneNumberUtil;
@@ -245,6 +249,10 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         msgrMsg.setRecipient(user.getTelegramId());
         yield telegramReqApi.toggleTyping(user.getTelegramId())
           .chain(() -> telegramReqApi.sendMsg(msgrMsg, user.getId()));
+      }
+      case VIBER -> {
+        msgrMsg.setRecipient(user.getTelegramId());
+        yield viberReqApi.sendMsg(msgrMsg, user.getId());
       }
       default -> Uni.createFrom().voidItem();
     };
