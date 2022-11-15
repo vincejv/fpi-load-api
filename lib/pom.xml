@@ -41,18 +41,18 @@
     <tag>HEAD</tag>
   </scm>
 
-  <name>FPI Load API core module</name>
+  <name>FPI Load API shared library</name>
   <description>FPI Reactive backend Topup API, contains usage for DTOne and GlobeLabs Rewards API with callback functionality</description>
   <url>https://github.com/vincejv/fpi-load-api</url>
   <inceptionYear>2022</inceptionYear>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>fpi-load-api-core</artifactId>
+  <artifactId>fpi-load-api</artifactId>
   <version>0</version>
 
   <parent>
     <groupId>com.abavilla</groupId>
-    <artifactId>fpi-load-api</artifactId>
+    <artifactId>fpi-load-api-parent</artifactId>
     <version>0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -65,56 +65,16 @@
 
     <dependency>
       <groupId>com.abavilla</groupId>
-      <artifactId>fpi-load-api-lib</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.vincejv</groupId>
-      <artifactId>dvs-apiclient</artifactId>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
-    <dependency>
-      <groupId>com.googlecode.libphonenumber</groupId>
-      <artifactId>libphonenumber</artifactId>
-    </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/carrier -->
-    <dependency>
-      <groupId>com.googlecode.libphonenumber</groupId>
-      <artifactId>carrier</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.abavilla</groupId>
-      <artifactId>fpi-login-api-lib</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.abavilla</groupId>
-      <artifactId>fpi-sms-api-lib</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.abavilla</groupId>
-      <artifactId>fpi-msgr-api-lib</artifactId>
+      <artifactId>fpi-telco-plugin</artifactId>
     </dependency>
 
   </dependencies>
+
   <build>
     <plugins>
 
       <plugin>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
 
@@ -124,13 +84,15 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
-      
+
     </plugins>
   </build>
 </project>
