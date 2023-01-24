@@ -41,6 +41,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -89,7 +90,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    */
   public Uni<LoadRespDto> processQuery(QueryDto query) {
     Log.info("Processing query: " + query);
-    var tokens = StringUtils.split(query.getQuery(), null, 4);
+    var tokens = StringUtils.split(query.getQuery(), null, 5);
 
     return repo.findByQuery(query.getQuery(), identity.getPrincipal().getName()).chain(found -> {
       if (found.isPresent()) {
@@ -108,8 +109,19 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
       if (tokens.length >= 2) {
         var sku = tokens[0];
         var msisdn = tokens[1];
-        var network = tokens.length == 2 ? StringUtils.EMPTY : tokens[2];
-        var loadReq = buildLoadRequest(msisdn, sku, network, query.getBotSource());
+        var network = StringUtils.EMPTY;
+        var advertFlag = true;
+
+        if (tokens.length == 3) {
+          network = tokens[2];
+          if (Telco.fromValue(network) == Telco.UNKNOWN) {
+            advertFlag = BooleanUtils.toBoolean(tokens[2]);
+          }
+        } else if (tokens.length == 4) {
+          advertFlag = BooleanUtils.toBoolean(tokens[3]);
+        }
+
+        var loadReq = buildLoadRequest(msisdn, sku, network, advertFlag, query.getBotSource());
         return rewardsSvc.reloadNumber(loadReq);
       }
       throw new FPISvcEx("Invalid query: " + query.getQuery(), Response.Status.BAD_REQUEST.getStatusCode());
@@ -124,7 +136,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
    * @param network Telco or operator for mobile or account number
    * @return {@link LoadReqDto} Load request
    */
-  private LoadReqDto buildLoadRequest(String mobile, String sku, String network, String source) {
+  private LoadReqDto buildLoadRequest(String mobile, String sku, String network, Boolean advertFlag, String source) {
     var loadReq = new LoadReqDto();
     var carrier = network;
 
@@ -144,6 +156,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
     loadReq.setSku(sku);
     loadReq.setAccountNo(mobile);
     loadReq.setBotSource(source);
+    loadReq.setSendAckMsg(advertFlag);
     if (Telco.fromValue(carrier) != Telco.UNKNOWN) {
       loadReq.setTelco(carrier);
     }

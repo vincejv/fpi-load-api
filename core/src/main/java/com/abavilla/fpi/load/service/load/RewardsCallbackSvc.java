@@ -174,39 +174,46 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   }
 
   /**
-   * Sends an acknowledgement message for successful load transfer
+   * Determines if transaction requires an acknowledgement message for successful load transfer
    *
    * @param rewardsTransStatus Rewards transaction
    * @param status Load status
    * @return {@link Function} callback
    */
   private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, ApiStatus status) {
+    if (rewardsTransStatus.getLoadRequest() != null &&
+      rewardsTransStatus.getLoadRequest().getSendAckMsg()) {
       Log.info("Sending FPI acknowledgement message " +
-          rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
+        rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
       if (status == ApiStatus.DEL) {
         var req = new MsgReqDto();
         try {
           var number = phoneNumberUtil.parse(rewardsTransStatus.getLoadRequest().getMobile(),
-              LoadConst.PH_REGION_CODE);
+            LoadConst.PH_REGION_CODE);
           req.setMobileNumber(phoneNumberUtil
-              .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
+            .format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
         } catch (NumberParseException e) {
           Log.warn("Invalid recipient number, not sending ack message: " +
             rewardsTransStatus.getLoadRequest().getMobile());
           return Uni.createFrom().voidItem();
         }
         req.setContent(
-            String.format("""
-                %s was loaded to your account.
-                Thank you for visiting Florenz Pension Inn!
-                For reservations, message us at https://m.me/florenzpensioninn
-                
-                Ref: %s""", rewardsTransStatus.getLoadRequest().getSku(),
-                rewardsTransStatus.getLoadSmsId()));
+          String.format("""
+              %s was loaded to your account.
+              Thank you for visiting Florenz Pension Inn!
+              For reservations, message us at https://m.me/florenzpensioninn
+                              
+              Ref: %s""", rewardsTransStatus.getLoadRequest().getSku(),
+            rewardsTransStatus.getLoadSmsId()));
         return smsApi.sendSms(req);
       } else {
         return Uni.createFrom().voidItem();
       }
+    } else {
+      Log.info("Skipping FPI acknowledgement message for " +
+        rewardsTransStatus.getLoadSmsId() + " apiStatus: " + status);
+      return Uni.createFrom().voidItem();
+    }
   }
 
   private Uni<? extends RewardsTransStatus> sendLoaderAckMsg(RewardsTransStatus rewardsTransStatus,
