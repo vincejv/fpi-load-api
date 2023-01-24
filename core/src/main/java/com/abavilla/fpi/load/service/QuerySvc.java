@@ -118,6 +118,7 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
             advertFlag = BooleanUtils.toBoolean(tokens[2]);
           }
         } else if (tokens.length == 4) {
+          network = tokens[2];
           advertFlag = BooleanUtils.toBoolean(tokens[3]);
         }
 
