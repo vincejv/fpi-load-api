@@ -35,4 +35,5 @@ public class LoadReqDto extends AbsDto {
   private String transactionId;
   private String telco;
   private String botSource;
+  private Boolean sendAckMsg;
 }
