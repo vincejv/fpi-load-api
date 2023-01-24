@@ -36,4 +36,5 @@ public class LoadReq extends AbsMongoField {
   private String accountNo;
   private String mobile;
   private Telco telco;
+  private Boolean sendAckMsg;
 }
