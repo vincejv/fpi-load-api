@@ -62,8 +62,8 @@ public class PromoSkuRepo extends AbsMongoRepo<PromoSku> {
               ]
             }
             """,
-        Sort.by("offers.wholesaleDiscount", Sort.Direction.Descending, Sort.NullPrecedence.NULLS_LAST)
-          .and("type.ord", Sort.Direction.Ascending, Sort.NullPrecedence.NULLS_LAST),
+        Sort.by("offers.wholesaleDiscount", Sort.Direction.Descending)
+          .and("type.ord", Sort.Direction.Ascending),
         telco.getValue(),
         keyword,
         NumberUtils.toInt(keyword)
@@ -99,8 +99,8 @@ public class PromoSkuRepo extends AbsMongoRepo<PromoSku> {
               ]
             }
             """,
-      Sort.by("offers.wholesaleDiscount", Sort.Direction.Descending, Sort.NullPrecedence.NULLS_LAST)
-        .and("type.ord", Sort.Direction.Ascending, Sort.NullPrecedence.NULLS_LAST),
+      Sort.by("offers.wholesaleDiscount", Sort.Direction.Descending)
+        .and("type.ord", Sort.Direction.Ascending),
         keyword,
         NumberUtils.toInt(keyword)
     ).firstResultOptional();
