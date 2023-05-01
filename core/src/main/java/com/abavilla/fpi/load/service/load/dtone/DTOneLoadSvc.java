@@ -20,9 +20,6 @@ package com.abavilla.fpi.load.service.load.dtone;
 
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.util.FWConst;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.entity.enums.SkuType;
@@ -42,6 +39,8 @@ import com.dtone.dvs.dto.UnitTypes;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

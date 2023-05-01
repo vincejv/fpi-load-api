@@ -20,13 +20,12 @@ package com.abavilla.fpi.load.repo.load;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.telco.ext.enums.Telco;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.lang3.math.NumberUtils;
 
 @ApplicationScoped

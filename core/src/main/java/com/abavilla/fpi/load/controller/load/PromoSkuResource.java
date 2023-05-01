@@ -18,12 +18,11 @@
 
 package com.abavilla.fpi.load.controller.load;
 
-import javax.ws.rs.Path;
-
 import com.abavilla.fpi.fw.controller.AbsResource;
 import com.abavilla.fpi.load.dto.load.PromoSkuDto;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.service.load.PromoSkuSvc;
+import jakarta.ws.rs.Path;
 
 /**
  * Endpoints for doing operations with {@link PromoSku} items.

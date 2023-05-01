@@ -18,10 +18,9 @@
 
 package com.abavilla.fpi.load.repo.load.dtone;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-
 import com.dtone.dvs.DvsApiClientAsync;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
