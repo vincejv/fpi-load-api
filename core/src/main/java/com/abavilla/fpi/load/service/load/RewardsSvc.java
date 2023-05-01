@@ -20,9 +20,6 @@ package com.abavilla.fpi.load.service.load;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.exceptions.FPISvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
@@ -39,6 +36,8 @@ import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import io.quarkus.logging.Log;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.reactive.RestResponse;
 

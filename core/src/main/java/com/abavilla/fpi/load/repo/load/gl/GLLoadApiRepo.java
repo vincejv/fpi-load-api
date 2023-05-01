@@ -18,12 +18,11 @@
 
 package com.abavilla.fpi.load.repo.load.gl;
 
-import javax.ws.rs.POST;
-
 import com.abavilla.fpi.fw.rest.IApi;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
 import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.POST;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "gl-rewards-api")

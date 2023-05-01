@@ -18,13 +18,12 @@
 
 package com.abavilla.fpi.load.controller;
 
-import javax.ws.rs.Path;
-
 import com.abavilla.fpi.fw.controller.AbsResource;
 import com.abavilla.fpi.load.dto.ErrorLogDto;
 import com.abavilla.fpi.load.entity.ErrorLog;
 import com.abavilla.fpi.load.service.ErrorLogSvc;
 import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.Path;
 
 @Path("/fpi/log/error")
 public class ErrorLogResource

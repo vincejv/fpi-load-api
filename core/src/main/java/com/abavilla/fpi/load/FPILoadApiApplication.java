@@ -18,9 +18,8 @@
 
 package com.abavilla.fpi.load;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.abavilla.fpi.fw.FPIApplication;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FPILoadApiApplication extends FPIApplication {

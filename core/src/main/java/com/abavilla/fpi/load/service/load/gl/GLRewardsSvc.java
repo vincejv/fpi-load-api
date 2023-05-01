@@ -18,9 +18,6 @@
 
 package com.abavilla.fpi.load.service.load.gl;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsReqDto;
@@ -34,6 +31,8 @@ import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

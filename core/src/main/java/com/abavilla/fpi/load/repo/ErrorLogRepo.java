@@ -18,10 +18,9 @@
 
 package com.abavilla.fpi.load.repo;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.ErrorLog;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ErrorLogRepo extends AbsMongoRepo<ErrorLog> {

@@ -18,13 +18,6 @@
 
 package com.abavilla.fpi.load.controller.load;
 
-import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.util.MapperUtil;
 import com.abavilla.fpi.load.config.ApiKeyConfig;
@@ -35,6 +28,12 @@ import com.abavilla.fpi.load.service.load.RewardsCallbackSvc;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
 /**
