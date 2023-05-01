@@ -20,11 +20,10 @@ package com.abavilla.fpi.load.repo.load;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.abavilla.fpi.fw.repo.AbsMongoRepo;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class RewardsTransRepo extends AbsMongoRepo<RewardsTransStatus> {

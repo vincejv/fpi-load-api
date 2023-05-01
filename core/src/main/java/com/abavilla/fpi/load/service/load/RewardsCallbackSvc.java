@@ -23,9 +23,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.function.Function;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
@@ -52,6 +49,8 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 

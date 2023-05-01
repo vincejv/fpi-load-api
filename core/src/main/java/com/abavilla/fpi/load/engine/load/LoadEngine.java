@@ -21,12 +21,11 @@ package com.abavilla.fpi.load.engine.load;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.abavilla.fpi.fw.engine.AbsEngine;
 import com.abavilla.fpi.load.entity.load.PromoSku;
 import com.abavilla.fpi.load.entity.load.ProviderOffer;
 import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.lang3.StringUtils;
 
 @ApplicationScoped

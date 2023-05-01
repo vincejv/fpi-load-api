@@ -20,9 +20,6 @@ package com.abavilla.fpi.load.service.load;
 
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.service.AbsRepoSvc;
 import com.abavilla.fpi.load.dto.load.LoadReqDto;
 import com.abavilla.fpi.load.dto.load.PromoSkuDto;
@@ -31,6 +28,8 @@ import com.abavilla.fpi.load.mapper.load.PromoSkuMapper;
 import com.abavilla.fpi.load.repo.load.PromoSkuRepo;
 import com.abavilla.fpi.telco.ext.enums.Telco;
 import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 /**
  * Service layer for operating on {@link PromoSku} items.

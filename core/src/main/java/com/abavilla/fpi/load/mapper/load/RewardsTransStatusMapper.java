@@ -20,8 +20,6 @@ package com.abavilla.fpi.load.mapper.load;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoField;
 import com.abavilla.fpi.fw.mapper.IMapper;
 import com.abavilla.fpi.fw.util.DateUtil;
@@ -37,6 +35,7 @@ import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.abavilla.fpi.telco.ext.enums.BotSource;
 import com.dtone.dvs.dto.TransactionRequest;
 import com.dtone.dvs.dto.TransactionResponse;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.InjectionStrategy;

@@ -18,9 +18,6 @@
 
 package com.abavilla.fpi.load.controller.load;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.dto.AbsDto;
 import com.abavilla.fpi.fw.dto.IDto;
@@ -31,6 +28,8 @@ import com.abavilla.fpi.load.entity.Query;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
 import com.abavilla.fpi.load.service.QuerySvc;
 import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 

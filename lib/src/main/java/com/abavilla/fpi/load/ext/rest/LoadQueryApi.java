@@ -20,13 +20,6 @@ package com.abavilla.fpi.load.ext.rest;
 
 import java.time.temporal.ChronoUnit;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.exceptions.AuthApiSvcEx;
 import com.abavilla.fpi.fw.exceptions.handler.ApiRepoExHandler;
@@ -35,6 +28,12 @@ import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.ext.dto.QueryDto;
 import io.smallrye.faulttolerance.api.ExponentialBackoff;
 import io.smallrye.mutiny.Uni;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
