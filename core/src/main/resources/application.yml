@@ -20,25 +20,25 @@ quarkus:
     read-timeout: 120000
     gl-rewards-api:
       url: ${GL_REWARDS_API}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     login-api:
       url: ${LOGIN_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     sms-api:
       url: ${SMS_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     user-api:
       url: ${USER_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     msgr-api:
       url: ${MSGR_API_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     telegram-api:
       url: ${TG_API_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
     viber-api:
       url: ${VIBER_API_BASE_URI}
-      scope: javax.inject.Singleton
+      scope: jakarta.inject.Singleton
   oidc:
     auth-server-url: ${OIDC_AUTH_URL:https://localhost:8543/realms/quarkus}
     client-id: ${OIDC_CLIENT_ID:backend-api}
