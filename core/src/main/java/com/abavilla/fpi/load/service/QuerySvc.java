@@ -140,17 +140,19 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
     var loadReq = new LoadReqDto();
     var carrier = network;
 
-    try {
-      var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
-      if (phoneNumberUtil.isValidNumber(number)) {
-        loadReq.setMobile(mobile);
-        // check if network given is blank or of unknown value
-        if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
-          carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+    if (StringUtils.isNumeric(sku)) { // if sku has letters, do not guess the telco, fixes cignal implicit declaration
+      try {
+        var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
+        if (phoneNumberUtil.isValidNumber(number)) {
+          loadReq.setMobile(mobile);
+          // check if network given is blank or of unknown value
+          if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
+            carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
+          }
         }
+      } catch (NumberParseException ex) {
+        Log.warn("Invalid number: " + mobile);
       }
-    } catch (NumberParseException ex) {
-      Log.warn("Invalid number: " + mobile);
     }
 
     loadReq.setSku(sku);
