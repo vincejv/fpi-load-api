@@ -199,7 +199,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
           return Uni.createFrom().voidItem();
         }
         var pin = retrievePinFromCallBack(rewardsTransStatus, callbackResponse);
-        var msgContent = StringUtils.EMPTY;
+        String msgContent;
         if (StringUtils.isBlank(pin)) {
           msgContent = String.format("""
               %s was loaded to your account.
@@ -232,7 +232,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   }
 
   private String retrievePinFromCallBack(RewardsTransStatus rewardsTransStatus, AbsMongoItem callbackResponse) {
-    var pin = StringUtils.EMPTY;
+    String pin = StringUtils.EMPTY;
     if (StringUtils.equals(rewardsTransStatus.getLoadProvider(), LoadConst.PROV_DTONE)) {
       var dvsCallback = (DVSCallback) callbackResponse;
       if (dvsCallback.getPin() != null && StringUtils.isNotBlank(dvsCallback.getPin().getCode())) {
@@ -247,7 +247,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
                                                              ApiStatus status) {
     Log.info("Sending ack message to loader: " + rewardsTransStatus);
     String fpiUser = rewardsTransStatus.getFpiUser();
-    var msgContentFormat = StringUtils.EMPTY;
+    String msgContentFormat;
     var pin = retrievePinFromCallBack(rewardsTransStatus, callbackResponse);
 
     if (StringUtils.isBlank(pin)) {
