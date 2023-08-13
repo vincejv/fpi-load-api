@@ -140,26 +140,26 @@ public class QuerySvc extends AbsRepoSvc<QueryDto, Query, QueryRepo> {
     var loadReq = new LoadReqDto();
     var carrier = network;
 
-    if (StringUtils.isNumeric(sku)) { // if sku has letters, do not guess the telco, fixes cignal implicit declaration
-      try {
-        var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
-        if (phoneNumberUtil.isValidNumber(number)) {
-          loadReq.setMobile(mobile);
+    try {
+      var number = phoneNumberUtil.parse(mobile, LoadConst.PH_REGION_CODE);
+      if (phoneNumberUtil.isValidNumber(number)) {
+        loadReq.setMobile(mobile);
+        if (StringUtils.isNumeric(sku)) { // if sku has letters, do not guess the telco, fixes cignal implicit declaration
           // check if network given is blank or of unknown value
           if (StringUtils.isBlank(network) || Telco.fromValue(network) == Telco.UNKNOWN) {
             carrier = carrierMapper.getNameForValidNumber(number, LoadConst.DEFAULT_LOCALE);
           }
         }
-      } catch (NumberParseException ex) {
-        Log.warn("Invalid number: " + mobile);
       }
+    } catch (NumberParseException ex) {
+      Log.warn("Invalid number: " + mobile + ", might be an account number");
     }
 
     loadReq.setSku(sku);
     loadReq.setAccountNo(mobile);
     loadReq.setBotSource(source);
     loadReq.setSendAckMsg(advertFlag);
-    if (Telco.fromValue(carrier) != Telco.UNKNOWN) {
+    if (Telco.fromValue(carrier) != Telco.UNKNOWN) { // correct assumption through libphone carrier
       loadReq.setTelco(carrier);
     }
 
