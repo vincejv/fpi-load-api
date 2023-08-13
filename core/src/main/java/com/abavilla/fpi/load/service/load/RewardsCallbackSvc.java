@@ -29,6 +29,7 @@ import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
+import com.abavilla.fpi.load.entity.dtone.DVSCallback;
 import com.abavilla.fpi.load.entity.load.CallBack;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
@@ -90,21 +91,21 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   @Inject
   PhoneNumberUtil phoneNumberUtil;
 
-  public Uni<Void> storeCallback(GLRewardsCallbackDto dto) {
+  public Uni<Void> storeCallback(GLRewardsCallbackDto callbackDto) {
     return storeCallback(
-      glMapper.mapGLCallbackDtoToEntity(dto),
-      ApiStatus.fromGL(dto.getBody().getStatus()),
-      LoadConst.PROV_GL, dto.getBody().getTransactionId());
+      glMapper.mapGLCallbackDtoToEntity(callbackDto),
+      ApiStatus.fromGL(callbackDto.getBody().getStatus()),
+      LoadConst.PROV_GL, callbackDto.getBody().getTransactionId());
   }
 
-  public Uni<Void> storeCallback(DVSCallbackDto dto) {
+  public Uni<Void> storeCallback(DVSCallbackDto callbackDto) {
     return storeCallback(
-      dtOneMapper.mapDTOneRespToEntity(dto),
-      ApiStatus.fromDtOne(dto.getStatus().getId()),
-      LoadConst.PROV_DTONE, dto.getDtOneId());
+      dtOneMapper.mapDTOneRespToEntity(callbackDto),
+      ApiStatus.fromDtOne(callbackDto.getStatus().getId()),
+      LoadConst.PROV_DTONE, callbackDto.getDtOneId());
   }
 
-  private Uni<Void> storeCallback(AbsMongoItem field, ApiStatus status,
+  private Uni<Void> storeCallback(AbsMongoItem callbackResponse, ApiStatus status,
                                   String provider, Long transactionId) {
     var byTransId = advRepo.findByRespTransIdAndProvider(
         String.valueOf(transactionId), provider);
@@ -113,10 +114,10 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       .onFailure(ApiSvcEx.class).retry().withBackOff(
           Duration.ofSeconds(3)).withJitter(0.2)
       .atMost(5) // Retry for item not found and nothing else
-      .chain(transFound -> updateTransWithCallback(transFound, field, status))
-      .chain(updatedTrans -> sendLoaderAckMsg(updatedTrans, status))
-      .chain(updatedTrans -> sendFPIAckMsg(updatedTrans, status)).onFailure()
-      .call(ex -> saveCallbackAsLeak(ex, field, transactionId))
+      .chain(transFound -> updateTransWithCallback(transFound, callbackResponse, status))
+      .chain(updatedTrans -> sendLoaderAckMsg(updatedTrans, callbackResponse, status))
+      .chain(updatedTrans -> sendFPIAckMsg(updatedTrans, callbackResponse, status)).onFailure()
+      .call(ex -> saveCallbackAsLeak(ex, callbackResponse, transactionId))
       .subscribe().with(ignored->{});
 
     return Uni.createFrom().voidItem();
@@ -179,7 +180,8 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    * @param status Load status
    * @return {@link Function} callback
    */
-  private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, ApiStatus status) {
+  private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, AbsMongoItem callbackResponse,
+                               ApiStatus status) {
     if (rewardsTransStatus.getLoadRequest() != null &&
       rewardsTransStatus.getLoadRequest().getSendAckMsg()) {
       Log.info("Sending FPI acknowledgement message " +
@@ -196,14 +198,28 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
             rewardsTransStatus.getLoadRequest().getMobile());
           return Uni.createFrom().voidItem();
         }
-        req.setContent(
-          String.format("""
+        var pin = retrievePinFromCallBack(rewardsTransStatus, callbackResponse);
+        var msgContent = StringUtils.EMPTY;
+        if (StringUtils.isBlank(pin)) {
+          msgContent = String.format("""
               %s was loaded to your account.
               Thank you for visiting Florenz Pension Inn!
               For reservations, message us at https://m.me/florenzpensioninn
                               
               Ref: %s""", rewardsTransStatus.getLoadRequest().getSku(),
-            rewardsTransStatus.getLoadSmsId()));
+            rewardsTransStatus.getLoadSmsId());
+        } else {
+          msgContent = String.format("""
+              %s was loaded to your account.
+              Thank you for visiting Florenz Pension Inn!
+              For reservations, message us at https://m.me/florenzpensioninn
+                              
+              ePIN: %s
+              Ref: %s""",
+            rewardsTransStatus.getLoadRequest().getSku(),
+            pin, rewardsTransStatus.getLoadSmsId());
+        }
+        req.setContent(msgContent);
         return smsApi.sendSms(req);
       } else {
         return Uni.createFrom().voidItem();
@@ -215,20 +231,49 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
     }
   }
 
+  private String retrievePinFromCallBack(RewardsTransStatus rewardsTransStatus, AbsMongoItem callbackResponse) {
+    var pin = StringUtils.EMPTY;
+    if (StringUtils.equals(rewardsTransStatus.getLoadProvider(), LoadConst.PROV_DTONE)) {
+      var dvsCallback = (DVSCallback) callbackResponse;
+      if (dvsCallback.getPin() != null && StringUtils.isNotBlank(dvsCallback.getPin().getCode())) {
+        pin = dvsCallback.getPin().getCode();
+      }
+    }
+    return pin;
+  }
+
   private Uni<? extends RewardsTransStatus> sendLoaderAckMsg(RewardsTransStatus rewardsTransStatus,
+                                                             AbsMongoItem callbackResponse,
                                                              ApiStatus status) {
     Log.info("Sending ack message to loader: " + rewardsTransStatus);
     String fpiUser = rewardsTransStatus.getFpiUser();
-    String msgContent = """
+    var msgContentFormat = StringUtils.EMPTY;
+    var pin = retrievePinFromCallBack(rewardsTransStatus, callbackResponse);
+
+    if (StringUtils.isBlank(pin)) {
+      msgContentFormat = """
         Loaded %s to %s
                   
         S: %s
         Ref: %s""".formatted(
-      rewardsTransStatus.getLoadRequest().getSku(),
-      StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
-        rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
-      String.valueOf(status), rewardsTransStatus.getLoadSmsId());
+        rewardsTransStatus.getLoadRequest().getSku(),
+        StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
+          rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
+        String.valueOf(status), rewardsTransStatus.getLoadSmsId());
+    } else {
+      msgContentFormat = """
+        Loaded %s to %s
+                  
+        ePIN: %s
+        S: %s
+        Ref: %s""".formatted(
+        rewardsTransStatus.getLoadRequest().getSku(),
+        StringUtils.isBlank(rewardsTransStatus.getLoadRequest().getAccountNo()) ?
+          rewardsTransStatus.getLoadRequest().getMobile() : rewardsTransStatus.getLoadRequest().getAccountNo(),
+        pin, String.valueOf(status), rewardsTransStatus.getLoadSmsId());
+    }
 
+    var msgContent = msgContentFormat;
     return userApi.getById(fpiUser).chain(resp -> {
       var botMsg = new MsgrMsgReqDto();
       botMsg.setContent(msgContent);
