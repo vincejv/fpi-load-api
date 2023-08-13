@@ -273,7 +273,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
         pin, String.valueOf(status), rewardsTransStatus.getLoadSmsId());
     }
 
-    var msgContent = msgContentFormat;
+    final var msgContent = msgContentFormat; // force to final for lambda usage
     return userApi.getById(fpiUser).chain(resp -> {
       var botMsg = new MsgrMsgReqDto();
       botMsg.setContent(msgContent);
