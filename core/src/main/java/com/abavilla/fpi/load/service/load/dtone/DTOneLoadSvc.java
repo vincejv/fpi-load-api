@@ -30,8 +30,8 @@ import com.abavilla.fpi.load.service.load.AbsLoadProviderSvc;
 import com.abavilla.fpi.load.util.LoadConst;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.dtone.dvs.DvsApiClientAsync;
+import com.dtone.dvs.dto.ApiError;
 import com.dtone.dvs.dto.CalculationMode;
-import com.dtone.dvs.dto.Error;
 import com.dtone.dvs.dto.PartyIdentifier;
 import com.dtone.dvs.dto.Source;
 import com.dtone.dvs.dto.TransactionRequest;
@@ -85,7 +85,7 @@ public class DTOneLoadSvc extends AbsLoadProviderSvc {
         } else {
           loadResp.setStatus(ApiStatus.REJ);
           loadResp.setError(dvsResp.getErrors()
-              .stream().map(Error::getMessage)
+              .stream().map(ApiError::getMessage)
               .collect(Collectors.joining(FWConst.COMMA_SEP)));
         }
         loadResp.setApiResponse(dvsResp.getResult());
