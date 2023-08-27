@@ -21,10 +21,10 @@ package com.abavilla.fpi.load.controller.load;
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
 import com.abavilla.fpi.fw.util.MapperUtil;
 import com.abavilla.fpi.load.config.ApiKeyConfig;
-import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.entity.load.RewardsTransStatus;
 import com.abavilla.fpi.load.service.load.RewardsCallbackSvc;
+import com.dtone.dvs.dto.Transaction;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.smallrye.mutiny.Uni;
@@ -54,7 +54,7 @@ public class CallbackResource
     if (StringUtils.equals(apiKey, apiKeyConfig.getGenericApiKey())) {
       return service.storeCallback(MapperUtil.convert(body, GLRewardsCallbackDto.class));
     } else if (StringUtils.equals(apiKey, "intlprov")) {
-      return service.storeCallback(MapperUtil.convert(body, DVSCallbackDto.class));
+      return service.storeCallback(MapperUtil.convert(body, Transaction.class));
     } else {
       throw new WebApplicationException(Response
           .status(HttpResponseStatus.UNAUTHORIZED.code())

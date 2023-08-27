@@ -21,7 +21,6 @@ package com.abavilla.fpi.load.dto.load.dtone;
 import java.util.List;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
-import com.dtone.dvs.dto.Benefit;
 import com.dtone.dvs.dto.Party;
 import com.dtone.dvs.dto.PartyIdentifier;
 import com.dtone.dvs.dto.Pin;
@@ -29,9 +28,10 @@ import com.dtone.dvs.dto.Prices;
 import com.dtone.dvs.dto.Product;
 import com.dtone.dvs.dto.Promotion;
 import com.dtone.dvs.dto.Rates;
+import com.dtone.dvs.dto.StatementIdentifier;
 import com.dtone.dvs.dto.Status;
 import com.dtone.dvs.dto.Values;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,25 +41,46 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @RegisterForReflection
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DVSCallbackDto extends AbsDto {
-  @JsonProperty("id")
+
   private Long dtOneId;
+
   private String externalId;
+
   private String creationDate;
+
   private String confirmationExpirationDate;
+
   private String confirmationDate;
+
   private Status status;
+
   private String operatorReference;
+
   private Pin pin;
+
   private Product product;
+
   private Prices prices;
+
   private Rates rates;
-  private List<Benefit> benefits;
+
   private List<Promotion> promotions;
+
   private Values requestedValues;
+
   private Values adjustedValues;
+
   private Party sender;
+
   private Party beneficiary;
+
   private PartyIdentifier debitPartyIdentifier;
+
   private PartyIdentifier creditPartyIdentifier;
+
+  private StatementIdentifier statementIdentifier;
+
+  private String callbackUrl;
 }
