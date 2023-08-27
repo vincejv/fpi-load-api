@@ -30,8 +30,8 @@ import com.abavilla.fpi.load.entity.dtone.DVSCallback;
 import com.abavilla.fpi.load.entity.dtone.DVSReq;
 import com.abavilla.fpi.load.entity.dtone.DVSResp;
 import com.abavilla.fpi.load.util.LoadConst;
+import com.dtone.dvs.dto.Transaction;
 import com.dtone.dvs.dto.TransactionRequest;
-import com.dtone.dvs.dto.TransactionResponse;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,8 +44,7 @@ public interface DTOneMapper extends IMapper {
   DVSReq copyTransactionReqToDVSReq(TransactionRequest dto);
 
   @Mapping(target = "dtOneId", source = "id")
-  DVSResp copyTransactionRespToDVSResp(TransactionResponse dto);
-
+  DVSResp copyTransactionRespToDVSResp(Transaction dto);
 
   @Mapping(target = "loadProvider", constant = LoadConst.PROV_DTONE)
   DVSCallback mapDTOneRespToEntity(DVSCallbackDto dto);

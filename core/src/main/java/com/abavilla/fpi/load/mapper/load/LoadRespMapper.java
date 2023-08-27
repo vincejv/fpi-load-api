@@ -22,7 +22,7 @@ import com.abavilla.fpi.fw.util.DateUtil;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsRespDto;
 import com.abavilla.fpi.load.ext.dto.LoadRespDto;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
-import com.dtone.dvs.dto.TransactionResponse;
+import com.dtone.dvs.dto.Transaction;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -50,7 +50,7 @@ public interface LoadRespMapper {
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "dateCreated", ignore = true)
   @Mapping(target = "dateUpdated", ignore = true)
-  void mapDTRespToDto(TransactionResponse source,
+  void mapDTRespToDto(Transaction source,
                       @MappingTarget LoadRespDto dest);
 
   @Named("formatGlTimestamp")
