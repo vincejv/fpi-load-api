@@ -49,6 +49,9 @@ public interface DTOneMapper extends IMapper {
   @Mapping(target = "loadProvider", constant = LoadConst.PROV_DTONE)
   DVSCallback mapDTOneRespToEntity(DVSCallbackDto dto);
 
+  @Mapping(target = "dtOneId", source = "id")
+  DVSCallbackDto mapDTOneTransactionToCallbackDto(Transaction dto);
+
   default String dtLdtToStr(LocalDateTime ldtTimestamp) {
     if (ldtTimestamp != null) {
       var formatter = DateTimeFormatter.ISO_DATE_TIME;

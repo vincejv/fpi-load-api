@@ -27,7 +27,6 @@ import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
 import com.abavilla.fpi.fw.util.DateUtil;
-import com.abavilla.fpi.load.dto.load.dtone.DVSCallbackDto;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
 import com.abavilla.fpi.load.entity.dtone.DVSCallback;
 import com.abavilla.fpi.load.entity.load.CallBack;
@@ -46,6 +45,7 @@ import com.abavilla.fpi.msgr.ext.rest.ViberReqApi;
 import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
+import com.dtone.dvs.dto.Transaction;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
@@ -98,11 +98,12 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       LoadConst.PROV_GL, callbackDto.getBody().getTransactionId());
   }
 
-  public Uni<Void> storeCallback(DVSCallbackDto callbackDto) {
+  public Uni<Void> storeCallback(Transaction dvsCallbackTransaction) {
+    var dvsCallbackDto = dtOneMapper.mapDTOneTransactionToCallbackDto(dvsCallbackTransaction);
     return storeCallback(
-      dtOneMapper.mapDTOneRespToEntity(callbackDto),
-      ApiStatus.fromDtOne(callbackDto.getStatus().getId()),
-      LoadConst.PROV_DTONE, callbackDto.getDtOneId());
+      dtOneMapper.mapDTOneRespToEntity(dvsCallbackDto),
+      ApiStatus.fromDtOne(dvsCallbackDto.getStatus().getId()),
+      LoadConst.PROV_DTONE, dvsCallbackDto.getDtOneId());
   }
 
   private Uni<Void> storeCallback(AbsMongoItem callbackResponse, ApiStatus status,
