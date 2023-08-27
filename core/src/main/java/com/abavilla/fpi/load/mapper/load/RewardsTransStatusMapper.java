@@ -33,8 +33,8 @@ import com.abavilla.fpi.load.mapper.load.dtone.DTOneMapper;
 import com.abavilla.fpi.load.mapper.load.gl.GLMapper;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.abavilla.fpi.telco.ext.enums.BotSource;
+import com.dtone.dvs.dto.Transaction;
 import com.dtone.dvs.dto.TransactionRequest;
-import com.dtone.dvs.dto.TransactionResponse;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.BeanMapping;
@@ -87,7 +87,7 @@ public abstract class RewardsTransStatusMapper implements IMapper {
       field = glMapper.mapGLRewardsRespToEntity(glRespDto);
     } else if (dto instanceof TransactionRequest transReq) {
       field = dtOneMapper.copyTransactionReqToDVSReq(transReq);
-    } else if (dto instanceof TransactionResponse transResp) {
+    } else if (dto instanceof Transaction transResp) {
       field = dtOneMapper.copyTransactionRespToDVSResp(transResp);
     }
     return field;
