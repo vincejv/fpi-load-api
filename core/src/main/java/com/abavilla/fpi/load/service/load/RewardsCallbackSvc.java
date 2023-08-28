@@ -109,17 +109,18 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   private Uni<Void> storeCallback(AbsMongoItem callbackResponse, ApiStatus status,
                                   String provider, Long transactionId) {
     var byTransId = advRepo.findByRespTransIdAndProvider(
-        String.valueOf(transactionId), provider);
+      String.valueOf(transactionId), provider);
 
     byTransId.chain(transPulled -> checkIfTxExists(transPulled.orElse(null), transactionId))
       .onFailure(ApiSvcEx.class).retry().withBackOff(
-          Duration.ofSeconds(3)).withJitter(0.2)
+        Duration.ofSeconds(3)).withJitter(0.2)
       .atMost(5) // Retry for item not found and nothing else
       .chain(transFound -> updateTransWithCallback(transFound, callbackResponse, status))
       .chain(updatedTrans -> sendLoaderAckMsg(updatedTrans, callbackResponse, status))
       .chain(updatedTrans -> sendFPIAckMsg(updatedTrans, callbackResponse, status)).onFailure()
       .call(ex -> saveCallbackAsLeak(ex, callbackResponse, transactionId))
-      .subscribe().with(ignored->{});
+      .subscribe().with(ignored -> {
+      });
 
     return Uni.createFrom().voidItem();
   }
@@ -128,23 +129,23 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
    * Checks if rewards transaction have been logged in the db, if not, throw an {@link ApiSvcEx} exception.
    *
    * @param rewardsTransStatus Entity in DB found
-   * @param transactionId External transaction id
+   * @param transactionId      External transaction id
    * @return @return {@link Function} callback
    */
   private Uni<? extends RewardsTransStatus> checkIfTxExists(RewardsTransStatus rewardsTransStatus, Long transactionId) {
-      if (rewardsTransStatus != null) {
-        return Uni.createFrom().item(rewardsTransStatus);
-      } else {
-        throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
-      }
+    if (rewardsTransStatus != null) {
+      return Uni.createFrom().item(rewardsTransStatus);
+    } else {
+      throw new ApiSvcEx("Trans Id for rewards callback not found: " + transactionId);
+    }
   }
 
   /**
    * Updates the rewards transaction with the callback status.
    *
    * @param rewardsTrans Rewards transaction
-   * @param field Callback status
-   * @param status Status of transaction
+   * @param field        Callback status
+   * @param status       Status of transaction
    * @return {@link Function} callback
    */
   private Uni<? extends RewardsTransStatus> updateTransWithCallback(RewardsTransStatus rewardsTrans, AbsMongoItem field,
@@ -161,24 +162,24 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   /**
    * Logs the load transaction as a failed in the database
    *
-   * @param ex Failed transaction
-   * @param field Load transaction
+   * @param ex            Failed transaction
+   * @param field         Load transaction
    * @param transactionId External transaction id
    * @return {@link Function} callback
    */
   private Uni<?> saveCallbackAsLeak(Throwable ex, AbsMongoItem field, Long transactionId) {
-      Log.error("Rewards leak " + transactionId, ex);
-      field.setDateCreated(DateUtil.now());
-      field.setDateUpdated(DateUtil.now());
-      return leakRepo.persist(field)
-          .onFailure().recoverWithNull();
+    Log.error("Rewards leak " + transactionId, ex);
+    field.setDateCreated(DateUtil.now());
+    field.setDateUpdated(DateUtil.now());
+    return leakRepo.persist(field)
+      .onFailure().recoverWithNull();
   }
 
   /**
    * Determines if transaction requires an acknowledgement message for successful load transfer
    *
    * @param rewardsTransStatus Rewards transaction
-   * @param status Load status
+   * @param status             Load status
    * @return {@link Function} callback
    */
   private Uni<?> sendFPIAckMsg(RewardsTransStatus rewardsTransStatus, AbsMongoItem callbackResponse,

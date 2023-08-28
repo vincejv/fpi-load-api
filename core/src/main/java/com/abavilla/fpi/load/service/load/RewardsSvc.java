@@ -74,14 +74,14 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
 
     return skuLookup.chain(promo -> {
       ILoadProviderSvc loadSvc = promo
-          .map(promoSku -> loadEngine.getProvider(promoSku))
-          .orElse(null);
+        .map(promoSku -> loadEngine.getProvider(promoSku))
+        .orElse(null);
 
       if (loadSvc != null) {
         log.setLoadProvider(loadSvc.getProviderName());
         log.setDateUpdated(DateUtil.now());
         return repo.persist(log)
-            .chain(savedLog -> reloadAndUpdateDb(savedLog, loadReqDto, promo.get(), loadSvc));
+          .chain(savedLog -> reloadAndUpdateDb(savedLog, loadReqDto, promo.get(), loadSvc));
       } else {
         return buildRejectedResponse();
       }
@@ -92,7 +92,7 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
                                                        PromoSku promo, ILoadProviderSvc loadSvcProvider) {
     loadReqDto.setTransactionId(savedLog.getId().toString()); // map mongo id to load request
     return loadSvcProvider.reload(loadReqDto, promo)
-        .chain(resp -> updateRequestInDb(resp, savedLog));
+      .chain(resp -> updateRequestInDb(resp, savedLog));
   }
 
   private Uni<LoadRespDto> buildRejectedResponse() {
@@ -104,25 +104,22 @@ public class RewardsSvc extends AbsSvc<GLRewardsReqDto, RewardsTransStatus> {
     return Uni.createFrom().failure(ex);
   }
 
-  private Uni<? extends LoadRespDto> updateRequestInDb(
-      LoadRespDto loadRespDto,
-      RewardsTransStatus logEntity) {
-      rewardsMapper.mapLoadRespDtoToEntity(
-        loadRespDto, logEntity);
+  private Uni<? extends LoadRespDto> updateRequestInDb(LoadRespDto loadRespDto, RewardsTransStatus logEntity) {
+    rewardsMapper.mapLoadRespDtoToEntity(loadRespDto, logEntity);
+    if (loadRespDto.getStatus() == ApiStatus.WAIT ||
+      loadRespDto.getStatus() == ApiStatus.CREATED) {
+      // only generate a load sms id if there was no error encountered
+      // during load transaction during external load api call
+      logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
+    }
 
-      if (loadRespDto.getStatus() == ApiStatus.WAIT ||
-          loadRespDto.getStatus() == ApiStatus.CREATED) {
-        // only generate a load sms id if there was no error encountered
-        // during load transaction during external load api call
-        logEntity.setLoadSmsId(LoadUtil.encodeId(logEntity.getLoadProvider(), logEntity.getTransactionId()));
-      }
-
-      logEntity.setDateUpdated(DateUtil.now());
-      return repo.update(logEntity)
-        .map(res -> {
-          loadRespDto.setSmsTransactionId(res.getLoadSmsId());
-          return loadRespDto;
-        });
+    logEntity.setDateUpdated(DateUtil.now());
+    return repo.update(logEntity)
+      .map(res -> {
+        Log.info("saved logEntity: " + res);
+        loadRespDto.setSmsTransactionId(res.getLoadSmsId());
+        return loadRespDto;
+      });
   }
 
 }
