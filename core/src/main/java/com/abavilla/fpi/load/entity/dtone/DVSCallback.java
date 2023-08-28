@@ -48,6 +48,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 @BsonDiscriminator
 @MongoEntity(collection = "rewards_leak")
 public class DVSCallback extends AbsMongoItem {
+
   @BsonProperty(value = "transactionId")
   private Long dtOneId;
 
@@ -92,4 +93,5 @@ public class DVSCallback extends AbsMongoItem {
   private List<Benefit> benefits;
 
   private String loadProvider;
+
 }

@@ -30,6 +30,7 @@ import com.dtone.dvs.dto.Prices;
 import com.dtone.dvs.dto.Product;
 import com.dtone.dvs.dto.Promotion;
 import com.dtone.dvs.dto.Rates;
+import com.dtone.dvs.dto.StatementIdentifier;
 import com.dtone.dvs.dto.Status;
 import com.dtone.dvs.dto.Values;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -44,24 +45,49 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 @NoArgsConstructor
 @BsonDiscriminator
 public class DVSResp extends AbsMongoField {
+
   private Long dtOneId;
+
   private String externalId;
+
   private LocalDateTime creationDate;
+
   private LocalDateTime confirmationExpirationDate;
+
   private LocalDateTime confirmationDate;
+
   private Status status;
+
   private String operatorReference;
+
   private Pin pin;
+
   private Product product;
+
   private Prices prices;
+
   private Rates rates;
-  private List<Benefit> benefits;
+
   private List<Promotion> promotions;
+
   private Values requestedValues;
+
   private Values adjustedValues;
+
   private Party sender;
+
   private Party beneficiary;
+
   private PartyIdentifier debitPartyIdentifier;
+
   private PartyIdentifier creditPartyIdentifier;
+
+  private StatementIdentifier statementIdentifier;
+
+  private String callbackUrl;
+
+  private List<Benefit> benefits;
+
   private String loadProvider;
+
 }
