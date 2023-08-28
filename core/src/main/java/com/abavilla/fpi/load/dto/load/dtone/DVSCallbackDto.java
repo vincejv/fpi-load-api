@@ -21,6 +21,7 @@ package com.abavilla.fpi.load.dto.load.dtone;
 import java.util.List;
 
 import com.abavilla.fpi.fw.dto.AbsDto;
+import com.dtone.dvs.dto.Benefit;
 import com.dtone.dvs.dto.Party;
 import com.dtone.dvs.dto.PartyIdentifier;
 import com.dtone.dvs.dto.Pin;
@@ -83,4 +84,7 @@ public class DVSCallbackDto extends AbsDto {
   private StatementIdentifier statementIdentifier;
 
   private String callbackUrl;
+
+  private List<Benefit> benefits;
+
 }

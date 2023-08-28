@@ -21,6 +21,7 @@ package com.abavilla.fpi.load.service.load;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.function.Function;
 
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
@@ -46,12 +47,15 @@ import com.abavilla.fpi.sms.ext.dto.MsgReqDto;
 import com.abavilla.fpi.sms.ext.rest.SmsApi;
 import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.dtone.dvs.dto.Transaction;
+import com.dtone.dvs.dto.TransactionFixed;
+import com.dtone.dvs.dto.TransactionRanged;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -100,6 +104,13 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
 
   public Uni<Void> storeCallback(Transaction dvsCallbackTransaction) {
     var dvsCallbackDto = dtOneMapper.mapDTOneTransactionToCallbackDto(dvsCallbackTransaction);
+    if (dvsCallbackTransaction instanceof TransactionFixed fixed && ObjectUtils.isNotEmpty(fixed.getBenefits())) {
+      dvsCallbackDto.setBenefits(new ArrayList<>(fixed.getBenefits().size()));
+      dvsCallbackDto.getBenefits().addAll(fixed.getBenefits());
+    } else if (dvsCallbackTransaction instanceof TransactionRanged ranged && ObjectUtils.isNotEmpty(ranged.getBenefits())) {
+      dvsCallbackDto.setBenefits(new ArrayList<>(ranged.getBenefits().size()));
+      dvsCallbackDto.getBenefits().addAll(ranged.getBenefits());
+    }
     return storeCallback(
       dtOneMapper.mapDTOneRespToEntity(dvsCallbackDto),
       ApiStatus.fromDtOne(dvsCallbackDto.getStatus().getId()),
