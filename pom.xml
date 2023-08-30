@@ -87,7 +87,7 @@
       <dependency>
         <groupId>com.googlecode.libphonenumber</groupId>
         <artifactId>carrier</artifactId>
-        <version>1.203</version>
+        <version>1.204</version>
       </dependency>
 
       <dependency>
