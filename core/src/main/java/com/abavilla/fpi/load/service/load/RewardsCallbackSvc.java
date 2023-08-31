@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.function.Function;
 
+import com.abavilla.fpi.fw.dto.impl.NullDto;
+import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.entity.mongo.AbsMongoItem;
 import com.abavilla.fpi.fw.exceptions.ApiSvcEx;
 import com.abavilla.fpi.fw.service.AbsSvc;
@@ -48,6 +50,7 @@ import com.abavilla.fpi.telco.ext.enums.ApiStatus;
 import com.dtone.dvs.dto.Transaction;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -91,14 +94,14 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
   @Inject
   PhoneNumberUtil phoneNumberUtil;
 
-  public Uni<Void> storeCallback(GLRewardsCallbackDto callbackDto) {
+  public Uni<RespDto<NullDto>> storeCallback(GLRewardsCallbackDto callbackDto) {
     return storeCallback(
       glMapper.mapGLCallbackDtoToEntity(callbackDto),
       ApiStatus.fromGL(callbackDto.getBody().getStatus()),
       LoadConst.PROV_GL, callbackDto.getBody().getTransactionId());
   }
 
-  public Uni<Void> storeCallback(Transaction dvsCallbackTransaction) {
+  public Uni<RespDto<NullDto>> storeCallback(Transaction dvsCallbackTransaction) {
     var dvsCallbackDto = dtOneMapper.mapDTOneTransactionToCallbackDto(dvsCallbackTransaction);
     return storeCallback(
       dtOneMapper.mapDTOneRespToEntity(dvsCallbackDto),
@@ -106,7 +109,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       LoadConst.PROV_DTONE, dvsCallbackDto.getDtOneId());
   }
 
-  private Uni<Void> storeCallback(AbsMongoItem callbackResponse, ApiStatus status,
+  private Uni<RespDto<NullDto>> storeCallback(AbsMongoItem callbackResponse, ApiStatus status,
                                   String provider, Long transactionId) {
     var byTransId = advRepo.findByRespTransIdAndProvider(
       String.valueOf(transactionId), provider);
@@ -122,7 +125,7 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       .subscribe().with(ignored -> {
       });
 
-    return Uni.createFrom().voidItem();
+    return Uni.createFrom().item(this::buildAckResponse);
   }
 
   /**
@@ -309,6 +312,13 @@ public class RewardsCallbackSvc extends AbsSvc<GLRewardsCallbackDto, RewardsTran
       }
       default -> Uni.createFrom().voidItem();
     };
+  }
+
+  public RespDto<NullDto> buildAckResponse() {
+    RespDto<NullDto> ackResp = new RespDto<>();
+    ackResp.setTimestamp(DateUtil.nowAsStr());
+    ackResp.setStatus(HttpResponseStatus.OK.reasonPhrase());
+    return ackResp;
   }
 
 }
