@@ -19,6 +19,8 @@
 package com.abavilla.fpi.load.controller.load;
 
 import com.abavilla.fpi.fw.controller.AbsBaseResource;
+import com.abavilla.fpi.fw.dto.impl.NullDto;
+import com.abavilla.fpi.fw.dto.impl.RespDto;
 import com.abavilla.fpi.fw.util.MapperUtil;
 import com.abavilla.fpi.load.config.ApiKeyConfig;
 import com.abavilla.fpi.load.dto.load.gl.GLRewardsCallbackDto;
@@ -49,8 +51,8 @@ public class CallbackResource
 
   @Path("{apiKey}")
   @POST
-  public Uni<Void> callback(@PathParam("apiKey") String apiKey,
-                            JsonNode body) {
+  public Uni<RespDto<NullDto>> callback(@PathParam("apiKey") String apiKey,
+                                        JsonNode body) {
     if (StringUtils.equals(apiKey, apiKeyConfig.getGenericApiKey())) {
       return service.storeCallback(MapperUtil.convert(body, GLRewardsCallbackDto.class));
     } else if (StringUtils.equals(apiKey, "intlprov")) {
